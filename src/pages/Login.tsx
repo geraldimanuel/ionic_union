@@ -8,14 +8,16 @@ import {
 	IonToolbar,
 } from "@ionic/react";
 import { useState } from "react";
+import { loginUser } from "../firebaseConfig";
+import { toast } from "../components/Toast";
 
 const Login: React.FC = () => {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 
-	function loginUser() {
-		console.log(username);
-		console.log(password);
+	async function login() {
+		const res = await loginUser(username, password);
+		console.log(res);
 	}
 
 	return (
@@ -32,7 +34,7 @@ const Login: React.FC = () => {
 					onIonChange={(e: any) => setPassword(e.target.value)}
 					type="password"
 				/>
-				<IonButton onClick={loginUser}>Login</IonButton>
+				<IonButton onClick={login}>Login</IonButton>
 			</IonContent>
 		</IonPage>
 	);
