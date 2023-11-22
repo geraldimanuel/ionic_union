@@ -9,7 +9,11 @@ import {
 } from "@ionic/react";
 import { useState } from "react";
 import { loginUser } from "../firebaseConfig";
+<<<<<<< HEAD
 // import { toast } from "../components/Toast";
+=======
+import { toast } from "../components/toast";
+>>>>>>> features/frontend/bella
 
 const Login: React.FC = () => {
 	const [username, setUsername] = useState("");
