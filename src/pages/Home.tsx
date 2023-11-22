@@ -34,21 +34,72 @@ const Home: React.FC = () => {
 							backgroundColor: "#ffffff",
 							position: "absolute",
 							bottom: "0px",
-							padding: "20px 30px 20px",
+							padding: "20px 30px 35px",
 							display: "flex",
 							flexDirection: "column",
 							minHeight: "50%",
+							justifyContent: "space-between",
 						}}
 					>
 						<div>
-							<h1>Welcome to UNION</h1>
-							<p>
-								Lorem ipsum hehehehhe iya gitu bener hahaha makanya login dulu
+							<h1 style={{ fontSize: "43px" }}>Welcome to UNION</h1>
+							<p style={{ fontSize: "15px" }}>
+								Lorem ipsum hehehehhe iya gitu bener hahaha makanya login dulu,
+								tapi ini udah bisa pak janji banget nih
 							</p>
 						</div>
-
-						<div>Sign up</div>
-						<div>Sign In</div>
+						<div
+							style={{
+								display: "flex",
+								flexDirection: "column",
+								gap: "10px",
+							}}
+						>
+							<Link to={"/login"}>
+								<div
+									style={{
+										backgroundColor: "#000000",
+										color: "#FFFFFF",
+										padding: "15px",
+										borderRadius: "20px",
+										textAlign: "center",
+										fontWeight: "bold",
+									}}
+								>
+									<p
+										style={{
+											padding: "0px",
+											margin: "0px",
+											fontSize: "14px",
+										}}
+									>
+										Sign in
+									</p>
+								</div>
+							</Link>
+							<Link to={"/register"}>
+								<div
+									style={{
+										backgroundColor: "#000000",
+										color: "#FFFFFF",
+										padding: "15px",
+										borderRadius: "20px",
+										textAlign: "center",
+										fontWeight: "bold",
+									}}
+								>
+									<p
+										style={{
+											padding: "0px",
+											margin: "0px",
+											fontSize: "14px",
+										}}
+									>
+										Sign up
+									</p>
+								</div>
+							</Link>
+						</div>
 					</div>
 				</div>
 			</IonContent>
