@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Event from "./pages/Event";
+import EventDetail from "./pages/EventDetail";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -118,6 +119,7 @@ const App: React.FC = () => {
 						{isAdmin ? <Admin /> : <Redirect to="/login" />}
 					</Route>
 					<Route path="/event" component={Event} />
+					<Route path="/event/:eventId" component={EventDetail} />
 				</IonRouterOutlet>
 			</IonReactRouter>
 		</IonApp>
