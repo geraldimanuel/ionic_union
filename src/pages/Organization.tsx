@@ -1,4 +1,4 @@
-import { IonCard, IonCardHeader, IonCol, IonContent, IonGrid, IonHeader, IonItem, IonPage, IonRow, IonicSlides } from "@ionic/react";
+import { IonCard, IonCardHeader, IonCol, IonContent, IonGrid, IonHeader, IonItem, IonPage, IonRow } from "@ionic/react";
 
 const Organization: React.FC = () => {
     return (
@@ -8,27 +8,69 @@ const Organization: React.FC = () => {
             </IonHeader>
             <IonContent className="ion-padding">
                 <h2>My Organization</h2>
-
-                <IonGrid>
+                {/* <IonGrid>
                     <IonRow>
                         <IonCol>
-                            <IonCard>
-                                <IonRow>
-                                    <img src="./imkom.png" />
-                                    <h3>Im'Kom</h3>
-                                </IonRow>
+                            <IonCard className="ion-text-center" style={{ height: "78px" }}>
+                                <IonGrid>
+                                    <IonRow>
+                                        <IonCol>
+                                            <img src="./imkom.png" />
+                                        </IonCol>
+                                        <IonCol>
+                                            <h3>Im'Kom</h3>
+                                        </IonCol>
+                                    </IonRow>
+                                </IonGrid>
                             </IonCard>
                         </IonCol>
                         <IonCol>
-                            <IonCard>
-                                <IonRow>
-                                    <img src="./radio.png" />
-                                    <h3>UMN Radio</h3>
-                                </IonRow>
+                            <IonCard style={{ height: "78px" }}>
+                                <IonGrid>
+                                    <IonRow>
+                                        <IonCol>
+                                            <img style={{ marginTop: "20px" }} src="./radio.png" />
+                                        </IonCol>
+                                        <IonCol>
+                                            <h3>UMN Radio</h3>
+                                        </IonCol>
+                                    </IonRow>
+                                </IonGrid>
                             </IonCard>
                         </IonCol>
                     </IonRow>
-                </IonGrid>
+                </IonGrid> */}
+
+                <IonContent className="wrapper" style={{ height: "120px", overflowX: "auto", whiteSpace: "nowrap" }}>
+                    <div style={{ display: "flex" }}> 
+                        <IonCard className="ion-text-center" style={{ height: "78px", width: "180px" }}>
+                            <IonGrid>
+                                <IonRow>
+                                    <IonCol>
+                                        <img style={{ marginTop: "3px" }} src="./imkom.png" />
+                                    </IonCol>
+                                    <IonCol size="8">
+                                        <h3>Im'Kom</h3>
+                                    </IonCol>
+                                </IonRow>
+                            </IonGrid>
+                        </IonCard>
+
+                        <IonCard className="ion-text-center" style={{ height: "78px", width: "180px" }}>
+                            <IonGrid>
+                                <IonRow>
+                                    <IonCol>
+                                        <img style={{ marginTop: "20px" }} src="./radio.png" />
+                                    </IonCol>
+                                    <IonCol size="8">
+                                        <h3>UMN Radio</h3>
+                                    </IonCol>
+                                </IonRow>
+                            </IonGrid>
+                        </IonCard>
+                    </div>
+                    
+                </IonContent>
                 
                 <h2>Organizations</h2>
                 <IonGrid>
