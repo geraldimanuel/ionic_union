@@ -62,7 +62,7 @@ const Register: React.FC = () => {
 
 				<button onClick={loginWithGooglePopup}>Sign in With Google</button> */}
 
-				<div style={{ backgroundColor: "#125488", height: "100%" }}>
+				<div style={{ background: "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)", height: "100%" }}>
 					<div
 						style={{
 							borderRadius: "40px 40px 0px 0px",
@@ -113,7 +113,7 @@ const Register: React.FC = () => {
 						>
 							<div
 								style={{
-									backgroundColor: "#000000",
+									backgroundColor: "#125488",
 									color: "#FFFFFF",
 									padding: "15px",
 									borderRadius: "20px",
