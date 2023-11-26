@@ -1,9 +1,54 @@
-import { IonAvatar, IonCard, IonCardHeader, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonItem, IonPage, IonRow, IonText } from "@ionic/react";
-import { calendarNumberOutline, locationOutline } from "ionicons/icons";
+import { IonAvatar, IonBadge, IonButton, IonCard, IonCardHeader, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonPage, IonRow, IonText } from "@ionic/react";
+import { calendarNumberOutline, locationOutline, notificationsOutline, searchOutline } from "ionicons/icons";
 
 const OrganizationDetail: React.FC = () => {
     return (
-        <IonPage>
+        <IonPage style={{backgroundColor:"DBDBDB"}}>
+
+            {/* Header untuk dicuri */}
+            <div style={{
+                background:"linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)", 
+                height:"261px", 
+                borderRadius:"0px 0px 32px 32px",
+                padding:"10px 25px",
+                position:"relative",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)"}}>
+                    <IonButton color="secondary" style={{ position: "relative", top:"45px", left:"315px", width:"51px", height:"51px", borderRadius:"14px" }} slot="end">
+                        <IonIcon icon={notificationsOutline} />
+                        <IonBadge
+                            color="danger"
+                            style={{
+                            position: "absolute",
+                            top: "4px",
+                            left: "15px",
+                            width: "5px",
+                            height: "5px",
+                            borderRadius: "100%",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            }}
+                        >
+                        </IonBadge>
+                    </IonButton>
+                <IonText color="light">
+                    <p>Hello, Kesya!</p>
+                    <h1 style={{
+                        fontSize:"32px"
+                    }}>Let's find your <br></br> favorite events!</h1>
+                </IonText>
+
+                
+                <IonItem style={{top:"30px", borderRadius:"28px", height:"56px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)"}}>
+                    <IonLabel><IonIcon icon={searchOutline} /></IonLabel>
+                    <IonInput 
+                        style={{left:"5px", borderRadius:"28px", height:"56px"}}
+                        type="text"
+                        placeholder="Search here. . ."
+                    />
+                </IonItem>
+            </div>
+
             <IonContent className="ion-padding">
                 <h2>Description</h2>
                 <regular>
@@ -84,7 +129,7 @@ const OrganizationDetail: React.FC = () => {
                 <h2>Members</h2>
                 <IonItem lines="none">
                     <IonAvatar slot="start">
-                        <img src="./profiles/bella.jpg" />
+                        <img src="./images/profiles/bella.jpg" />
                     </IonAvatar>
                     <IonText>
                         <regular>Bella Saharani Sopyan (Admin)</regular>
@@ -92,7 +137,7 @@ const OrganizationDetail: React.FC = () => {
                 </IonItem>
                 <IonItem lines="none">
                     <IonAvatar slot="start">
-                        <img src="./profiles/geri.jpg" />
+                        <img src="./images/profiles/geri.jpg" />
                     </IonAvatar>
                     <IonText>
                         <regular>Gerald Imanuel Wijaya</regular>
@@ -100,7 +145,7 @@ const OrganizationDetail: React.FC = () => {
                 </IonItem>
                 <IonItem lines="none">
                     <IonAvatar slot="start">
-                        <img src="./profiles/kesya.jpg" />
+                        <img src="./images/profiles/kesya.jpg" />
                     </IonAvatar>
                     <IonText>
                         <regular>Kesya Febriana Manampiring (Admin)</regular>
@@ -108,7 +153,7 @@ const OrganizationDetail: React.FC = () => {
                 </IonItem>
                 <IonItem lines="none">
                     <IonAvatar slot="start">
-                        <img src="./profiles/steve.jpg" />
+                        <img src="./images/profiles/steve.jpg" />
                     </IonAvatar>
                     <IonText>
                         <regular>Steve Christian Wijaya</regular>
