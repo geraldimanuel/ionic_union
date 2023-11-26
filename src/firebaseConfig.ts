@@ -9,7 +9,19 @@ import {
 	getRedirectResult,
 	onAuthStateChanged,
 } from "firebase/auth";
-import { getFirestore, setDoc, doc, addDoc, collection } from "firebase/firestore";
+import { useHistory } from "react-router-dom";
+import {
+	getFirestore,
+	setDoc,
+	doc,
+	addDoc,
+	collection,
+	getDoc,
+	query,
+	where,
+	getDocs,
+} from "firebase/firestore";
+import { useState } from "react";
 
 export const firebaseConfig = {
 	apiKey: "AIzaSyDshXm1Zw3PrgHHjlmLlYZp-YVwrWqWvC8",
@@ -26,7 +38,7 @@ const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 provider.addScope("https://www.googleapis.com/auth/contacts.readonly");
 
-const db = getFirestore(app);
+export const db = getFirestore(app);
 
 auth.languageCode = "it";
 
@@ -77,12 +89,28 @@ export async function loginWithGooglePopup() {
 			// IdP data available using getAdditionalUserInfo(result)
 			// ...
 
-			await setDoc(doc(db, "users", user.uid), {
-				name: user.displayName,
-				email: user.email,
-				role: "user",
-				organizations: ["umn"],
-			});
+			// await setDoc(doc(db, "users", user.uid), {
+			// 	name: user.displayName,
+			// 	email: user.email,
+			// 	role: "user",
+			// 	organizations: ["umn"],
+			// });
+
+			const userRef = doc(db, "users", user.uid);
+			const userSnapshot = await getDoc(userRef);
+
+			if (!userSnapshot.exists()) {
+				// User doesn't exist, create a new entry
+				await setDoc(userRef, {
+					name: user.displayName,
+					email: user.email,
+					role: "user",
+					organizations: ["umn"],
+				});
+			} else {
+				// User already exists
+				console.log("User already exists in the database");
+			}
 		})
 		.catch((error) => {
 			// Handle Errors here.
@@ -154,7 +182,6 @@ export async function getEmail() {
 }
 
 export async function fetchData(id = "E001") {
-
 	// const docRef = await addDoc(collection(db, "events"), {
 	// 	origin: "hmif",
 	// 	heading: "JOLLITY: Closing Concert COMMFEST UMN 2023",
@@ -169,7 +196,7 @@ export async function fetchData(id = "E001") {
 		heading: "JOLLITY: Closing Concert COMMFEST UMN 2023",
 		location: "Lapangan Universitas Multimedia Nusantara",
 		date: "Saturday, Nov 11, 2023 (15.30 WIB - Selesai)",
-		description: ` Haii haiii, KomZen!
+		description: `Haii haiii, KomZen!
 
 		Udah siap belum nih untuk seru-seruan nonton konser 
 		bareng di Jollity: Closing Concert COMMFEST UMN 
@@ -182,7 +209,48 @@ export async function fetchData(id = "E001") {
 		
 		Temukan kegembiraan di Jollity COMMFEST 2023
 		Instagram: @commfest.umn`,
-		banner_url: "https://media.discordapp.net/attachments/1054830852783231008/1176751437267615845/image_5.png?ex=6570022d&is=655d8d2d&hm=b89a03a67e4adcc153acff64676d5b12c63aec9442eec7a25cf5851692bf5431&=&format=webp&width=537&height=347"
-	})
-
+		banner_url:
+			"https://media.discordapp.net/attachments/1054830852783231008/1176751437267615845/image_5.png?ex=6570022d&is=655d8d2d&hm=b89a03a67e4adcc153acff64676d5b12c63aec9442eec7a25cf5851692bf5431&=&format=webp&width=537&height=347",
+	});
 }
+
+export async function addEvent(
+	bannerUrl: string,
+	date: string,
+	description: string,
+	heading: string,
+	location: string,
+	origin: string
+) {
+	const eventsCollection = collection(db, "events");
+
+	await addDoc(eventsCollection, {
+		origin: origin,
+		heading: heading,
+		location: location,
+		date: date,
+		description: description,
+		banner_url: bannerUrl,
+		// You don't need to specify an ID here, Firestore will auto-generate one
+	});
+}	
+
+// export const [eventData, setEventData] = useState([]);
+
+// export async function getEvent(origin:string){
+
+// 	const q = query(collection(db, "events"), where("origin","==", origin));
+
+// 	try {
+//         const querySnapshot = await getDocs(q);
+//         const events:any = [];
+//         querySnapshot.forEach((doc) => {
+//           // Push each document's data to the events array
+//           events.push({ id: doc.id, data: doc.data() });
+//         });
+//         setEventData(events); // Set the state with retrieved data
+//       } catch (error) {
+//         console.error('Error fetching data:', error);
+//       }
+	  
+// }

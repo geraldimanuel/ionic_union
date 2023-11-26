@@ -11,7 +11,7 @@ import {
 	IonToolbar,
 } from "@ionic/react";
 import { useState } from "react";
-import { loginUser } from "../firebaseConfig";
+import { loginUser, loginWithGooglePopup } from "../firebaseConfig";
 import { toast } from "../components/toast";
 import { Link } from "react-router-dom";
 
@@ -29,7 +29,13 @@ const Login: React.FC = () => {
 	return (
 		<IonPage>
 			<IonContent>
-				<div style={{ background: "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)", height: "100%" }}>
+				<div
+					style={{
+						background:
+							"linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
+						height: "100%",
+					}}
+				>
 					<div
 						style={{
 							borderRadius: "40px 40px 0px 0px",
@@ -115,7 +121,7 @@ const Login: React.FC = () => {
 									justifyContent: "center",
 									gap: "10px",
 								}}
-								onClick={login}
+								onClick={loginWithGooglePopup}
 							>
 								<p
 									style={{
