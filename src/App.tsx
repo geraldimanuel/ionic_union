@@ -24,6 +24,7 @@ import "@ionic/react/css/display.css";
 /* Theme variables */
 import "./theme/variables.css";
 import Organization from "./pages/Organization";
+import OrganizationDetail from "./pages/OrganizationDetail";
 
 setupIonicReact();
 
@@ -35,6 +36,7 @@ const App: React.FC = () => (
 				<Route path="/login" component={Login} />
 				<Route path="/register" component={Register} />
 				<Route path="/org" component={Organization} />
+				<Route path="/orgDetail" component={OrganizationDetail} />
 			</IonRouterOutlet>
 		</IonReactRouter>
 	</IonApp>
