@@ -41,6 +41,7 @@ const Home: React.FC = () => {
 					padding: "10px",
 					bottom: "20px",
 					marginBottom: "15px",
+					
 				}}>
                 <IonTabButton tab="organization" href="/organization">
                     <IonIcon icon={bag} color="light" size="small"/>
