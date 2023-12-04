@@ -4,6 +4,8 @@ import { IonReactRouter } from "@ionic/react-router";
 import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
+import Event from "./pages/Event";
+import EventDetail from "./pages/EventDetail";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -23,10 +25,16 @@ import "@ionic/react/css/display.css";
 
 /* Theme variables */
 import "./theme/variables.css";
+import Admin from "./pages/Admin";
+
+import { onAuthStateChanged } from "@firebase/auth";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import Organization from "./pages/Organization";
+import OrganizationDetail from "./pages/OrganizationDetail";
 
 setupIonicReact();
 
+<<<<<<< HEAD
 const App: React.FC = () => (
 	<IonApp>
 		<IonReactRouter>
@@ -41,4 +49,24 @@ const App: React.FC = () => (
 	</IonApp>
 );
 
+=======
+const App: React.FC = () => {
+	return (
+		<IonApp>
+			<IonReactRouter>
+				<IonRouterOutlet>
+					<Route exact path="/" component={Home} />
+					<Route path="/login" component={Login} />
+					<Route path="/register" component={Register} />
+					<Route path="/admin" component={Admin} />
+					<Route path="/event" component={Event} />
+					<Route path="/event/:eventId" component={EventDetail} />
+					<Route path="/org" component={Organization} />
+					<Route path="/orgDetail" component={OrganizationDetail} />
+				</IonRouterOutlet>
+			</IonReactRouter>
+		</IonApp>
+	);
+};
+>>>>>>> features/backend/auth
 export default App;

@@ -1,0 +1,33 @@
+.orgWrapper {
+    max-height: 120px;
+    overflow-x: auto;
+}
+
+.orgWrapper .orgItem {
+    min-width: 210px;
+    text-align: center;
+    margin-right: 2px;
+}
+
+.orgWrapper .orgItem .orgGrid {
+    height: 70px;
+}
+
+.catWrapper {
+    overflow-x: auto;
+}
+
+.catWrapper .catItem {
+    min-width: 110px;
+    width: fit-content;
+    height: 20px;
+    border-radius: 25px;
+}
+
+.catWrapper .catItem .catText {
+    width: 100%;
+    text-align: center;
+    font-size: 10px;
+    font-weight: bold;
+    margin-bottom: 23px;
+}
