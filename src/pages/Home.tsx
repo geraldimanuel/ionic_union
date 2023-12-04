@@ -6,6 +6,7 @@ import {
 	IonPage,
 	IonTabBar,
 	IonTabButton,
+	IonText,
 	IonTitle,
 	IonToolbar,
 } from "@ionic/react";
@@ -33,43 +34,46 @@ const Home: React.FC = () => {
 					<h1>Register</h1>
 				</Link>
 			</IonContent>
-			<div className="" style={{}}>
-			<IonTabBar color="primary" slot="bottom" 
+			<IonTabBar color="primary" slot="bottom" className="container" 
 				style={{
 					borderRadius: "20px",
 					position: "floating",
 					padding: "10px",
 					bottom: "20px",
 					marginBottom: "15px",
-					
+					marginLeft: "10px",
+					marginRight: "10px",
+
 				}}>
                 <IonTabButton tab="organization" href="/organization">
                     <IonIcon icon={bag} color="light" size="small"/>
-                    <IonLabel>Organization</IonLabel>
+                    <IonText color="light"><b>Organization</b></IonText>
                 </IonTabButton>
                 <IonTabButton tab="events" href="/events">
                     <IonIcon icon={albums} color="light" size="small"/>
-                    <IonLabel>Events</IonLabel>
+                    <IonText color="light"><b>Events</b></IonText>
                 </IonTabButton>
-                <IonTabButton tab="home" href="/home">
-                    <IonIcon icon={home} size="large" style={{
-						// backgroundRadius: "30px",
-						// backgroundShape: "circle",
-						// backgroundColor: "red",
-						borderRadius: "15px",
+                <IonTabButton tab="home" href="/home" style={{
+					
+				}}>
+                    <IonIcon icon={home} size="large" color="primary" style={{
+						backgroundColor: "#fff",
+						padding: "10px",
+						// background behind icon
+
+						borderRadius: "20px",
 						
 					}} />
                 </IonTabButton>
                 <IonTabButton tab="calendar" href="/calendar">
                     <IonIcon icon={calendar} color="light" size="small"/>
-                    <IonLabel>Calendar</IonLabel>
+                    <IonText color="light"><b>Calendar</b></IonText>
                 </IonTabButton>
                 <IonTabButton tab="profile" href="/profile">
                     <IonIcon icon={people} color="light" size="small"/>
-                    <IonLabel>Profile</IonLabel>
+                    <IonText color="light"><b>Profile</b></IonText>
                 </IonTabButton>
             </IonTabBar>
-			</div>
 		</IonPage>
 	);
 };
