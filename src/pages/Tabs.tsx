@@ -3,64 +3,74 @@ import { IonReactRouter } from "@ionic/react-router";
 import { albums, bag, calendar, home, people } from "ionicons/icons"
 import { Link, Redirect, Route } from "react-router-dom";
 import Organization from "./Organization";
+import Event from "./Event";
 
 
 
 const Tabs: React.FC = () => {
-    return(
-        <IonReactRouter> 
+    
+        const tabStyle = {
+            borderRadius: "20px",
+            position: "floating",
+            padding: "10px",
+            bottom: "20px",
+            marginBottom: "15px",
+            marginLeft: "10px",
+            marginRight: "10px",
+            background: "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
+            boxshadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+        }
+        return(
+
             <IonTabs>
             <IonRouterOutlet>
-                <Redirect exact path="/" to ="/home" />
-                <Route exact path="/home" component={Organization} />
-                {/* <Route exact path="/organization" component={Organization} /> */}
-                <Route exact path="/events" component={Organization} />
-                <Route exact path="/calendar" component={Organization} />
-                <Route exact path="/profile" component={Organization} />
-
+                <Redirect exact path="/" to ="/organization" />
+                <Route exact path="/organization" component={Organization} />
+                <Route exact path="/events" component={Event} />
+                {/* <Route exact path="/calendar" component={Calendar} />
+                <Route exact path="/profile" component={Profile} /> */}
             </IonRouterOutlet>
-			<IonTabBar color="primary" slot="bottom" className="container" 
-				style={{
-					borderRadius: "20px",
-					position: "floating",
-					padding: "10px",
-					bottom: "20px",
-					marginBottom: "15px",
-					marginLeft: "10px",
-					marginRight: "10px",
 
-				}}>
-                <IonTabButton tab="organization" href="/organization">
-                    <IonIcon icon={bag} color="light" size="small"/>
+			<IonTabBar slot="bottom" className="container" style={tabStyle}>
+            
+                <IonTabButton tab="organization" href="/organization" style={{
+                    background: "transparent",
+                }}>
+                    <IonIcon icon={bag} color="light" size="small" />
                     <IonText color="light"><b>Organization</b></IonText>
                 </IonTabButton>
-                <IonTabButton tab="events" href="/events">
+                <IonTabButton tab="events" href="/events" style={{
+                    background: "transparent",
+                }}>
                     <IonIcon icon={albums} color="light" size="small"/>
                     <IonText color="light"><b>Events</b></IonText>
                 </IonTabButton>
-                <IonTabButton tab="home" href="/home" style={{
-					
+                <IonTabButton tab="home" href="/organization" style={{
+					background: "transparent",
 				}}>
                     <IonIcon icon={home} size="large" color="primary" style={{
 						backgroundColor: "#fff",
 						padding: "10px",
-						// background behind icon
-
 						borderRadius: "20px",
 						
 					}} />
                 </IonTabButton>
-                <IonTabButton tab="calendar" href="/calendar">
+                <IonTabButton tab="calendar" href="/calendar" style={{
+                    background: "transparent",
+                }}>
                     <IonIcon icon={calendar} color="light" size="small"/>
                     <IonText color="light"><b>Calendar</b></IonText>
                 </IonTabButton>
-                <IonTabButton tab="profile" href="/profile">
+                <IonTabButton tab="profile" href="/profile" style={{
+                    background: "transparent",
+                }}>
                     <IonIcon icon={people} color="light" size="small"/>
                     <IonText color="light"><b>Profile</b></IonText>
                 </IonTabButton>
             </IonTabBar>
+            {/* </div> */}
             </IonTabs>
-        </IonReactRouter>
+
     )
 }
 
