@@ -32,6 +32,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import Organization from "./pages/Organization";
 import OrganizationDetail from "./pages/OrganizationDetail";
 import Tabs from "./pages/Tabs";
+import EditOrganization from "./pages/EditOrganization";
 
 setupIonicReact();
 
@@ -50,6 +51,7 @@ const App: React.FC = () => {
 					<Route exact path="/event/:id" component={EventDetail} />
 					{/* <Route exact path="/organization" component={Organization} /> */}
 					<Route exact path="/organization/:id" component={OrganizationDetail} />
+					{/* <Route exact path="/editorganization" component={EditOrganization} /> */}
 				</IonRouterOutlet>
 			</IonReactRouter>
 		</IonApp>

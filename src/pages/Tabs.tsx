@@ -4,11 +4,21 @@ import { albums, bag, calendar, home, people } from "ionicons/icons"
 import { Link, Redirect, Route } from "react-router-dom";
 import Organization from "./Organization";
 import Event from "./Event";
-
+import EditOrganization from "./EditOrganization";
+import { useHistory } from "react-router-dom";
+import { useState} from "react";
 
 
 const Tabs: React.FC = () => {
     
+    const history = useHistory();
+    const [isClicked, setIsClicked] = useState<boolean>(false);
+
+    const handleClick = () => {
+        setIsClicked(true);
+        history.push("/organization");
+    }
+
         const tabStyle = {
             borderRadius: "20px",
             position: "floating",
@@ -27,6 +37,7 @@ const Tabs: React.FC = () => {
                 <Redirect exact path="/" to ="/organization" />
                 <Route exact path="/organization" component={Organization} />
                 <Route exact path="/events" component={Event} />
+                <Route exact path="/editorganization" component={EditOrganization} />
                 {/* <Route exact path="/calendar" component={Calendar} />
                 <Route exact path="/profile" component={Profile} /> */}
             </IonRouterOutlet>
@@ -36,8 +47,12 @@ const Tabs: React.FC = () => {
                 <IonTabButton tab="organization" href="/organization" style={{
                     background: "transparent",
                 }}>
-                    <IonIcon icon={bag} color="light" size="small" />
-                    <IonText color="light"><b>Organization</b></IonText>
+                    <IonIcon icon={bag} size="small" style={{
+                        color: isClicked ? "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)" : "white",
+                    }}onClick={handleClick}/>
+                    <IonText style={{
+                        color: isClicked ? "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)" : "white",
+                    }}onClick={handleClick}><b>Organization</b></IonText>
                 </IonTabButton>
                 <IonTabButton tab="events" href="/events" style={{
                     background: "transparent",
