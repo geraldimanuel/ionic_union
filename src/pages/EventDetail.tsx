@@ -92,10 +92,22 @@ const EventDetail: React.FC = () => {
     <IonPage>
       <IonContent fullscreen>
         <div style={{ width: "100%", height: "300px" }}>
-          <img
-            src="./images/cardImage2.png"
-            style={{ width: "100%", height: "250px", objectFit: "cover" }}
-          />
+        <div style={{ position: "relative" }}>
+  <img
+    src="./images/cardImage.png"
+    style={{ width: "100%", height: "250px", objectFit: "cover" }}
+  />
+  <div
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      background: "linear-gradient(0deg, rgba(18,84,136,1) 0%, rgba(55,202,236,0) 100%)",
+    }}
+  ></div>
+</div>
           <div style={{padding:"0px 15px"}}>
           <IonButtons style={{position: "absolute", top: "10px", marginTop:"10px"}}>
             <IonButton style={{backgroundColor:"#095797", padding:"5px 0px", borderRadius:"100%"}} onClick={goBack}>
@@ -146,7 +158,14 @@ const EventDetail: React.FC = () => {
             <IonText>
                 <p>Organizations: </p>
             </IonText>
-            <img src="./images/imkom.png" />
+            <IonGrid style={{ display: "flex" }}>
+            <IonRow className="ion-align-items-center ion-justify-content-center">
+                <img src="./images/imkom.png" />
+                <IonText style={{ marginLeft: "10px" }}>
+                <p>I'm Kom</p>
+                </IonText>
+            </IonRow>
+            </IonGrid>
             <IonText color="dark">
 								<div
 									style={{
