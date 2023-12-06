@@ -52,7 +52,7 @@ const Event: React.FC = () => {
   	const [eventData, setEventData] = useState<EventData[]>([]);
 
 	const handleCardClick = (eventId: string) => {
-		history.push(`/event/${eventId}`);
+		history.push(`/events/1`);
 	};
 
 	const filteredEvents = eventData.filter((item) =>

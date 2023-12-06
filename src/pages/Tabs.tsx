@@ -3,7 +3,9 @@ import { IonReactRouter } from "@ionic/react-router";
 import { albums, bag, calendar, home, people } from "ionicons/icons"
 import { Link, Redirect, Route } from "react-router-dom";
 import Organization from "./Organization";
+import OrganizationDetail from "./OrganizationDetail";
 import Event from "./Event";
+import EventDetail from "./EventDetail";
 import EditOrganization from "./EditOrganization";
 import { useHistory } from "react-router-dom";
 import { useState} from "react";
@@ -34,8 +36,10 @@ const Tabs: React.FC = () => {
 
             <IonTabs>
             <IonRouterOutlet>
-                <Redirect exact path="/" to ="/organization" />
+                <Redirect path="/" to ="/home" />
+                <Route exact path="/organization/:id" component={OrganizationDetail} />
                 <Route exact path="/organization" component={Organization} />
+                <Route exact path="/events/:id" component={EventDetail} />
                 <Route exact path="/events" component={Event} />
                 <Route exact path="/editorganization" component={EditOrganization} />
                 {/* <Route exact path="/calendar" component={Calendar} />
