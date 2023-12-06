@@ -1,4 +1,4 @@
-import { IonApp, IonContent, IonHeader, IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs, IonText, IonTitle, IonToolbar } from "@ionic/react"
+import { IonApp, IonContent, IonGrid, IonHeader, IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs, IonText, IonTitle, IonToolbar } from "@ionic/react"
 import { IonReactRouter } from "@ionic/react-router";
 import { albums, bag, calendar, home, people } from "ionicons/icons"
 import { Link, Redirect, Route } from "react-router-dom";
@@ -48,10 +48,12 @@ const Tabs: React.FC = () => {
                     background: "transparent",
                 }}>
                     <IonIcon icon={bag} size="small" style={{
-                        color: isClicked ? "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)" : "white",
+                        // color: isClicked ? "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)" : "white",
+                        color: "white",
                     }}onClick={handleClick}/>
                     <IonText style={{
-                        color: isClicked ? "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)" : "white",
+                        // color: isClicked ? "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)" : "white",
+                        color: "white",
                     }}onClick={handleClick}><b>Organization</b></IonText>
                 </IonTabButton>
                 <IonTabButton tab="events" href="/events" style={{
@@ -63,12 +65,19 @@ const Tabs: React.FC = () => {
                 <IonTabButton tab="home" href="/organization" style={{
 					background: "transparent",
 				}}>
-                    <IonIcon icon={home} size="large" color="primary" style={{
-						backgroundColor: "#fff",
+                    <IonGrid style={{
+                        position: "fixed",
+						backgroundColor: "#ffffff",
 						padding: "10px",
-						borderRadius: "20px",
-						
+						borderRadius: "30px",
+                        // marginBottom: "30px",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                    }}>
+                    <IonIcon icon={home} size="large" color="primary" style={{
 					}} />
+                    </IonGrid>
                 </IonTabButton>
                 <IonTabButton tab="calendar" href="/calendar" style={{
                     background: "transparent",

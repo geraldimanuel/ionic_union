@@ -85,7 +85,7 @@ const EditOrganization: React.FC = () => {
                     <IonTitle color="light">Edit Organization</IonTitle>
                 </IonToolbar>
             </IonHeader>
-            <IonContent fullscreen>
+            <IonContent fullscreen >
                 <IonLoading isOpen={loading} />
                 <IonAlert
                     isOpen={!!error}
@@ -106,16 +106,14 @@ const EditOrganization: React.FC = () => {
                     justifyContent: "center",
                 }}>
                 <IonGrid>
-                    
-
                     <IonCard style={{ 
-                        height: "100px", 
-                        width: "100px",
+                        height: "125px", 
+                        width: "125px",
                         }}>
                         <IonRow className="ion-text-center" >
                             <IonCol style={{
                                 borderRadius: "20px",
-                                top: "20px",
+                                top: "30px",
                                 marginLeft: "10px",
                                 marginRight: "10px",
                             
@@ -134,13 +132,18 @@ const EditOrganization: React.FC = () => {
                     </IonCard>
                 </IonGrid>
                 </div>
-                <IonList>
-                    <IonItem>
+                    <>
+                    <IonItem style={{
+                        
+                    }}>
                         
                     <IonInput 
+                    
+                    fill="outline"
+                    border-radius="20px"
                     label="Name" 
                     labelPlacement="floating" 
-                    fill="outline" 
+                     
                     placeholder="Enter your name"
                     value={name}
                     >
@@ -174,6 +177,7 @@ const EditOrganization: React.FC = () => {
                     <IonItem>
                 
                         <IonInput 
+
                         label="Phone" 
                         labelPlacement="floating" 
                         fill="outline" 
@@ -193,8 +197,7 @@ const EditOrganization: React.FC = () => {
                         >
                         </IonInput>
                     </IonItem>
-                
-                </IonList>
+                    </>
                 
                 <IonButton
                     expand="block"
