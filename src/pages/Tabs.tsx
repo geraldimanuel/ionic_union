@@ -29,7 +29,7 @@ const Tabs: React.FC = () => {
             marginBottom: "15px",
             marginLeft: "10px",
             marginRight: "10px",
-            background: "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
+            background: "radial-gradient(circle, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
             boxshadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
         }
         return(
@@ -66,12 +66,13 @@ const Tabs: React.FC = () => {
                 </IonTabButton>
                 <IonTabButton tab="home" href="/organization" style={{
 					background: "transparent",
+                    marginBottom:"10px"
 				}}>
-                    <IonIcon icon={home} size="large" color="primary" style={{
-						backgroundColor: "#fff",
-						padding: "10px",
-						borderRadius: "20px",
-						
+                    <IonIcon icon={home} size="large" color="light" style={{
+						background: "linear-gradient(180deg, rgba(42,147,213,1) 0%, rgba(55,202,236,1) 100%)",
+						padding: "10px 0px",
+						borderRadius: "100%",
+                        width:"60px",
 					}} />
                 </IonTabButton>
                 <IonTabButton tab="calendar" href="/calendar" style={{
