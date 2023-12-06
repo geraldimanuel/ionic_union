@@ -1,6 +1,5 @@
 import {
 	IonButton,
-	IonCol,
 	IonContent,
 	IonHeader,
 	IonInput,
@@ -8,8 +7,6 @@ import {
 	IonLabel,
 	IonPage,
 	IonRow,
-	IonTitle,
-	IonToolbar,
 } from "@ionic/react";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
