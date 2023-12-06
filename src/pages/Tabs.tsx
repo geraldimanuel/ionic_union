@@ -1,6 +1,6 @@
 import { IonApp, IonContent, IonHeader, IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs, IonText, IonTitle, IonToolbar } from "@ionic/react"
 import { IonReactRouter } from "@ionic/react-router";
-import { albums, bag, calendar, home, people } from "ionicons/icons"
+import { albums, bag, calendar, home, people, person } from "ionicons/icons"
 import { Link, Redirect, Route } from "react-router-dom";
 import Organization from "./Organization";
 import OrganizationDetail from "./OrganizationDetail";
@@ -51,7 +51,7 @@ const Tabs: React.FC = () => {
                 <IonTabButton tab="organization" href="/organization" style={{
                     background: "transparent",
                 }}>
-                    <IonIcon icon={bag} size="small" style={{
+                    <IonIcon icon={people} size="small" style={{
                         color: isClicked ? "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)" : "white",
                     }}onClick={handleClick}/>
                     <IonText style={{
@@ -84,7 +84,7 @@ const Tabs: React.FC = () => {
                 <IonTabButton tab="profile" href="/profile" style={{
                     background: "transparent",
                 }}>
-                    <IonIcon icon={people} color="light" size="small"/>
+                    <IonIcon icon={person} color="light" size="small"/>
                     <IonText color="light"><b>Profile</b></IonText>
                 </IonTabButton>
             </IonTabBar>
