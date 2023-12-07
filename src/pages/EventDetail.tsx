@@ -1,93 +1,28 @@
-// import {
-// 	IonButton,
-// 	IonContent,
-// 	IonHeader,
-// 	IonInput,
-// 	IonPage,
-//     IonIcon,
-// 	IonTitle,
-//     IonText,
-//     IonBadge,
-// 	IonToolbar,
-//     IonItem,
-//     IonLabel,
-//     IonCard,
-//     IonGrid,
-//     IonRow,
-//     IonCol
-// } from "@ionic/react";
-// import { notificationsOutline, searchOutline, calendarClearOutline, locationOutline, appsOutline } from 'ionicons/icons';
-// import Swiper from 'swiper';
-// import { Navigation, Pagination } from 'swiper/modules';
-// import 'swiper/css';
-// import 'swiper/css/navigation';
-// import 'swiper/css/pagination';
-
-// const EventDetail: React.FC = () => {
-
-//     const data = [
-//         {
-//           title: "JOLLITY: Closing Concert COMMFEST UMN 2023",
-//           date: "Saturday, Nov 11, 2023",
-//           time: "15.30 WIB - Selesai",
-//           location: "Lapangan Universitas Multimedia Nusantara"
-//         },
-//       ];
-
-// 	return (
-// 		<IonPage style={{backgroundColor:"DBDBDB"}}>
-
-// 			<IonContent style={{top:"40px"}} className="ion-padding">
-//                     Ini Page Detail
-// 			</IonContent>
-// 		</IonPage>
-// 	);
-// };
-
-// export default EventDetail;
-
 import React from "react";
 import {
     IonContent,
-    IonHeader,
-    IonCard,
     IonIcon,
     IonGrid,
-    IonCol,
     IonRow,
     IonPage,
-    IonItemGroup,
-    IonItem,
     IonText,
-    IonTitle,
     IonButton,
     IonButtons,
-    IonToolbar,
-    IonAvatar,
-    IonCardTitle,
-    IonCardSubtitle,
-    IonImg,
-    IonItemDivider,
 } from "@ionic/react";
 import "./Home.css";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
 import { useHistory } from 'react-router-dom';
-import { warningOutline, arrowBackOutline } from "ionicons/icons";
 import {
-    notificationsOutline,
-    searchOutline,
     calendarClearOutline,
     locationOutline,
-    appsOutline,
+    arrowBackOutline
 } from "ionicons/icons";
 
 const EventDetail: React.FC = () => {
-    const history = useHistory();
 
     const goBack = () => {
         window.history.back();
     };
+    
     return (
         <IonPage>
             <IonContent fullscreen>
@@ -227,62 +162,3 @@ const EventDetail: React.FC = () => {
 };
 
 export default EventDetail;
-
-// // EventDetail.tsx
-// import React, { useEffect, useState } from 'react';
-// import { IonPage, IonContent, IonText, IonButton } from '@ionic/react';
-// import { useParams } from 'react-router-dom';
-// import { db } from '../firebaseConfig';
-// import { doc, getDoc } from 'firebase/firestore';
-
-// const EventDetail: React.FC = () => {
-//   const { eventId } = useParams<{ eventId: string }>();
-//   const [eventDetails, setEventDetails] = useState<any>(null);
-//   const eventDocRef = doc(db, 'events', eventId);
-
-//   useEffect(() => {
-//     async function fetchEventData() {
-//         const origin = "your_origin_value"; // Replace 'your_origin_value' with the actual value
-//         const q = query(collection(db, "events"), where("origin", "==", "hmif"));
-
-//         try {
-//             const querySnapshot = await getDocs(q);
-//             const events: any = [];
-//             querySnapshot.forEach((doc) => {
-//                 // Push each document's data to the events array
-//                 events.push({ id: doc.id, data: doc.data() });
-//             });
-//             setEventData(events); // Set the state with retrieved data
-//         } catch (error) {
-//             console.error("Error fetching data:", error);
-//         }
-//     }
-
-//     fetchEventData();
-// }, [db]);
-
-//   return (
-//     <IonPage>
-//       <IonContent className="ion-padding">
-//         {eventDetails ? (
-//           <>
-//             <IonText>
-//               <h2>{eventDetails.heading}</h2>
-//             </IonText>
-//             <IonText color="dark">
-//               <p>Date: {eventDetails.date}</p>
-//               <p>Location: {eventDetails.location}</p>
-//               <p>Description: {eventDetails.description}</p>
-//             </IonText>
-//             <IonButton color="secondary">Attend</IonButton>
-//             <IonButton color="danger">Decline</IonButton>
-//           </>
-//         ) : (
-//           <IonText>Loading event details...</IonText>
-//         )}
-//       </IonContent>
-//     </IonPage>
-//   );
-// };
-
-// export default EventDetail;

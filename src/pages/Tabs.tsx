@@ -4,7 +4,9 @@ import { albums, bag, calendar, home, people, person } from "ionicons/icons"
 import { Link, Redirect, Route } from "react-router-dom";
 import Organization from "./Organization";
 import OrganizationDetail from "./OrganizationDetail";
+import CreateEvent from "./CreateEvent";
 import Event from "./Event";
+import Home from "./LandingPage";
 import EventDetail from "./EventDetail";
 import EditOrganization from "./EditOrganization";
 import { useHistory } from "react-router-dom";
@@ -37,8 +39,10 @@ const Tabs: React.FC = () => {
             <IonTabs>
             <IonRouterOutlet>
                 <Redirect path="/" to ="/home" />
+                <Route exact path="/home" component={Home} />
                 <Route exact path="/organization/:id" component={OrganizationDetail} />
                 <Route exact path="/organization" component={Organization} />
+                <Route exact path="/createevents" component={CreateEvent} />
                 <Route exact path="/events/:id" component={EventDetail} />
                 <Route exact path="/events" component={Event} />
                 <Route exact path="/editorganization" component={EditOrganization} />
@@ -64,7 +68,7 @@ const Tabs: React.FC = () => {
                     <IonIcon icon={albums} color="light" size="small"/>
                     <IonText color="light"><b>Events</b></IonText>
                 </IonTabButton>
-                <IonTabButton tab="home" href="/organization" style={{
+                <IonTabButton tab="home" href="/home" style={{
 					background: "transparent",
                     marginBottom:"10px"
 				}}>
