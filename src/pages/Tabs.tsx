@@ -5,6 +5,9 @@ import { Link, Redirect, Route, useLocation } from "react-router-dom";
 import Organization from "./Organization";
 import OrganizationDetail from "./OrganizationDetail";
 import Event from "./Event";
+import CreateEvent from "./CreateEvent";
+import CreateOrganization from "./CreateOrganization";
+import Home from "./LandingPage";
 import EventDetail from "./EventDetail";
 import EditOrganization from "./EditOrganization";
 import { useHistory } from "react-router-dom";
@@ -29,13 +32,21 @@ const Tabs: React.FC = () => {
             background: "radial-gradient(circle, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
             boxshadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
         }
+<<<<<<< HEAD
 
         
         const location = useLocation();
         return(
+=======
+        return(
+            
+>>>>>>> features/frontend/kesya
             <IonTabs>
             <IonRouterOutlet>
                 <Redirect path="/" to ="/home" />
+                <Route exact path="/home" component={Home} />
+                <Route exact path="/createorganization" component={CreateOrganization} />
+				<Route exact path="/createevent" component={CreateEvent} />
                 <Route exact path="/organization/:id" component={OrganizationDetail} />
                 <Route exact path="/organization" component={Organization} />
                 <Route exact path="/events/:id" component={EventDetail} />
@@ -68,7 +79,7 @@ const Tabs: React.FC = () => {
                         color: location.pathname === "/events" ? "#75e8ff" : "white",
                     }}><b>Events</b></IonText>
                 </IonTabButton>
-                <IonTabButton tab="home" href="/organization" style={{
+                <IonTabButton tab="home" href="/home" style={{
 					background: "transparent",
                     marginBottom:"10px"
 				}}>

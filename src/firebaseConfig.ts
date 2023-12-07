@@ -20,6 +20,7 @@ import {
 	query,
 	where,
 	getDocs,
+	Timestamp,
 } from "firebase/firestore";
 import { useState } from "react";
 
@@ -102,10 +103,13 @@ export async function loginWithGooglePopup() {
 			if (!userSnapshot.exists()) {
 				// User doesn't exist, create a new entry
 				await setDoc(userRef, {
+					profile_picture: user.photoURL,
 					name: user.displayName,
 					email: user.email,
 					role: "user",
-					organizations: ["umn"],
+					origin: ["umn"],
+					event_attended: [],
+					event_declined : [],
 				});
 			} else {
 				// User already exists
@@ -182,20 +186,12 @@ export async function getEmail() {
 }
 
 export async function fetchData(id = "E001") {
-	// const docRef = await addDoc(collection(db, "events"), {
-	// 	origin: "hmif",
-	// 	heading: "JOLLITY: Closing Concert COMMFEST UMN 2023",
-	// 	location: "",
-	// 	date: "",
-	// 	description: "",
-	// 	banner_url: ""
-	// })
 
 	await setDoc(doc(db, "events", id), {
 		origin: "hmif",
 		heading: "JOLLITY: Closing Concert COMMFEST UMN 2023",
 		location: "Lapangan Universitas Multimedia Nusantara",
-		date: "Saturday, Nov 11, 2023 (15.30 WIB - Selesai)",
+		date: new Date("2023-11-11T15:30:00"),
 		description: `Haii haiii, KomZen!
 
 		Udah siap belum nih untuk seru-seruan nonton konser 
@@ -211,15 +207,19 @@ export async function fetchData(id = "E001") {
 		Instagram: @commfest.umn`,
 		banner_url:
 			"https://media.discordapp.net/attachments/1054830852783231008/1176751437267615845/image_5.png?ex=6570022d&is=655d8d2d&hm=b89a03a67e4adcc153acff64676d5b12c63aec9442eec7a25cf5851692bf5431&=&format=webp&width=537&height=347",
+			category: ["music", "concert"],
+			status: true,
 	});
 }
 
 export async function addEvent(
-	bannerUrl: string,
-	date: string,
-	description: string,
+	bannerUrl: string | null,
 	heading: string,
+	date: Timestamp|null,
 	location: string,
+	description: string,
+	category: string[],
+	status: boolean, 
 	origin: string
 ) {
 	const eventsCollection = collection(db, "events");
@@ -231,26 +231,28 @@ export async function addEvent(
 		date: date,
 		description: description,
 		banner_url: bannerUrl,
-		// You don't need to specify an ID here, Firestore will auto-generate one
+		category: category,
+		status: status,
 	});
 }	
 
-// export const [eventData, setEventData] = useState([]);
+export async function addOrganization(
+	origin_id: string,
+	logo_url: string | null,
+	origin_name: string,
+	description: string,
+	announcement: string,
+	type: string[],
+	admin: string[],
+) {
+	await setDoc(doc(db, "organizations", origin_id), {
+		origin_id: origin_id,
+		logo_url: logo_url,
+		origin_name: origin_name,
+		description: description,
+		announcement: announcement,
+		type: type,
+		admin: admin,
+	});
 
-// export async function getEvent(origin:string){
-
-// 	const q = query(collection(db, "events"), where("origin","==", origin));
-
-// 	try {
-//         const querySnapshot = await getDocs(q);
-//         const events:any = [];
-//         querySnapshot.forEach((doc) => {
-//           // Push each document's data to the events array
-//           events.push({ id: doc.id, data: doc.data() });
-//         });
-//         setEventData(events); // Set the state with retrieved data
-//       } catch (error) {
-//         console.error('Error fetching data:', error);
-//       }
-	  
-// }
+}
