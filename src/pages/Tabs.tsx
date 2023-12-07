@@ -12,6 +12,7 @@ import EventDetail from "./EventDetail";
 import EditOrganization from "./EditOrganization";
 import { useHistory } from "react-router-dom";
 import { useEffect, useState} from "react";
+import Request from "./Request";
 
 
 const Tabs: React.FC = () => {
@@ -22,25 +23,21 @@ const Tabs: React.FC = () => {
 
 
         const tabStyle = {
-            borderRadius: "20px",
-            position: "floating",
-            padding: "10px",
-            bottom: "20px",
-            marginBottom: "15px",
-            marginLeft: "10px",
-            marginRight: "10px",
-            background: "radial-gradient(circle, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
-            boxshadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+            // display: "flex",
+            // justifyContent: "center",
+            // borderRadius: "20px",
+            // position: "floating",
+            // padding: "10px",
+            // bottom: "20px",
+            // marginBottom: "15px",
+            // marginLeft: "10px",
+            // marginRight: "10px",
+            // background: "radial-gradient(circle, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
+            // boxshadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
         }
-<<<<<<< HEAD
-
         
         const location = useLocation();
         return(
-=======
-        return(
-            
->>>>>>> features/frontend/kesya
             <IonTabs>
             <IonRouterOutlet>
                 <Redirect path="/" to ="/home" />
@@ -52,12 +49,32 @@ const Tabs: React.FC = () => {
                 <Route exact path="/events/:id" component={EventDetail} />
                 <Route exact path="/events" component={Event} />
                 <Route exact path="/editorganization" component={EditOrganization} />
+                <Route exact path="/request" component={Request} />
                 {/* <Route exact path="/calendar" component={Calendar} />
                 <Route exact path="/profile" component={Profile} /> */}
             </IonRouterOutlet>
 
-			<IonTabBar slot="bottom" className="container" style={tabStyle}>
-            
+            {/* <div style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}> */}
+			<IonTabBar slot="bottom" className="container" style={{
+                // justifyContent: "center",
+                borderRadius: "20px",
+                position: "floating",
+                padding: "10px",
+                bottom: "20px",
+                marginBottom: "15px",
+                marginLeft: "10px",
+                marginRight: "10px",
+                background: "radial-gradient(circle, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
+                boxshadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                display: "flex",
+                justifyContent: "space-around",
+                width: "auto",
+            }}>
                 <IonTabButton tab="organization" href="/organization"  style={{
                     background: "transparent",
                 }}>

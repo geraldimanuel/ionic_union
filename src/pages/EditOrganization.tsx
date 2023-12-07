@@ -1,61 +1,64 @@
-<<<<<<< HEAD
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonLoading, IonAlert, IonList, IonItem, IonLabel, IonInput, IonTextarea, IonButton, IonIcon, IonCard, IonCol, IonGrid, IonRow, IonButtons } from "@ionic/react";
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonLoading, IonAlert, IonList, IonItem, IonLabel, IonInput, IonTextarea, IonButton, IonIcon, IonCard, IonCol, IonGrid, IonRow, IonButtons, IonSelect, IonSelectOption, IonToast } from "@ionic/react";
 import { getFirestore, doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
-=======
-import {
-	IonPage,
-	IonHeader,
-	IonToolbar,
-	IonTitle,
-	IonContent,
-	IonLoading,
-	IonAlert,
-	IonList,
-	IonItem,
-	IonInput,
-	IonTextarea,
-	IonButton,
-	IonIcon,
-	IonCard,
-	IonCol,
-	IonGrid,
-	IonRow,
-} from "@ionic/react";
-import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
->>>>>>> features/frontend/kesya
 import { useState, useEffect } from "react";
 import { useParams, useHistory } from "react-router";
 import Organization from "./Organization";
 import { arrowBack, arrowBackOutline, pencil } from "ionicons/icons";
 import { Link } from "react-router-dom";
-<<<<<<< HEAD
 import styled from "styled-components";
+import { addOrganization } from "../firebaseConfig";
 
-=======
->>>>>>> features/frontend/kesya
 
 const EditOrganization: React.FC = () => {
-	const [name, setName] = useState<string>("");
-	const [description, setDescription] = useState<string>("");
-	const [email, setEmail] = useState<string>("");
-	const [phone, setPhone] = useState<string>("");
-	const [address, setAddress] = useState<string>("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [description, setDescription] = useState("");
+    const [announcement, setAnnouncement] = useState("");
+    const [name, setName] = useState("");
+    const [category, setCategory] = useState<string[]>([]);
+    const [status, setStatus] = useState("");
+    const [origin, setOrigin] = useState("");
+    const [image, setImage] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const history = useHistory();
+    const [showToast, setShowToast] = useState(false);
+    const [showToastCancel, setShowToastCancel] = useState(false);
 
-	// const [organization, setOrganization] = useState<Organization>();
+    const handleSubmit = () => {
+        if (name && category.length > 0) {
+            addOrganization(
+                "test",
+                imagePreview,
+                name,
+                description,
+                announcement,
+                category,
+                ["admin"]
+            );
 
-	const { id } = useParams<{ id: string }>();
+            history.push('/home');
+            setShowToast(true);
+        } else {
+            setShowToastCancel(true);
+        }
+        // belom error handling pasti masih error, image masih belom konek firestore juga
+    };
 
-	const history = useHistory();
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
 
-	// const { currentUser } = useAuth();
+        if (file) {
+            setImage(file);
 
-	const db = getFirestore();
+            const previewURL = URL.createObjectURL(file);
+            setImagePreview(previewURL);
+        }
+    };
 
-	const [loading, setLoading] = useState<boolean>(false);
+    const goBack = () => {
+        window.history.back();
+    };
 
-	const [error, setError] = useState<string>("");
-
-<<<<<<< HEAD
     const InputContainer = styled.div`
         position: relative;
         margin-bottom: 20px;
@@ -119,52 +122,14 @@ const EditOrganization: React.FC = () => {
         }
     `;
 
-    useEffect(() => {
-        const getOrganization = async () => {
-            const organizationRef = doc(db, "organizations", id);
-            const organizationSnap = await getDoc(organizationRef);
-        };
-        getOrganization();
-    }, [db, id]);
-=======
-	useEffect(() => {
-		const getOrganization = async () => {
-			const organizationRef = doc(db, "organizations", id);
-			const organizationSnap = await getDoc(organizationRef);
-		};
-		getOrganization();
-	}, [db, id]);
->>>>>>> features/frontend/kesya
+    // useEffect(() => {
+    //     const getOrganization = async () => {
+    //         const organizationRef = doc(db, "organizations", id);
+    //         const organizationSnap = await getDoc(organizationRef);
+    //     };
+    //     getOrganization();
+    // }, [db, id]);
 
-	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		setLoading(true);
-		setError("");
-
-		const organizationRef = doc(db, "organizations", id);
-
-		const organizationSnap = await getDoc(organizationRef);
-
-		if (organizationSnap.exists()) {
-			await updateDoc(organizationRef, {
-				name: name,
-				description: description,
-				email: email,
-				phone: phone,
-				address: address,
-			});
-			history.push("/organization");
-		} else {
-			console.log("No such document!");
-		}
-
-		setLoading(false);
-	};
-
-<<<<<<< HEAD
-    const goBack = () => {
-        window.history.back();
-    };
 
     return (
         
@@ -190,7 +155,7 @@ const EditOrganization: React.FC = () => {
                     <IonTitle color="light">Edit Organization</IonTitle>
                 </IonToolbar>
             </IonHeader>
-            <IonContent fullscreen >
+            {/* <IonContent fullscreen >
                 <IonLoading isOpen={loading} />
                 <IonAlert
                     isOpen={!!error}
@@ -244,7 +209,242 @@ const EditOrganization: React.FC = () => {
                     justifyContent: "center",
                     
                 }}>
-                {/* <IonGrid>
+                
+                <IonGrid>
+          <IonItem>
+            <IonLabel position="floating" style={{
+                
+            }}>Name</IonLabel>
+            <IonInput
+              value={name}
+              placeholder="Enter your organization's name"
+              onIonChange={(e) => setName(e.detail.value!)}
+              style={{
+            
+              }}
+            ></IonInput>
+          </IonItem>
+          <IonItem>
+            <IonLabel position="floating">Description</IonLabel>
+            <IonTextarea
+              value={description}
+              placeholder="Enter your description"
+              onIonChange={(e) => setDescription(e.detail.value!)}
+            ></IonTextarea>
+          </IonItem>
+          <IonItem>
+            <IonLabel position="floating">Email</IonLabel>
+            <IonInput
+              type="email"
+              value={email}
+              placeholder="Enter your email"
+              onIonChange={(e) => setEmail(e.detail.value!)}
+            ></IonInput>
+          </IonItem>
+          <IonItem>
+            <IonLabel position="floating">Phone</IonLabel>
+            <IonInput
+              type="tel"
+              value={phone}
+              placeholder="Enter your phone"
+              onIonChange={(e) => setPhone(e.detail.value!)}
+            ></IonInput>
+          </IonItem>
+          <IonItem>
+            <IonLabel position="floating">Address</IonLabel>
+            <IonInput
+              value={address}
+              placeholder="Enter your address"
+              onIonChange={(e) => setAddress(e.detail.value!)}
+            ></IonInput>
+          </IonItem>
+        </IonGrid>
+
+        </div>
+
+        </IonContent> */}
+            <IonToast
+                isOpen={showToast}
+                onDidDismiss={() => setShowToast(false)}
+                message="Organization Successfully edited!"
+                duration={2000}
+            />
+            <IonToast
+                isOpen={showToastCancel}
+                onDidDismiss={() => setShowToastCancel(false)}
+                message="Please fill every mandatory fields!"
+                duration={2000}
+            />
+            <IonContent fullscreen>
+                {/* <div
+                    style={{
+                        background:
+                            "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
+                        height: "80px",
+                        borderRadius: "0px 0px 32px 0px",
+                        padding: "10px 25px",
+                        position: "relative",
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                        display: "grid",
+                        gridTemplateColumns: "auto 1fr",
+                        alignItems: "center",
+                    }}
+                >
+                    <IonButtons onClick={goBack}>
+                        <IonButton>
+                            <IonIcon
+                                icon={arrowBack}
+                                style={{
+                                    color: "white",
+                                    fontSize: "20px",
+                                }}
+                            ></IonIcon>
+                        </IonButton>
+                    </IonButtons>
+
+                    <IonTitle color="light" style={{ textAlign: "center" }}>
+                        Create Organization
+                    </IonTitle>
+                </div> */}
+                <div style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                }}>
+                
+                <IonGrid>
+                    <IonCard style={{
+                        height: "125px",
+                        width: "125px",
+                        // alignItems: "center",
+                        // justifyContent: "center",
+                    }}>
+                        <IonRow className="ion-text-center" >
+                            <IonCol style={{
+                                borderRadius: "20px",
+                                top: "30px",
+                                marginLeft: "10px",
+                                marginRight: "10px",
+                            }}>
+                                {imagePreview ? (
+                                    <img src={imagePreview} />
+                                ) : (
+                                    <img src="./images/imkom.png" />
+                                )}
+                            </IonCol>
+                        </IonRow>
+                        <IonIcon icon={pencil} style={{
+                            position: "absolute",
+                            top: "80px",
+                            left: "80px",
+                            width: "20px",
+                            color: "white",
+                        }}></IonIcon>
+
+                    </IonCard>
+                </IonGrid>
+                </div>
+
+                <IonLoading isOpen={loading} />
+                <IonAlert
+                    isOpen={!!error}
+                    message={error}
+                    buttons={[
+                        {
+                            text: "Ok",
+                            handler: () => {
+                                setError("");
+                            },
+                        },
+                    ]}
+                />
+                <IonList className="ion-padding">
+                    <IonItem>
+                        <IonIcon icon={pencil} style={{
+                            position: "absolute",
+                            top: "80px",
+                            left: "80px",
+                            width: "20px",
+                            color: "white",
+                        }}></IonIcon>
+                        <input type="file" accept="image/*" onChange={handleImageChange} />
+                    </IonItem>
+                    {/* {imagePreview && (
+                        <img
+                            src={imagePreview}
+                            alt="Preview"
+                            style={{ width: "100%", maxHeight: "300px", marginTop: "10px" }}
+                        />
+                    )} */}
+                    <IonInput
+                        label="Name*"
+                        labelPlacement="floating"
+                        fill="outline"
+                        placeholder="Enter name"
+                        value={name}
+                        onIonChange={(e) => setName(e.detail.value!)}
+                        style={{ marginTop: "10px" }}
+                    />
+                    <IonTextarea
+                        label="Description"
+                        labelPlacement="floating"
+                        fill="outline"
+                        placeholder="Enter description"
+                        value={description}
+                        onIonChange={(e) => setDescription(e.detail.value!)}
+                        style={{ marginTop: "10px" }}
+                    />
+                    <IonTextarea
+                        label="Announcement"
+                        labelPlacement="floating"
+                        fill="outline"
+                        placeholder="Enter announcement"
+                        value={description}
+                        onIonChange={(e) => setAnnouncement(e.detail.value!)}
+                        style={{ marginTop: "10px" }}
+                    />
+                    <IonSelect
+                        label="Category*"
+                        labelPlacement="floating"
+                        fill="outline"
+                        value={category}
+                        placeholder="Select category"
+                        onIonChange={(e) => setCategory(e.detail.value as string[])}
+                        style={{ marginTop: "10px" }}
+                    >
+                        <IonSelectOption value="1">Himpunan</IonSelectOption>
+                        <IonSelectOption value="2">UKM</IonSelectOption>
+                        <IonSelectOption value="3">Media Kampus</IonSelectOption>
+                    </IonSelect>
+                </IonList>
+
+                <IonButton
+                    expand="block"
+                    style={{
+                        borderRadius: "20px",
+                        display: "flex",
+                        flexDirection: "column",
+                        marginLeft: "10px",
+                        marginRight: "10px",
+                        '--background': 'linear-gradient(90deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)',
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                        justifyContent: "center",
+                        alignItems: "center",
+                    }}
+                    onClick={handleSubmit}
+                >
+                    Create
+                </IonButton>
+            </IonContent>
+
+        </IonPage>
+    );
+}
+
+export default EditOrganization;
+
+{/* <IonGrid>
                 <InputContainer>
                 <Label htmlFor="name">Name</Label>
                     <StyledInput
@@ -303,219 +503,3 @@ const EditOrganization: React.FC = () => {
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}/>
                 </InputContainer> */}
-                <IonGrid>
-          <IonItem>
-            <IonLabel position="floating" style={{
-                
-            }}>Name</IonLabel>
-            <IonInput
-              value={name}
-              placeholder="Enter your organization's name"
-              onIonChange={(e) => setName(e.detail.value!)}
-              style={{
-            
-              }}
-            ></IonInput>
-          </IonItem>
-          <IonItem>
-            <IonLabel position="floating">Description</IonLabel>
-            <IonTextarea
-              value={description}
-              placeholder="Enter your description"
-              onIonChange={(e) => setDescription(e.detail.value!)}
-            ></IonTextarea>
-          </IonItem>
-          <IonItem>
-            <IonLabel position="floating">Email</IonLabel>
-            <IonInput
-              type="email"
-              value={email}
-              placeholder="Enter your email"
-              onIonChange={(e) => setEmail(e.detail.value!)}
-            ></IonInput>
-          </IonItem>
-          <IonItem>
-            <IonLabel position="floating">Phone</IonLabel>
-            <IonInput
-              type="tel"
-              value={phone}
-              placeholder="Enter your phone"
-              onIonChange={(e) => setPhone(e.detail.value!)}
-            ></IonInput>
-          </IonItem>
-          <IonItem>
-            <IonLabel position="floating">Address</IonLabel>
-            <IonInput
-              value={address}
-              placeholder="Enter your address"
-              onIonChange={(e) => setAddress(e.detail.value!)}
-            ></IonInput>
-          </IonItem>
-        </IonGrid>
-
-        </div>
-
-        
-        </IonContent>
-        </IonPage>
-    );
-}
-=======
-	return (
-		<IonPage>
-			<IonHeader>
-				<IonToolbar
-					color="linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)"
-					style={{
-						background:
-							"linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
-
-						height: "80px",
-						borderRadius: "0px 0px 32px 32px",
-						padding: "10px 25px",
-						position: "relative",
-						boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-					}}
-				>
-					<Link to="/organization">
-						<IonIcon
-							icon={arrowBack}
-							style={{
-								color: "white",
-								fontSize: "20px",
-							}}
-						></IonIcon>
-					</Link>
-
-					<IonTitle color="light">Edit Organization</IonTitle>
-				</IonToolbar>
-			</IonHeader>
-			<IonContent fullscreen>
-				<IonLoading isOpen={loading} />
-				<IonAlert
-					isOpen={!!error}
-					message={error}
-					buttons={[
-						{
-							text: "Ok",
-							handler: () => {
-								setError("");
-							},
-						},
-					]}
-				/>
-				<div
-					style={{
-						display: "flex",
-						flexDirection: "column",
-						alignItems: "center",
-						justifyContent: "center",
-					}}
-				>
-					<IonGrid>
-						<IonCard
-							style={{
-								height: "100px",
-								width: "100px",
-							}}
-						>
-							<IonRow className="ion-text-center">
-								<IonCol
-									style={{
-										borderRadius: "20px",
-										top: "20px",
-										marginLeft: "10px",
-										marginRight: "10px",
-									}}
-								>
-									<img src="./images/imkom.png" />
-								</IonCol>
-							</IonRow>
-							<IonIcon
-								icon={pencil}
-								style={{
-									position: "absolute",
-									top: "80px",
-									left: "80px",
-									width: "20px",
-									color: "white",
-								}}
-							></IonIcon>
-						</IonCard>
-					</IonGrid>
-				</div>
-				<IonList>
-					<IonItem>
-						<IonInput
-							label="Name"
-							labelPlacement="floating"
-							fill="outline"
-							placeholder="Enter your name"
-							value={name}
-						></IonInput>
-					</IonItem>
-					<IonItem>
-						<IonTextarea
-							label="Description"
-							labelPlacement="floating"
-							fill="outline"
-							placeholder="Enter your description"
-							value={description}
-						></IonTextarea>
-					</IonItem>
-
-					<IonItem>
-						<IonInput
-							label="Email"
-							labelPlacement="floating"
-							fill="outline"
-							placeholder="Enter your email"
-							value={email}
-						></IonInput>
-					</IonItem>
-					<IonItem>
-						<IonInput
-							label="Phone"
-							labelPlacement="floating"
-							fill="outline"
-							placeholder="Enter your phone"
-							value={phone}
-						></IonInput>
-					</IonItem>
-					<IonItem>
-						<IonInput
-							label="Address"
-							labelPlacement="floating"
-							fill="outline"
-							placeholder="Enter your address"
-							value={address}
-						></IonInput>
-					</IonItem>
-				</IonList>
-
-				<IonButton
-					expand="block"
-					style={{
-						borderRadius: "20px",
-						display: "flex",
-						flexDirection: "column",
-						// width: "100px",
-
-						marginLeft: "10px",
-						marginRight: "10px",
-						background:
-							"linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
-						boxshadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-						justifyContent: "center",
-						alignItems: "center",
-					}}
-				>
-					Save
-				</IonButton>
-			</IonContent>
-		</IonPage>
-	);
-};
->>>>>>> features/frontend/kesya
-
-export default EditOrganization;

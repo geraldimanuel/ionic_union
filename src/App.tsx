@@ -35,6 +35,8 @@ import Organization from "./pages/Organization";
 import OrganizationDetail from "./pages/OrganizationDetail";
 import Tabs from "./pages/Tabs";
 import EditOrganization from "./pages/EditOrganization";
+import EditProfile from "./pages/EditProfile";
+import Request from "./pages/Request";
 
 setupIonicReact();
 
@@ -46,16 +48,18 @@ const App: React.FC = () => {
 					<Redirect exact from="/" to="/home" />
 
 					<Route path="/" component={Tabs} />
-					<Route exact path="/landing" component={Home} />
-					<Route exact path="/register" component={Register} />
-					<Route exact path="/login" component={Login} />
-					<Route exact path="/admin" component={Admin} />
-					<Route exact path="/event" component={Event} />
-					<Route exact path="/event" component={Event} />
-					<Route exact path="/event/1" component={EventDetail} />
+					<Route path="/landing" component={Home} />
+					<Route path="/register" component={Register} />
+					<Route path="/login" component={Login} />
+					<Route path="/admin" component={Admin} />
+					<Route path="/event" component={Event} />
+					<Route path="/event" component={Event} />
+					<Route path="/event/1" component={EventDetail} />
 					{/* <Route exact path="/organization" component={Organization} /> */}
-					<Route exact path="/organization/:id" component={OrganizationDetail} />
+					<Route path="/organization/:id" component={OrganizationDetail} />
 					{/* <Route exact path="/editorganization" component={EditOrganization} /> */}
+					<Route path="/editprofile" component={EditProfile} />
+					<Route path="/request" component={Request} />
 				</IonRouterOutlet>
 			</IonReactRouter>
 		</IonApp>
