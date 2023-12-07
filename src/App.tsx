@@ -6,6 +6,8 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Event from "./pages/Event";
 import EventDetail from "./pages/EventDetail";
+import CreateEvent from "./pages/CreateEvent";
+import CreateOrganization from "./pages/CreateOrganization";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -43,10 +45,13 @@ const App: React.FC = () => {
 				<IonRouterOutlet id="main">
 					<Redirect exact from="/" to="/home" />
 					<Route path="/" component={Tabs} />
-					<Route exact path="/home" component={Home} />
+					<Route exact path="/landing" component={Home} />
+					<Route exact path="/createorganization" component={CreateOrganization} />
+					<Route exact path="/createevent" component={CreateEvent} />
 					<Route exact path="/register" component={Register} />
 					<Route exact path="/login" component={Login} />
 					<Route exact path="/admin" component={Admin} />
+					<Route exact path="/event" component={Event} />
 					<Route exact path="/event" component={Event} />
 					<Route exact path="/event/1" component={EventDetail} />
 					{/* <Route exact path="/organization" component={Organization} /> */}

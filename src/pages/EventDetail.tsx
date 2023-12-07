@@ -1,53 +1,48 @@
 import React from "react";
 import {
 	IonContent,
-	IonHeader,
-	IonCard,
 	IonIcon,
 	IonGrid,
-	IonCol,
 	IonRow,
 	IonPage,
-	IonItemGroup,
-	IonItem,
 	IonText,
-	IonTitle,
 	IonButton,
 	IonButtons,
-	IonToolbar,
-	IonAvatar,
-	IonCardTitle,
-	IonCardSubtitle,
-	IonImg,
-	IonItemDivider,
 } from "@ionic/react";
 import "./Home.css";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
 import { useHistory } from "react-router-dom";
-import { warningOutline, arrowBackOutline } from "ionicons/icons";
 import {
-	notificationsOutline,
-	searchOutline,
 	calendarClearOutline,
 	locationOutline,
-	appsOutline,
+	arrowBackOutline,
 } from "ionicons/icons";
 
 const EventDetail: React.FC = () => {
-	const history = useHistory();
-
 	const goBack = () => {
 		window.history.back();
 	};
+
 	return (
 		<IonPage>
 			<IonContent fullscreen>
 				<div style={{ width: "100%", height: "300px" }}>
-					<img
-						src="./images/cardImage2.png"
-						style={{ width: "100%", height: "250px", objectFit: "cover" }}
-					/>
+					<div style={{ position: "relative" }}>
+						<img
+							src="./images/cardImage.png"
+							style={{ width: "100%", height: "250px", objectFit: "cover" }}
+						/>
+						<div
+							style={{
+								position: "absolute",
+								top: 0,
+								left: 0,
+								width: "100%",
+								height: "100%",
+								background:
+									"linear-gradient(0deg, rgba(18,84,136,1) 0%, rgba(55,202,236,0) 100%)",
+							}}
+						></div>
+					</div>
 					<div style={{ padding: "0px 15px" }}>
 						<IonButtons
 							style={{ position: "absolute", top: "10px", marginTop: "10px" }}
@@ -105,7 +100,14 @@ const EventDetail: React.FC = () => {
 					<IonText>
 						<p>Organizations: </p>
 					</IonText>
-					<img src="./images/imkom.png" />
+					<IonGrid style={{ display: "flex" }}>
+						<IonRow className="ion-align-items-center ion-justify-content-center">
+							<img src="./images/imkom.png" />
+							<IonText style={{ marginLeft: "10px" }}>
+								<p>I'm Kom</p>
+							</IonText>
+						</IonRow>
+					</IonGrid>
 					<IonText color="dark">
 						<div
 							style={{
@@ -167,6 +169,30 @@ const EventDetail: React.FC = () => {
 							platea dictumst.
 						</p>
 					</IonText>
+					<div
+						style={{
+							marginTop: "10px",
+							display: "flex",
+							flexDirection: "row",
+							gap: "40px",
+							alignItems: "center",
+							justifyContent: "center",
+							marginBottom: "15px",
+						}}
+					>
+						<IonButton
+							color="secondary"
+							style={{ borderRadius: "10px", width: "146px" }}
+						>
+							Attend
+						</IonButton>
+						<IonButton
+							color="danger"
+							style={{ borderRadius: "10px", width: "146px" }}
+						>
+							Decline
+						</IonButton>
+					</div>
 				</div>
 			</IonContent>
 		</IonPage>
@@ -174,62 +200,3 @@ const EventDetail: React.FC = () => {
 };
 
 export default EventDetail;
-
-// // EventDetail.tsx
-// import React, { useEffect, useState } from 'react';
-// import { IonPage, IonContent, IonText, IonButton } from '@ionic/react';
-// import { useParams } from 'react-router-dom';
-// import { db } from '../firebaseConfig';
-// import { doc, getDoc } from 'firebase/firestore';
-
-// const EventDetail: React.FC = () => {
-//   const { eventId } = useParams<{ eventId: string }>();
-//   const [eventDetails, setEventDetails] = useState<any>(null);
-//   const eventDocRef = doc(db, 'events', eventId);
-
-//   useEffect(() => {
-//     async function fetchEventData() {
-//         const origin = "your_origin_value"; // Replace 'your_origin_value' with the actual value
-//         const q = query(collection(db, "events"), where("origin", "==", "hmif"));
-
-//         try {
-//             const querySnapshot = await getDocs(q);
-//             const events: any = [];
-//             querySnapshot.forEach((doc) => {
-//                 // Push each document's data to the events array
-//                 events.push({ id: doc.id, data: doc.data() });
-//             });
-//             setEventData(events); // Set the state with retrieved data
-//         } catch (error) {
-//             console.error("Error fetching data:", error);
-//         }
-//     }
-
-//     fetchEventData();
-// }, [db]);
-
-//   return (
-//     <IonPage>
-//       <IonContent className="ion-padding">
-//         {eventDetails ? (
-//           <>
-//             <IonText>
-//               <h2>{eventDetails.heading}</h2>
-//             </IonText>
-//             <IonText color="dark">
-//               <p>Date: {eventDetails.date}</p>
-//               <p>Location: {eventDetails.location}</p>
-//               <p>Description: {eventDetails.description}</p>
-//             </IonText>
-//             <IonButton color="secondary">Attend</IonButton>
-//             <IonButton color="danger">Decline</IonButton>
-//           </>
-//         ) : (
-//           <IonText>Loading event details...</IonText>
-//         )}
-//       </IonContent>
-//     </IonPage>
-//   );
-// };
-
-// export default EventDetail;

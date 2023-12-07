@@ -100,25 +100,7 @@ const Event: React.FC = () => {
                 padding:"10px 25px",
                 position:"relative",
                 boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)"}}>
-                    <div style={{ textAlign: "right" }}>
-                        <IonButton color="secondary" style={{ position: "relative", top:"45px", width:"51px", height:"51px", borderRadius:"14px"}} slot="end">
-                            <IonIcon icon={notificationsOutline} />
-                            <IonBadge
-                                color="danger"
-                                style={{
-                                position: "absolute",
-                                top: "4px",
-                                left: "15px",
-                                width: "5px",
-                                height: "5px",
-                                borderRadius: "100%",
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                }}
-                            >
-                            </IonBadge>
-                        </IonButton>
+                    <div style={{ textAlign: "right", marginTop:"70px" }}>
                     </div>
 				<IonText color="light">
 					<p>Hello, Kesya!</p>
@@ -157,11 +139,11 @@ const Event: React.FC = () => {
 						Popular Events
 					</h2>
 				</IonText>
-				<img style={{ marginLeft: "10px" }} src="../images/hahaha.png" />
+				{/* <img style={{ marginLeft: "10px" }} src="../images/hahaha.png" /> */}
 				{filteredEvents.map((item, index) => (
 						<IonCard
 							key={index}
-							style={{ borderRadius: "10px" }}
+							style={{ borderRadius: "10px", marginTop:"30px" }}
 							onClick={() => handleCardClick(item.id)}
 						>
 						<img
@@ -171,7 +153,7 @@ const Event: React.FC = () => {
 						<div
 							style={{
 								zIndex: "2",
-								top: "-165px",
+								top: "-150px",
 								left: "10px",
 								backgroundColor: "#2a93d5",
 								height: "22px",
