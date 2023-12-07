@@ -195,7 +195,7 @@ const EditEvent: React.FC = () => {
                     </IonButtons>
 
                     <IonTitle color="light" style={{ textAlign: "center" }}>
-                        Create Event
+                        Edit Event
                     </IonTitle>
                 </div>
 
