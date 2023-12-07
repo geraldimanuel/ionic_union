@@ -1,7 +1,13 @@
 import { IonBadge, IonButton, IonCard, IonCardHeader, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonPage, IonRow, IonText } from "@ionic/react";
 import { notificationsOutline, searchOutline } from "ionicons/icons";
+import { useHistory } from 'react-router-dom';
 
 const Organization: React.FC = () => {
+    const history = useHistory();
+
+    const handleCardClick = (eventId: string) => {
+		history.push(`/organization/1`);
+	};
     return (
         <IonPage style={{backgroundColor:"DBDBDB"}}>
             {/* Header untuk dicuri */}
@@ -34,7 +40,7 @@ const Organization: React.FC = () => {
                     <p>Hello, Kesya!</p>
                     <h1 style={{
                         fontSize:"32px"
-                    }}>Let's find your <br></br> favorite events!</h1>
+                    }}>Manage your <br></br> organization!</h1>
                 </IonText>
                 <IonItem style={{top:"30px", borderRadius:"28px", height:"56px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)"}}>
                     <IonLabel><IonIcon icon={searchOutline} /></IonLabel>
@@ -48,7 +54,7 @@ const Organization: React.FC = () => {
 
             <IonContent className="ion-padding">
                 <h2>My Organization</h2>
-                <IonItem lines="none" className="orgWrapper">
+                <IonItem lines="none" className="orgWrapper" onClick={() => handleCardClick("1")}>
                     <IonItem className="orgItem">
                         <IonGrid className="orgGrid">
                             <IonRow>

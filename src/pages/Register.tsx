@@ -98,7 +98,7 @@ const Register: React.FC = () => {
 								<IonLabel position="floating">Confirm password</IonLabel>
 								<IonInput
 									placeholder="Re-type password"
-									onIonChange={(e: any) => setPassword(e.target.value)}
+									onIonChange={(e: any) => setCPassword(e.target.value)}
 									type="password"
 								/>
 							</IonItem>

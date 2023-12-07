@@ -41,14 +41,14 @@ const App: React.FC = () => {
 		<IonApp>
 			<IonReactRouter>
 				<IonRouterOutlet id="main">
-					<Redirect exact from="/" to="/organization" />
+					<Redirect exact from="/" to="/home" />
 					<Route path="/" component={Tabs} />
 					<Route exact path="/home" component={Home} />
 					<Route exact path="/register" component={Register} />
 					<Route exact path="/login" component={Login} />
 					<Route exact path="/admin" component={Admin} />
 					<Route exact path="/event" component={Event} />
-					<Route exact path="/event/:id" component={EventDetail} />
+					<Route exact path="/event/1" component={EventDetail} />
 					{/* <Route exact path="/organization" component={Organization} /> */}
 					<Route exact path="/organization/:id" component={OrganizationDetail} />
 					{/* <Route exact path="/editorganization" component={EditOrganization} /> */}

@@ -1,7 +1,13 @@
-import { IonAvatar, IonBadge, IonButton, IonCard, IonCardHeader, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonPage, IonRow, IonText } from "@ionic/react";
-import { calendarNumberOutline, locationOutline, notificationsOutline, searchOutline } from "ionicons/icons";
+import { IonAvatar, IonBadge, IonButton, IonCard, IonCardHeader,IonButtons, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonPage, IonRow, IonText } from "@ionic/react";
+import { calendarNumberOutline, locationOutline, notificationsOutline, arrowBackOutline, searchOutline } from "ionicons/icons";
+import { useHistory } from 'react-router-dom';
 
 const OrganizationDetail: React.FC = () => {
+    const history = useHistory();
+
+    const goBack = () => {
+        window.history.back();
+      };
     return (
         <IonPage style={{backgroundColor:"DBDBDB"}}>
 
@@ -13,56 +19,39 @@ const OrganizationDetail: React.FC = () => {
                 padding:"10px 25px",
                 position:"relative",
                 boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)"}}>
-                    <IonButton color="secondary" style={{ position: "relative", top:"45px", left:"315px", width:"51px", height:"51px", borderRadius:"14px" }} slot="end">
-                        <IonIcon icon={notificationsOutline} />
-                        <IonBadge
-                            color="danger"
-                            style={{
-                            position: "absolute",
-                            top: "4px",
-                            left: "15px",
-                            width: "5px",
-                            height: "5px",
-                            borderRadius: "100%",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            }}
-                        >
-                        </IonBadge>
-                    </IonButton>
+                    <div style={{padding:"0px 15px"}}>
+          <IonButtons style={{position: "absolute", top: "10px", marginTop:"10px", marginLeft:"-15px"}}>
+            <IonButton style={{backgroundColor:"#ffffff", padding:"5px 0px", borderRadius:"100%"}} onClick={goBack}>
+                <IonIcon color="primary" icon={arrowBackOutline} size="large" />
+            </IonButton>
+          </IonButtons>
+          <div style={{position:"absolute", marginTop:"130px", backgroundColor:"white", borderRadius:"20%", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)"}}>
+            <img src="./images/imkom.png" style={{width:"100px"}} />
+          </div>
+          </div>
                 <IonText color="light">
-                    <p>Hello, Kesya!</p>
                     <h1 style={{
-                        fontSize:"32px"
-                    }}>Let's find your <br></br> favorite events!</h1>
+                        fontSize:"32px",
+                        marginTop:"190px",
+                        marginLeft:"150px"
+                    }}>I'm Kom</h1>
                 </IonText>
-
-                
-                <IonItem style={{top:"30px", borderRadius:"28px", height:"56px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)"}}>
-                    <IonLabel><IonIcon icon={searchOutline} /></IonLabel>
-                    <IonInput 
-                        style={{left:"5px", borderRadius:"28px", height:"56px"}}
-                        type="text"
-                        placeholder="Search here. . ."
-                    />
-                </IonItem>
             </div>
 
             <IonContent className="ion-padding">
                 <h2>Description</h2>
-                <regular>
+                <p>
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
                     Donec malesuada felis in nunc lacinia, non convallis 
                     ipsum fermentum. Lorem ipsum dolor sit amet, 
                     consectetur adipiscing elit. Donec malesuada felis in 
                     nunc lacinia, non convallis ipsum fermentum.
-                </regular>
+                </p>
                 
                 <h2>Announcement</h2>
-                <regular>
+                <p>
                     HALO BELLA!
-                </regular>
+                </p>
                 
                 <h2>Events</h2>
                 <IonCard>
@@ -80,7 +69,7 @@ const OrganizationDetail: React.FC = () => {
                                         <IonIcon icon={calendarNumberOutline}></IonIcon>
                                     </IonCol>
                                     <IonCol>
-                                        <smallmedium>18.00 WIB - Selesai</smallmedium>
+                                        <small>18.00 WIB - Selesai</small>
                                     </IonCol>
                                 </IonRow>
                                 <IonRow>
@@ -88,7 +77,7 @@ const OrganizationDetail: React.FC = () => {
                                         <IonIcon icon={locationOutline}></IonIcon>
                                     </IonCol>
                                     <IonCol>
-                                        <smallmedium>B0307</smallmedium>
+                                        <small>B0307</small>
                                     </IonCol>
                                 </IonRow>
                             </IonCol>
@@ -110,7 +99,7 @@ const OrganizationDetail: React.FC = () => {
                                         <IonIcon icon={calendarNumberOutline}></IonIcon>
                                     </IonCol>
                                     <IonCol>
-                                        <smallmedium>14.00 - 16.00 WIB</smallmedium>
+                                        <small>14.00 - 16.00 WIB</small>
                                     </IonCol>
                                 </IonRow>
                                 <IonRow>
@@ -118,7 +107,7 @@ const OrganizationDetail: React.FC = () => {
                                         <IonIcon icon={locationOutline}></IonIcon>
                                     </IonCol>
                                     <IonCol>
-                                        <smallmedium>Lecture Hall</smallmedium>
+                                        <small>Lecture Hall</small>
                                     </IonCol>
                                 </IonRow>
                             </IonCol>
@@ -132,7 +121,7 @@ const OrganizationDetail: React.FC = () => {
                         <img src="./images/profiles/bella.jpg" />
                     </IonAvatar>
                     <IonText>
-                        <regular>Bella Saharani Sopyan (Admin)</regular>
+                        <p>Bella Saharani Sopyan (Admin)</p>
                     </IonText>
                 </IonItem>
                 <IonItem lines="none">
@@ -140,7 +129,7 @@ const OrganizationDetail: React.FC = () => {
                         <img src="./images/profiles/geri.jpg" />
                     </IonAvatar>
                     <IonText>
-                        <regular>Gerald Imanuel Wijaya</regular>
+                        <p>Gerald Imanuel Wijaya</p>
                     </IonText>
                 </IonItem>
                 <IonItem lines="none">
@@ -148,7 +137,7 @@ const OrganizationDetail: React.FC = () => {
                         <img src="./images/profiles/kesya.jpg" />
                     </IonAvatar>
                     <IonText>
-                        <regular>Kesya Febriana Manampiring (Admin)</regular>
+                        <p>Kesya Febriana Manampiring (Admin)</p>
                     </IonText>
                 </IonItem>
                 <IonItem lines="none">
@@ -156,7 +145,7 @@ const OrganizationDetail: React.FC = () => {
                         <img src="./images/profiles/steve.jpg" />
                     </IonAvatar>
                     <IonText>
-                        <regular>Steve Christian Wijaya</regular>
+                        <p>Steve Christian Wijaya</p>
                     </IonText>
                 </IonItem>
                 

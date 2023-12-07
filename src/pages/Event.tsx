@@ -31,6 +31,7 @@ import "swiper/css/pagination";
 import { useEffect, useState } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../firebaseConfig";
+import { useHistory } from 'react-router-dom';
 
 interface EventData {
 	id: string;
@@ -46,7 +47,21 @@ interface EventData {
 }
 
 const Event: React.FC = () => {
-	const [eventData, setEventData] = useState<EventData[]>([]);
+    const history = useHistory();
+	const [searchTerm, setSearchTerm] = useState<string>("");
+  	const [eventData, setEventData] = useState<EventData[]>([]);
+
+	const handleCardClick = (eventId: string) => {
+		history.push(`/events/1`);
+	};
+
+	const filteredEvents = eventData.filter((item) =>
+		Object.values(item.data).some(
+		(value) =>
+			typeof value === "string" &&
+			value.toLowerCase().includes(searchTerm.toLowerCase())
+		)
+	);
 
 	useEffect(() => {
 		async function fetchEventData() {
@@ -78,46 +93,15 @@ const Event: React.FC = () => {
 	return (
 		<IonPage style={{ backgroundColor: "DBDBDB" }}>
 			{/* Header untuk dicuri */}
-			<div
-				style={{
-					background:
-						"linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
-					height: "261px",
-					borderRadius: "0px 0px 32px 32px",
-					padding: "10px 25px",
-					position: "relative",
-					boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-				}}
-			>
-				<IonButton
-					color="secondary"
-					style={{
-						position: "relative",
-						top: "45px",
-						left: "315px",
-						width: "51px",
-						height: "51px",
-						borderRadius: "14px",
-					}}
-					slot="end"
-					onClick={printData}
-				>
-					<IonIcon icon={notificationsOutline} />
-					<IonBadge
-						color="danger"
-						style={{
-							position: "absolute",
-							top: "4px",
-							left: "15px",
-							width: "5px",
-							height: "5px",
-							borderRadius: "100%",
-							display: "flex",
-							justifyContent: "center",
-							alignItems: "center",
-						}}
-					></IonBadge>
-				</IonButton>
+			<div style={{
+                background:"linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)", 
+                height:"261px", 
+                borderRadius:"0px 0px 32px 32px",
+                padding:"10px 25px",
+                position:"relative",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)"}}>
+                    <div style={{ textAlign: "right", marginTop:"70px" }}>
+                    </div>
 				<IonText color="light">
 					<p>Hello, Kesya!</p>
 					<h1
@@ -143,6 +127,8 @@ const Event: React.FC = () => {
 						style={{ left: "5px", borderRadius: "28px", height: "56px" }}
 						type="text"
 						placeholder="Search here. . ."
+						value={searchTerm}
+						onIonChange={(e) => setSearchTerm(e.detail.value!)}
 					/>
 				</IonItem>
 			</div>
@@ -153,9 +139,13 @@ const Event: React.FC = () => {
 						Popular Events
 					</h2>
 				</IonText>
-				<img style={{ marginLeft: "10px" }} src="../images/hahaha.png" />
-				{eventData.map((item, index) => (
-					<IonCard key={index} style={{ borderRadius: "10px" }}>
+				{/* <img style={{ marginLeft: "10px" }} src="../images/hahaha.png" /> */}
+				{filteredEvents.map((item, index) => (
+						<IonCard
+							key={index}
+							style={{ borderRadius: "10px", marginTop:"30px" }}
+							onClick={() => handleCardClick(item.id)}
+						>
 						<img
 							src="../images/cardImage.png"
 							style={{ position: "relative", zIndex: "1" }}
@@ -163,7 +153,7 @@ const Event: React.FC = () => {
 						<div
 							style={{
 								zIndex: "2",
-								top: "-165px",
+								top: "-150px",
 								left: "10px",
 								backgroundColor: "#2a93d5",
 								height: "22px",
