@@ -23,6 +23,7 @@ import {
     calendarNumberOutline,
     locationOutline,
     appsOutline,
+    add,
 } from "ionicons/icons";
 import Swiper from "swiper";
 import { Navigation, Pagination } from "swiper/modules";
@@ -91,6 +92,7 @@ const Home: React.FC = () => {
         const options: Intl.DateTimeFormatOptions = {
             day: '2-digit',
             month: 'short',
+            year: '2-digit'
         };
         return date.toLocaleDateString(undefined, options);
     };
@@ -125,14 +127,20 @@ const Home: React.FC = () => {
                         Make your own event and organization!
                     </h2>
                 </IonText>
-                <IonButton onClick={handleClickEvent}>
-                    Create Event
-                </IonButton>
-
-                <IonButton onClick={handleClickOrganization}>
-                    Create Organization
-                </IonButton>
-
+                <IonGrid>
+                    <IonCol>
+                        <IonButton onClick={handleClickEvent} style={{ '--background': 'linear-gradient(90deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)' }}>
+                            <IonIcon icon={add} slot="start" />
+                            Create Event
+                        </IonButton>
+                    </IonCol>
+                    <IonCol>
+                        <IonButton onClick={handleClickOrganization} style={{ '--background': 'linear-gradient(90deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)' }}>
+                            <IonIcon icon={add} slot="start" />
+                            Create Org
+                        </IonButton>
+                    </IonCol>
+                </IonGrid>
                 <IonText>
                     <h2 style={{ marginTop: "10px", marginLeft: "10px" }}>
                         Your Upcoming Events
