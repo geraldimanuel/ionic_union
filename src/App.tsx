@@ -35,6 +35,7 @@ import Organization from "./pages/Organization";
 import OrganizationDetail from "./pages/OrganizationDetail";
 import Tabs from "./pages/Tabs";
 import EditOrganization from "./pages/EditOrganization";
+import Calendar from "./pages/Calendar";
 
 setupIonicReact();
 
@@ -52,8 +53,13 @@ const App: React.FC = () => {
 					<Route exact path="/event" component={Event} />
 					<Route exact path="/event" component={Event} />
 					{/* <Route exact path="/organization" component={Organization} /> */}
-					<Route exact path="/organization/:id" component={OrganizationDetail} />
+					<Route
+						exact
+						path="/organization/:id"
+						component={OrganizationDetail}
+					/>
 					{/* <Route exact path="/editorganization" component={EditOrganization} /> */}
+					<Route exact path="/calendar" component={Calendar} />
 				</IonRouterOutlet>
 			</IonReactRouter>
 		</IonApp>

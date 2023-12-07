@@ -1,13 +1,87 @@
 import { IonBadge, IonButton, IonCard, IonCardHeader, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonPage, IonRow, IonText } from "@ionic/react";
+import { query, collection, where, getDocs } from "firebase/firestore";
 import { notificationsOutline, searchOutline } from "ionicons/icons";
+import { useEffect, useState } from "react";
 import { useHistory } from 'react-router-dom';
+import { db } from "../firebaseConfig";
+
+interface OrgData {
+	id: string;
+	data: {
+		banner_url: string;
+		description: string;
+        announcement: string;
+		origin: string;
+		// Add other properties as per your actual data structure
+	};
+}
 
 const Organization: React.FC = () => {
     const history = useHistory();
+    const [searchTerm, setSearchTerm] = useState<string>("");
+  	const [orgData, setOrgData] = useState<OrgData[]>([
+        {
+            id: "1",
+            data: {
+                banner_url: "./images/imkom.png",
+                description: "Lorem ipsum dolor sit amet",
+                announcement: "Lorem ipsum dolor sit amet",
+                origin: "Im'Kom",
+            },
+        },
+        {
+            id: "2",
+            data: {
+                banner_url: "./images/radio.png",
+                description: "Lorem ipsum dolor sit amet",
+                announcement: "Lorem ipsum dolor sit amet",
+                origin: "UMN Radio",
+            },
+        },
+    ]);
+    const user = 1;
 
-    const handleCardClick = (eventId: string) => {
+    const handleCardClick = (orgId: string) => {
 		history.push(`/organization/1`);
 	};
+
+	const filteredOrgs = orgData.filter((item) =>
+		Object.values(item.data).some(
+		(value) =>
+			typeof value === "string" &&
+			value.toLowerCase().includes(searchTerm.toLowerCase())
+		)
+	);
+
+	// useEffect(() => {
+	// 	async function fetchOrgData() {
+	// 		const origin = "your_origin_value"; // Replace 'your_origin_value' with the actual value
+	// 		const q = query(collection(db, "organizations"), where("origin", "==", "hmif"));
+
+	// 		try {
+	// 			const querySnapshot = await getDocs(q);
+	// 			const orgs: any = [];
+	// 			querySnapshot.forEach((doc) => {
+	// 				// Push each document's data to the orgs array
+	// 				orgs.push({ id: doc.id, data: doc.data() });
+	// 			});
+	// 			setOrgData(orgs); // Set the state with retrieved data
+	// 		} catch (error) {
+	// 			console.error("Error fetching data:", error);
+	// 		}
+	// 	}
+
+	// 	fetchOrgData();
+	// }, [db]); // Make sure to specify dependencies or leave it empty if it's a one-time fetch
+
+	// Check if orgData is empty or undefined before accessing its properties
+
+	function printData() {
+		console.log(orgData);
+	}
+
+    var isClick: boolean = false;
+
     return (
         <IonPage style={{backgroundColor:"DBDBDB"}}>
             {/* Header untuk dicuri */}
@@ -107,64 +181,48 @@ const Organization: React.FC = () => {
                 
                 <h2>Organizations</h2>
                 <IonItem lines="none" className="catWrapper">
-                    <IonItem lines="none" color="secondary" className="catItem">
+                    <IonButton 
+                        onClick={() => printData()}
+                        // color="isClicked() ? 'secondary' : 'primary'" 
+                        color="secondary"
+                        className="catItem"
+                    >
                         <small className="catText">All</small>
-                    </IonItem>
-                    <IonItem lines="none" className="catItem">
+                    </IonButton>
+                    <IonButton className="catItem">
                         <small className="catText">Himpunan</small>
-                    </IonItem>
-                    <IonItem lines="none" className="catItem">
+                    </IonButton>
+                    <IonButton className="catItem">
                         <small className="catText">Media Kampus</small>
-                    </IonItem>
-                    <IonItem lines="none" className="catItem">
+                    </IonButton>
+                    <IonButton className="catItem">
                         <small className="catText">UKM Olahraga</small>
-                    </IonItem>
-                    <IonItem lines="none" className="catItem">
+                    </IonButton>
+                    <IonButton className="catItem">
                         <small className="catText">UKM Seni</small>
-                    </IonItem>
+                    </IonButton>
+                    <IonButton className="catItem">
+                        <small className="catText">UKM Seni</small>
+                    </IonButton>
                 </IonItem>
 
                 <IonGrid>
-                    <IonCard style={{ height: "125px"}}>
+                    {orgData.map((item, index) => (
+                    <IonCard 
+                        key={index}
+                        onClick={() => handleCardClick(item.id)}
+                        style={{ height: "125px"}}
+                    >
                         <IonRow className="ion-text-center" style={{ marginTop: "30px" }}>
                             <IonCol size="4">
-                                <img src="./images/imkom.png" />
+                                <img src={item.data.banner_url} />
                             </IonCol>
                             <IonCol size="4">
-                                <h3>Im'Kom</h3>
+                                <h3>{item.data.origin}</h3>
                             </IonCol>
                         </IonRow>
                     </IonCard>
-                    <IonCard style={{ height: "125px" }}>
-                        <IonRow className="ion-text-center" style={{ marginTop: "30px" }}>
-                            <IonCol size="4">
-                                <img style={{ marginTop: "15px" }} src="./images/radio.png" />
-                            </IonCol>
-                            <IonCol size="4">
-                                <h3>UMN Radio</h3>
-                            </IonCol>
-                        </IonRow>
-                    </IonCard>
-                    <IonCard style={{ height: "125px"}}>
-                        <IonRow className="ion-text-center" style={{ marginTop: "30px" }}>
-                            <IonCol size="4">
-                                <img src="./images/imkom.png" />
-                            </IonCol>
-                            <IonCol size="4">
-                                <h3>Im'Kom</h3>
-                            </IonCol>
-                        </IonRow>
-                    </IonCard>
-                    <IonCard style={{ height: "125px" }}>
-                        <IonRow className="ion-text-center" style={{ marginTop: "30px" }}>
-                            <IonCol size="4">
-                                <img style={{ marginTop: "15px" }} src="./images/radio.png" />
-                            </IonCol>
-                            <IonCol size="4">
-                                <h3>UMN Radio</h3>
-                            </IonCol>
-                        </IonRow>
-                    </IonCard>
+                    ))}
                 </IonGrid>
             </IonContent>
         </IonPage>
