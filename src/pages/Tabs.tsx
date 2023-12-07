@@ -5,6 +5,8 @@ import { Link, Redirect, Route } from "react-router-dom";
 import Organization from "./Organization";
 import OrganizationDetail from "./OrganizationDetail";
 import Event from "./Event";
+import CreateEvent from "./CreateEvent";
+import CreateOrganization from "./CreateOrganization";
 import Home from "./LandingPage";
 import EventDetail from "./EventDetail";
 import EditOrganization from "./EditOrganization";
@@ -34,11 +36,13 @@ const Tabs: React.FC = () => {
             boxshadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
         }
         return(
-
+            
             <IonTabs>
             <IonRouterOutlet>
                 <Redirect path="/" to ="/home" />
                 <Route exact path="/home" component={Home} />
+                <Route exact path="/createorganization" component={CreateOrganization} />
+				<Route exact path="/createevent" component={CreateEvent} />
                 <Route exact path="/organization/:id" component={OrganizationDetail} />
                 <Route exact path="/organization" component={Organization} />
                 <Route exact path="/events/:id" component={EventDetail} />
