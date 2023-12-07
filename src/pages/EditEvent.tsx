@@ -323,7 +323,7 @@ const EditEvent: React.FC = () => {
                     }}
                     onClick={handleSubmit}
                 >
-                    Create
+                    Edit
                 </IonButton>
             </IonContent>
         </IonPage>
