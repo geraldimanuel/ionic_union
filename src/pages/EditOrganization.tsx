@@ -139,6 +139,7 @@ const EditOrganization: React.FC = () => {
                         
                     <IonInput 
                     
+                    id="name"
                     fill="outline"
                     border-radius="20px"
                     label="Name" 
@@ -153,6 +154,7 @@ const EditOrganization: React.FC = () => {
                     <IonItem>
                         
                     <IonTextarea 
+                    id="description"
                     label="Description" 
                     labelPlacement="floating" 
                     fill="outline" 
@@ -166,6 +168,7 @@ const EditOrganization: React.FC = () => {
                     <IonItem>
                 
                         <IonInput 
+                        id="email"
                         label="Email" 
                         labelPlacement="floating" 
                         fill="outline" 
@@ -178,6 +181,7 @@ const EditOrganization: React.FC = () => {
                 
                         <IonInput 
 
+                        id="phone"
                         label="Phone" 
                         labelPlacement="floating" 
                         fill="outline" 
@@ -187,8 +191,8 @@ const EditOrganization: React.FC = () => {
                         </IonInput>
                     </IonItem>
                     <IonItem>
-                
                         <IonInput 
+                        id="address"
                         label="Address" 
                         labelPlacement="floating" 
                         fill="outline" 
