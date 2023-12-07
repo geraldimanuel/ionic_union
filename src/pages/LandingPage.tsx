@@ -36,8 +36,12 @@ import { useHistory } from 'react-router-dom';
 const Home: React.FC = () => {
     const history = useHistory();
 
-	const handleCardClick = () => {
-		history.push(`/createevents`);
+	const handleClickEvent = () => {
+		history.push(`/createevent`);
+	};
+
+    const handleClickOrganization = () => {
+		history.push(`/createorganization`);
 	};
 
 	return (
@@ -71,8 +75,12 @@ const Home: React.FC = () => {
 					</h2>
 				</IonText>
 				
-                <IonButton onClick={handleCardClick}>
+                <IonButton onClick={handleClickEvent}>
                     Create Events
+                </IonButton>
+
+                <IonButton onClick={handleClickOrganization}>
+                    Create Organization
                 </IonButton>
 			</IonContent>
 		</IonPage>
