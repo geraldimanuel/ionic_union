@@ -213,12 +213,12 @@ export async function fetchData(id = "E001") {
 }
 
 export async function addEvent(
-	bannerUrl: string,
+	bannerUrl: string | null,
 	heading: string,
-	date: Timestamp,
+	date: Timestamp|null,
 	location: string,
 	description: string,
-	category: [],
+	category: string[],
 	status: boolean, 
 	origin: string
 ) {
@@ -238,12 +238,12 @@ export async function addEvent(
 
 export async function addOrganization(
 	origin_id: string,
-	logo_url: string,
+	logo_url: string | null,
 	origin_name: string,
 	description: string,
 	announcement: string,
-	type: string,
-	admin: [],
+	type: string[],
+	admin: string[],
 ) {
 	await setDoc(doc(db, "organizations", origin_id), {
 		origin_id: origin_id,

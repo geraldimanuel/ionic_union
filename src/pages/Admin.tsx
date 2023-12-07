@@ -72,9 +72,9 @@ const Admin: React.FC = () => {
 		return () => unsubscribe();
 	}, [history]);
 
-	function addEventFunction() {
-		addEvent(bannerUrl, date, description, heading, location, origin);
-	}
+	// function addEventFunction() {
+	// 	addEvent(bannerUrl, date, description, heading, location, origin);
+	// }
 
 	return (
 		<IonPage>
@@ -124,7 +124,7 @@ const Admin: React.FC = () => {
 							onIonChange={(e: any) => setOrigin(e.target.value)}
 						/>
 					</IonItem>
-					<IonButton onClick={addEventFunction}>Add Event!</IonButton>
+					{/* <IonButton onClick={addEventFunction}>Add Event!</IonButton> */}
 				</IonRow>
 			</IonContent>
 		</IonPage>
