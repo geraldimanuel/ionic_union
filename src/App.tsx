@@ -47,8 +47,6 @@ const App: React.FC = () => {
 					<Redirect exact from="/" to="/home" />
 					<Route path="/" component={Tabs} />
 					<Route exact path="/landing" component={Home} />
-					<Route exact path="/createorganization" component={CreateOrganization} />
-					<Route exact path="/createevent" component={CreateEvent} />
 					<Route exact path="/register" component={Register} />
 					<Route exact path="/login" component={Login} />
 					<Route exact path="/admin" component={Admin} />
