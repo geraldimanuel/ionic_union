@@ -58,6 +58,11 @@ const eventData = [
     },
 ];
 
+const logged_user = {
+    user: 'Kesya',
+    attended: [1, 2],
+  };
+
 const Home: React.FC = () => {
     const history = useHistory();
 
@@ -69,8 +74,11 @@ const Home: React.FC = () => {
         history.push(`/createorganization`);
     };
 
+    //ini untuk sort yg dihadirin sama logged user aja
+    const attendedEvents = eventData.filter((event) => logged_user.attended.includes(event.id));
+
     //Ini untuk sort event data biar urut dari yg id terkecil (tapi nanti diganti sama date terkecil)
-    const sortedEventData = eventData.sort((a, b) => a.id - b.id);
+    const sortedEventData = attendedEvents.sort((a, b) => a.id - b.id);
 
     return (
         <IonPage style={{ backgroundColor: "DBDBDB" }}>
@@ -151,7 +159,7 @@ const Home: React.FC = () => {
                 ))) : (
                     <IonText>
                         <p style={{ marginLeft: "10px" }}>
-                        You have no upcoming events. Explore all events{' '}
+                        You haven't attended any events. Explore all events{' '}
                         <IonRouterLink routerLink="/events" style={{ textDecoration: 'underline', cursor: 'pointer' }}>
                             here
                         </IonRouterLink>
