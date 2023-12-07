@@ -16,6 +16,7 @@ import {
     calendarClearOutline,
     locationOutline,
     arrowBackOutline,
+    settingsOutline,
 } from "ionicons/icons";
 
 interface Event {
@@ -27,6 +28,7 @@ interface Event {
     organization: string;
     description: string;
     type: string;
+    user: string;
 }
 
 interface LoggedUser {
@@ -45,6 +47,7 @@ const eventData: Event[] = [
         organization: 'HMIF',
         description: 'Exciting talkshow about B-Land in 2023.',
         type: 'Talkshow',
+        user: 'Kesya',
     },
     {
         id: 2,
@@ -55,6 +58,7 @@ const eventData: Event[] = [
         organization: 'UMN Radio',
         description: 'Interactive workshop on XYZ topics.',
         type: 'Workshop',
+        user: 'Geri',
     },
     {
         id: 3,
@@ -65,6 +69,7 @@ const eventData: Event[] = [
         organization: 'Im\'Kom',
         description: 'In-depth seminar discussing ABC subjects.',
         type: 'Seminar',
+        user: 'Bella',
     },
 ];
 
@@ -83,6 +88,8 @@ const EventDetail: React.FC = () => {
         declined: [],
     });
 
+    const isCurrentUserEventCreator = event?.user === loggedUser.user;
+
     if (!event) {
         history.push('/home');
         return null;
@@ -90,6 +97,10 @@ const EventDetail: React.FC = () => {
 
     const goBack = () => {
         window.history.back();
+    };
+
+    const handleSettingsClick = () => {
+        history.push(`/events/edit/${id}`);
     };
 
     const formatDate = (date: Date) => {
@@ -134,21 +145,44 @@ const EventDetail: React.FC = () => {
                             }}
                         ></div>
                     </div>
-                    <div style={{ padding: "0px 15px" }}>
-                        <IonButtons
-                            style={{ position: "absolute", top: "10px", marginTop: "10px" }}
-                        >
+                    <div
+                        style={{
+                            position: "absolute",
+                            top: 10,
+                            width: "100%",
+                            display: "flex",
+                            justifyContent: "space-between",
+                            padding: "0px 15px",
+                            boxSizing: "border-box",
+                        }}
+                    >
+                        <IonButtons style={{ marginTop: '10px' }}>
                             <IonButton
                                 style={{
-                                    backgroundColor: "#095797",
-                                    padding: "5px 0px",
-                                    borderRadius: "100%",
+                                    backgroundColor: '#095797',
+                                    padding: '5px 0px',
+                                    borderRadius: '100%',
                                 }}
                                 onClick={goBack}
                             >
                                 <IonIcon color="light" icon={arrowBackOutline} size="large" />
                             </IonButton>
                         </IonButtons>
+
+                        {isCurrentUserEventCreator && (
+                            <IonButtons>
+                                <IonButton
+                                    style={{
+                                        backgroundColor: '#095797',
+                                        padding: '5px 0px',
+                                        borderRadius: '100%',
+                                    }}
+                                    onClick={handleSettingsClick}
+                                >
+                                    <IonIcon color="light" icon={settingsOutline} size="large" />
+                                </IonButton>
+                            </IonButtons>
+                        )}
                     </div>
                     <div
                         style={{
