@@ -153,7 +153,7 @@ const EventDetail: React.FC = () => {
                     <div
                         style={{
                             position: "absolute",
-                            top: "130px",
+                            top: "160px",
                             left: "25px",
                             zIndex: "2",
                             backgroundColor: "#2A93D5",
@@ -179,7 +179,7 @@ const EventDetail: React.FC = () => {
                             padding: "10px 25px",
                             position: "absolute",
                             top: "30px",
-                            marginTop: "100px",
+                            marginTop: "130px",
                         }}
                     >
                         <IonText color="light">
