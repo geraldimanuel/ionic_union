@@ -26,7 +26,7 @@ import { useState, useEffect } from "react";
 import { arrowBack, pencil } from "ionicons/icons";
 import { Link } from "react-router-dom";
 import { addEvent } from "../firebaseConfig";
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 
 const organization = Object.freeze([
     { code: "hmif", name: "HMIF" },
@@ -34,7 +34,58 @@ const organization = Object.freeze([
     { code: "imkom", name: "Im'Kom" },
 ]);
 
+interface Event {
+    id: number;
+    date: Date;
+    title: string;
+    time: string;
+    location: string;
+    organization: string;
+    description: string;
+    type: string;
+    user: string;
+}
+
+const eventData: Event[] = [
+    {
+        id: 1,
+        date: new Date('2023-12-04T14:00:00'),
+        title: 'Talkshow B-Land 2023',
+        time: '14.00 - 16.00 WIB',
+        location: 'Lecture Hall',
+        organization: 'HMIF',
+        description: 'Exciting talkshow about B-Land in 2023.',
+        type: 'Concert',
+        user: 'Kesya',
+    },
+    {
+        id: 2,
+        date: new Date('2023-12-05T10:00:00'),
+        title: 'Workshop XYZ',
+        time: '10.00 - 12.00 WIB',
+        location: 'Conference Room',
+        organization: 'UMN Radio',
+        description: 'Interactive workshop on XYZ topics.',
+        type: 'Workshop',
+        user: 'Geri',
+    },
+    {
+        id: 3,
+        date: new Date('2023-12-06T18:00:00'),
+        title: 'Seminar ABC',
+        time: '18.00 - 20.00 WIB',
+        location: 'Auditorium',
+        organization: 'Im\'Kom',
+        description: 'In-depth seminar discussing ABC subjects.',
+        type: 'Seminar',
+        user: 'Bella',
+    },
+];
+
 const EditEvent: React.FC = () => {
+    const { id } = useParams<{ id: string }>();
+    const eventId = parseInt(id, 10);
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [description, setDescription] = useState("");
@@ -52,6 +103,7 @@ const EditEvent: React.FC = () => {
     const [showToastCancel, setShowToastCancel] = useState(false);
 
     const handleSubmit = () => {
+
         if (heading && location && date && category.length > 0 && image) {
             // addEvent(
             //     imagePreview,
@@ -63,7 +115,7 @@ const EditEvent: React.FC = () => {
             //     status,
             //     origin
             // );
-            history.push('/home');
+            window.history.back();
             setShowToast(true);
         } else {
             setShowToastCancel(true);
@@ -86,6 +138,20 @@ const EditEvent: React.FC = () => {
     const goBack = () => {
         window.history.back();
     };
+
+    useEffect(() => {
+        const selectedEvent = eventData.find((event) => event.id === eventId);
+        if (selectedEvent) {
+            // setEvent(selectedEvent);
+            setHeading(selectedEvent.title);
+            setLocation(selectedEvent.location);
+            setDescription(selectedEvent.description);
+            setDate(selectedEvent.date.toISOString().split('T')[0]);
+            setCategory(selectedEvent.type ? [selectedEvent.type] : []);
+            setStatus(true);
+            setOrigin(selectedEvent.organization);
+        }
+    }, [eventId]);
 
     return (
         <IonPage>

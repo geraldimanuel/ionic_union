@@ -51,7 +51,6 @@ const App: React.FC = () => {
 					<Route exact path="/admin" component={Admin} />
 					<Route exact path="/event" component={Event} />
 					<Route exact path="/event" component={Event} />
-					<Route exact path="/event/1" component={EventDetail} />
 					{/* <Route exact path="/organization" component={Organization} /> */}
 					<Route exact path="/organization/:id" component={OrganizationDetail} />
 					{/* <Route exact path="/editorganization" component={EditOrganization} /> */}
