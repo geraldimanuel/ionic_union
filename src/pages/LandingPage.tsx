@@ -34,34 +34,42 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import { useHistory } from 'react-router-dom';
 
-const eventData = [
+interface Event {
+    id: number;
+    date: Date;
+    title: string;
+    time: string;
+    location: string;
+}
+
+const eventData: Event[] = [
     {
-        id: 2,
-        date: '04 Dec',
+        id: 1,
+        date: new Date('2023-12-04T14:00:00'),
         title: 'Talkshow B-Land 2023',
         time: '14.00 - 16.00 WIB',
         location: 'Lecture Hall',
     },
     {
-        id: 1,
-        date: '07 Dec',
-        title: 'Rapat Pleno HMIF',
-        time: '10.00 - 11.00 WIB',
-        location: 'B309',
+        id: 2,
+        date: new Date('2023-12-05T10:00:00'),
+        title: 'Workshop XYZ',
+        time: '10.00 - 12.00 WIB',
+        location: 'Conference Room',
     },
     {
-        id: 4,
-        date: '10 Dec',
-        title: 'Pembubaran Panitia Radioactive',
-        time: '10.00 - 11.00 WIB',
-        location: 'McDonalds SDC',
+        id: 3,
+        date: new Date('2023-12-06T18:00:00'),
+        title: 'Seminar ABC',
+        time: '18.00 - 20.00 WIB',
+        location: 'Auditorium',
     },
 ];
 
 const logged_user = {
     user: 'Kesya',
     attended: [1, 2],
-  };
+};
 
 const Home: React.FC = () => {
     const history = useHistory();
@@ -74,11 +82,18 @@ const Home: React.FC = () => {
         history.push(`/createorganization`);
     };
 
-    //ini untuk sort yg dihadirin sama logged user aja
-    const attendedEvents = eventData.filter((event) => logged_user.attended.includes(event.id));
+    //ini untuk sort yg dihadirin sama logged user aja + sort date
+    const sortedEventData: Event[] = eventData
+        .filter((event) => logged_user.attended.includes(event.id))
+        .sort((a, b) => b.date.getTime() - a.date.getTime());
 
-    //Ini untuk sort event data biar urut dari yg id terkecil (tapi nanti diganti sama date terkecil)
-    const sortedEventData = attendedEvents.sort((a, b) => a.id - b.id);
+    const formatEventDate = (date: Date) => {
+        const options: Intl.DateTimeFormatOptions = {
+            day: '2-digit',
+            month: 'short',
+        };
+        return date.toLocaleDateString(undefined, options);
+    };
 
     return (
         <IonPage style={{ backgroundColor: "DBDBDB" }}>
@@ -129,7 +144,7 @@ const Home: React.FC = () => {
                             <IonGrid>
                                 <IonRow>
                                     <IonCol style={{ backgroundColor: '#D93D3D' }} size="3">
-                                        <h1 style={{ textAlign: 'center', color: 'white' }}>{event.date}</h1>
+                                        <h1 style={{ textAlign: 'center', color: 'white' }}>{formatEventDate(event.date)}</h1>
                                     </IonCol>
                                     <IonCol>
                                         <IonRow>
@@ -159,12 +174,12 @@ const Home: React.FC = () => {
                 ))) : (
                     <IonText>
                         <p style={{ marginLeft: "10px" }}>
-                        You haven't attended any events. Explore all events{' '}
-                        <IonRouterLink routerLink="/events" style={{ textDecoration: 'underline', cursor: 'pointer' }}>
-                            here
-                        </IonRouterLink>
-                        .
-                    </p>
+                            You haven't attended any events. Explore all events{' '}
+                            <IonRouterLink routerLink="/events" style={{ textDecoration: 'underline', cursor: 'pointer' }}>
+                                here
+                            </IonRouterLink>
+                            .
+                        </p>
                     </IonText>
                 )}
             </IonContent>
