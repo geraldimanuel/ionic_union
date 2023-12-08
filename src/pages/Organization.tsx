@@ -52,29 +52,26 @@ const Organization: React.FC = () => {
 		)
 	);
 
-	// useEffect(() => {
-	// 	async function fetchOrgData() {
-	// 		const origin_name = "your_origin_name_value"; // Replace 'your_origin_name_value' with the actual value
-	// 		const q = query(collection(db, "organizations"), where("origin_name", "==", "hmif"));
+	useEffect(() => {
+		async function fetchOrganizationData() {
+			const origin = "your_origin_value"; // Replace 'your_origin_value' with the actual value
+			const getOrgs = query(collection(db, "organizations"), where("origin", "==", "hmif"));
 
-	// 		try {
-	// 			const querySnapshot = await getDocs(q);
-	// 			const orgs: any = [];
-	// 			querySnapshot.forEach((doc) => {
-	// 				// Push each document's data to the orgs array
-	// 				orgs.push({ id: doc.id, data: doc.data() });
-	// 			});
-	// 			setOrgData(orgs); // Set the state with retrieved data
-	// 		} catch (error) {
-	// 			console.error("Error fetching data:", error);
-	// 		}
-	// 	}
+			try {
+				const querySnapshot = await getDocs(getOrgs);
+				const orgs: any = [];
+				querySnapshot.forEach((doc) => {
+					// Push each document's data to the events array
+					orgs.push({ id: doc.id, data: doc.data() });
+				});
+				setOrgData(orgs); // Set the state with retrieved data
+			} catch (error) {
+				console.error("Error fetching data:", error);
+			}
+		}
 
-    //     console.log(searchTerm === "");
-	// 	fetchOrgData();
-	// }, [db]); // Make sure to specify dependencies or leave it empty if it's a one-time fetch
-
-	// Check if orgData is empty or undefined before accessing its properties
+        // fetchOrganizationData(); masih kosong
+	}, [db]); 
 
 	function printData() {
 		console.log(orgData);
@@ -204,25 +201,7 @@ const Organization: React.FC = () => {
                 </IonItem>
 
                 <IonGrid>
-                    {searchTerm === "" ? 
-                    orgData.map((item, index) => (
-                        <IonCard 
-                            key={index}
-                            onClick={() => handleCardClick(item.id)}
-                            style={{ height: "125px"}}
-                        >
-                            <IonRow className="ion-text-center" style={{ marginTop: "30px" }}>
-                                <IonCol size="4">
-                                    <img src={item.data.logo_url} />
-                                </IonCol>
-                                <IonCol size="4">
-                                    <h3>{item.data.origin_name}</h3>
-                                </IonCol>
-                            </IonRow>
-                        </IonCard>
-                        ))
-                    : 
-                    filteredOrgs.map((item, index) => (
+                    {filteredOrgs.map((item, index) => (
                         <IonCard 
                             key={index}
                             onClick={() => handleCardClick(item.id)}
