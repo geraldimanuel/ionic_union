@@ -12,6 +12,7 @@ import EventDetail from "./EventDetail";
 import EditOrganization from "./EditOrganization";
 import { useHistory } from "react-router-dom";
 import { useState} from "react";
+import Calendar from "./Calendar";
 
 
 const Tabs: React.FC = () => {
@@ -48,8 +49,8 @@ const Tabs: React.FC = () => {
                 <Route exact path="/events/:id" component={EventDetail} />
                 <Route exact path="/events" component={Event} />
                 <Route exact path="/editorganization" component={EditOrganization} />
-                {/* <Route exact path="/calendar" component={Calendar} />
-                <Route exact path="/profile" component={Profile} /> */}
+                <Route exact path="/calendar" component={Calendar} />
+                {/* <Route exact path="/profile" component={Profile} /> */}
             </IonRouterOutlet>
 
 			<IonTabBar slot="bottom" className="container" style={tabStyle}>

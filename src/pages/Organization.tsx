@@ -8,10 +8,10 @@ import { db } from "../firebaseConfig";
 interface OrgData {
 	id: string;
 	data: {
-		banner_url: string;
+		logo_url: string;
 		description: string;
         announcement: string;
-		origin: string;
+		origin_name: string;
 		// Add other properties as per your actual data structure
 	};
 }
@@ -23,23 +23,22 @@ const Organization: React.FC = () => {
         {
             id: "1",
             data: {
-                banner_url: "./images/imkom.png",
+                logo_url: "./images/imkom.png",
                 description: "Lorem ipsum dolor sit amet",
                 announcement: "Lorem ipsum dolor sit amet",
-                origin: "Im'Kom",
+                origin_name: "Im'Kom",
             },
         },
         {
             id: "2",
             data: {
-                banner_url: "./images/radio.png",
+                logo_url: "./images/radio.png",
                 description: "Lorem ipsum dolor sit amet",
                 announcement: "Lorem ipsum dolor sit amet",
-                origin: "UMN Radio",
+                origin_name: "UMN Radio",
             },
         },
     ]);
-    const user = 1;
 
     const handleCardClick = (orgId: string) => {
 		history.push(`/organization/1`);
@@ -55,8 +54,8 @@ const Organization: React.FC = () => {
 
 	// useEffect(() => {
 	// 	async function fetchOrgData() {
-	// 		const origin = "your_origin_value"; // Replace 'your_origin_value' with the actual value
-	// 		const q = query(collection(db, "organizations"), where("origin", "==", "hmif"));
+	// 		const origin_name = "your_origin_name_value"; // Replace 'your_origin_name_value' with the actual value
+	// 		const q = query(collection(db, "organizations"), where("origin_name", "==", "hmif"));
 
 	// 		try {
 	// 			const querySnapshot = await getDocs(q);
@@ -71,6 +70,7 @@ const Organization: React.FC = () => {
 	// 		}
 	// 	}
 
+    //     console.log(searchTerm === "");
 	// 	fetchOrgData();
 	// }, [db]); // Make sure to specify dependencies or leave it empty if it's a one-time fetch
 
@@ -80,51 +80,48 @@ const Organization: React.FC = () => {
 		console.log(orgData);
 	}
 
-    var isClick: boolean = false;
-
     return (
         <IonPage style={{backgroundColor:"DBDBDB"}}>
             {/* Header untuk dicuri */}
-            <div style={{
+			<div style={{
                 background:"linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)", 
                 height:"261px", 
                 borderRadius:"0px 0px 32px 32px",
                 padding:"10px 25px",
                 position:"relative",
                 boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)"}}>
-                    <IonButton color="secondary" style={{ position: "relative", top:"45px", left:"315px", width:"51px", height:"51px", borderRadius:"14px" }} slot="end">
-                        <IonIcon icon={notificationsOutline} />
-                        <IonBadge
-                            color="danger"
-                            style={{
-                            position: "absolute",
-                            top: "4px",
-                            left: "15px",
-                            width: "5px",
-                            height: "5px",
-                            borderRadius: "100%",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            }}
-                        >
-                        </IonBadge>
-                    </IonButton>
-                <IonText color="light">
-                    <p>Hello, Kesya!</p>
-                    <h1 style={{
-                        fontSize:"32px"
-                    }}>Manage your <br></br> organization!</h1>
-                </IonText>
-                <IonItem style={{top:"30px", borderRadius:"28px", height:"56px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)"}}>
-                    <IonLabel><IonIcon icon={searchOutline} /></IonLabel>
-                    <IonInput 
-                        style={{left:"5px", borderRadius:"28px", height:"56px"}}
-                        type="text"
-                        placeholder="Search here. . ."
-                    />
-                </IonItem>
-            </div>
+                    <div style={{ textAlign: "right", marginTop:"70px" }}>
+                    </div>
+				<IonText color="light">
+					<p>Hello, Bella!</p>
+					<h1
+						style={{
+							fontSize: "32px",
+						}}
+					>
+						Let's find your <br></br> favorite organization!
+					</h1>
+				</IonText>
+				<IonItem
+					style={{
+						top: "30px",
+						borderRadius: "28px",
+						height: "56px",
+						boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+					}}
+				>
+					<IonLabel>
+						<IonIcon icon={searchOutline} />
+					</IonLabel>
+					<IonInput
+						style={{ left: "5px", borderRadius: "28px", height: "56px" }}
+						type="text"
+						placeholder="Search here. . ."
+						value={searchTerm}
+						onIonChange={(e) => setSearchTerm(e.detail.value!)}
+					/>
+				</IonItem>
+			</div>
 
             <IonContent className="ion-padding">
                 <h2>My Organization</h2>
@@ -207,22 +204,41 @@ const Organization: React.FC = () => {
                 </IonItem>
 
                 <IonGrid>
-                    {orgData.map((item, index) => (
-                    <IonCard 
-                        key={index}
-                        onClick={() => handleCardClick(item.id)}
-                        style={{ height: "125px"}}
-                    >
-                        <IonRow className="ion-text-center" style={{ marginTop: "30px" }}>
-                            <IonCol size="4">
-                                <img src={item.data.banner_url} />
-                            </IonCol>
-                            <IonCol size="4">
-                                <h3>{item.data.origin}</h3>
-                            </IonCol>
-                        </IonRow>
-                    </IonCard>
-                    ))}
+                    {searchTerm === "" ? 
+                    orgData.map((item, index) => (
+                        <IonCard 
+                            key={index}
+                            onClick={() => handleCardClick(item.id)}
+                            style={{ height: "125px"}}
+                        >
+                            <IonRow className="ion-text-center" style={{ marginTop: "30px" }}>
+                                <IonCol size="4">
+                                    <img src={item.data.logo_url} />
+                                </IonCol>
+                                <IonCol size="4">
+                                    <h3>{item.data.origin_name}</h3>
+                                </IonCol>
+                            </IonRow>
+                        </IonCard>
+                        ))
+                    : 
+                    filteredOrgs.map((item, index) => (
+                        <IonCard 
+                            key={index}
+                            onClick={() => handleCardClick(item.id)}
+                            style={{ height: "125px"}}
+                        >
+                            <IonRow className="ion-text-center" style={{ marginTop: "30px" }}>
+                                <IonCol size="4">
+                                    <img src={item.data.logo_url} />
+                                </IonCol>
+                                <IonCol size="4">
+                                    <h3>{item.data.origin_name}</h3>
+                                </IonCol>
+                            </IonRow>
+                        </IonCard>
+                        ))
+                    }
                 </IonGrid>
             </IonContent>
         </IonPage>
