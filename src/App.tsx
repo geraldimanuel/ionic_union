@@ -58,6 +58,7 @@ const App: React.FC = () => {
 					{/* <Route exact path="/organization" component={Organization} /> */}
 					<Route path="/organization/:id" component={OrganizationDetail} />
 					{/* <Route exact path="/editorganization" component={EditOrganization} /> */}
+					{/* <Route path="/editorganization/:id" component={EditOrganization} /> */}
 					<Route path="/editprofile" component={EditProfile} />
 					<Route path="/request" component={Request} />
 				</IonRouterOutlet>

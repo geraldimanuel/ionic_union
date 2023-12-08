@@ -48,7 +48,7 @@ const Tabs: React.FC = () => {
                 <Route exact path="/organization" component={Organization} />
                 <Route exact path="/events/:id" component={EventDetail} />
                 <Route exact path="/events" component={Event} />
-                <Route exact path="/editorganization" component={EditOrganization} />
+                <Route exact path="/editorganization/:id" component={EditOrganization} />
                 <Route exact path="/request" component={Request} />
                 {/* <Route exact path="/calendar" component={Calendar} />
                 <Route exact path="/profile" component={Profile} /> */}

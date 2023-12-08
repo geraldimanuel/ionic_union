@@ -1,133 +1,156 @@
-import { IonPage, IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonTitle, IonContent, IonList, IonItemSliding, IonItem, IonLabel, IonItemOptions, IonItemOption } from "@ionic/react";
-import { doc, getDoc, collection, getDocs, updateDoc, arrayUnion } from "firebase/firestore";
-import { arrowBack } from "ionicons/icons";
-import { useState, useEffect } from "react";
-import { useHistory, useParams } from "react-router";
-import { db } from "../firebaseConfig";
+import { IonAlert, IonAvatar, IonBadge, IonButton, IonCard, IonCardContent, IonCardSubtitle, IonCol, IonFab, IonFabButton, IonGrid, IonIcon, IonInput, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonList, IonMenuButton, IonModal, IonPage, IonRow, IonText, IonThumbnail, IonToast, isPlatform } from "@ionic/react";
+import { IonHeader, IonToolbar, IonButtons, IonTitle, IonContent, setupIonicReact } from "@ionic/react";
+import { addOutline, arrowBack, ban, banSharp, cart, checkmark, create, trash } from "ionicons/icons";
+import React, { useContext, useRef, useState } from "react";
+import { useHistory } from "react-router";
+import { arrowBackOutline } from "ionicons/icons";
+
+setupIonicReact();
+
+export const DATA = [
+    {id: 'm1', name: "John Doe", message: 'Request to join I\'mKOM', avatar: "https://www.w3schools.com/howto/img_avatar.png"},
+    {id: 'm2', name: "John Thor", message: 'Request to join I\'mKOM', avatar: "https://www.w3schools.com/howto/img_avatar.png"},
+    {id: 'm3', name: "John Wick", message: 'Request to join I\'mKOM', avatar: "https://www.w3schools.com/howto/img_avatar.png"},
+    {id: 'm4', name: "John Cena", message: 'Request to join I\'mKOM', avatar: "https://www.w3schools.com/howto/img_avatar.png"},
+    {id: 'm5', name: "John Wick", message: 'Request to join I\'mKOM', avatar: "https://www.w3schools.com/howto/img_avatar.png"},
+]
 
 const Request: React.FC = () => {
-    const [user, setUser] = useState<any>(null);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string>("");
-    const [slidingoptionsref, setSlidingoptionsref] = useState<any>(null);
-    const [organization, setOrganization] = useState<any>(null);
-    const [request, setRequest] = useState<any>(null);
-    const [requestList, setRequestList] = useState<any>(null);
 
-    const history = useHistory();
+    const slidingOptionsRef = useRef<HTMLIonItemSlidingElement>(null);
 
-    const { id } = useParams<{ id: string }>();
+    const [toastMessage, setToastMessage] = useState("");
+    const [startRejecting, setStartRejecting] = useState(false);
+    const [startAccepting, setStartAccepting] = useState(false);
+    const [selectedRequest, setSelectedRequest] = useState<
+    { id: string; 
+        name: string; 
+        message: string; 
+        avatar: string } | undefined>();
 
-    // const { currentUser } = useAuth();
 
-    // useEffect(() => {
-    //     if (currentUser) {
-    //         setUser(currentUser);
-    //     }
-    //     setLoading(false);
-    // }, [currentUser]);
+    const startRejectingHandler = (id: string) => {
+        DATA.splice(DATA.findIndex((data) => data.id === id), 1);
+        setSelectedRequest(DATA.find((data) => data.id === id));
+        setStartRejecting(true);
+        setToastMessage("Request rejected!");
+    }
 
-    useEffect(() => {
-        const getOrganization = async () => {
-            const organizationRef = doc(db, "organizations", id);
-            const organizationSnap = await getDoc(organizationRef);
-            if (organizationSnap.exists()) {
-                setOrganization(organizationSnap.data());
-            }
-        };
-        getOrganization();
-    }, [id]);
+    const startAcceptingHandler = (id: string) => {
+        DATA.splice(DATA.findIndex((data) => data.id === id), 1);
+        setSelectedRequest(DATA.find((data) => data.id === id));
+        setStartAccepting(true);
+        setToastMessage("Request accepted!");
+    }
 
-    useEffect(() => {
-        const getRequest = async () => {
-            const requestRef = collection(db, "organizations", id, "request");
-            const requestSnap = await getDocs(requestRef);
-            if (requestSnap) {
-                setRequestList(requestSnap.docs.map((doc) => doc.data()));
-            }
-        };
-        getRequest();
-    }, [id]);
-
-    const handleAccept = async (request: any) => {
-        const organizationRef = doc(db, "organizations", id);
-        const requestRef = doc(db, "organizations", id, "request", request.id);
-        await updateDoc(requestRef, {
-            status: "accepted",
-        });
-        await updateDoc(organizationRef, {
-            members: arrayUnion(request.uid),
-        });
-        setRequestList(requestList.filter((item: any) => item.id !== request.id));
+    const goBack = () => {
+        window.history.back();
     };
 
-    const handleReject = async (request: any) => {
-        const requestRef = doc(db, "organizations", id, "request", request.id);
-        await updateDoc(requestRef, {
-            status: "rejected",
-        });
-        setRequestList(requestList.filter((item: any) => item.id !== request.id));
-    };
 
-    const handleSlidingoptionsref = (ref: any) => {
-        setSlidingoptionsref(ref);
-    };
 
-    const handleSlidingoptions = () => {
-        if (slidingoptionsref) {
-            slidingoptionsref.closeOpened();
-        }
-    };
-
-    const handleBack = () => {
-        history.goBack();
-    };
-    
-
-    return (
+    return(
+        <>
+        <React.Fragment>
+        <IonToast
+          isOpen={!!toastMessage}
+          message={toastMessage}
+          duration={2000}
+          onDidDismiss={() => {
+            setToastMessage("");
+          }}
+        />
+      </React.Fragment>
         <IonPage>
-            <IonHeader>
-                <IonToolbar>
-                    <IonButtons slot="start">
-                        <IonButton onClick={handleBack}>
-                            <IonIcon icon={arrowBack} />
-                        </IonButton>
-                    </IonButtons>
-                    <IonTitle>Request</IonTitle>
+        <IonHeader>
+                <IonToolbar color="linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)"style={{
+                    background: "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
+
+                    height: "80px",
+					borderRadius: "0px 0px 32px 32px",
+					padding: "10px 25px",
+					position: "relative",
+					boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                    marginBottom: "10px",
+                
+                }}>
+                    <IonButtons style={{ position: "absolute", top:"5px", bottom: "20px"}}>
+                            <IonButton style={{ backgroundColor: "#FFFFFF", borderRadius: "100%" }} onClick={goBack}>
+                                <IonIcon color="#095797" icon={arrowBackOutline} size="large" />
+                            </IonButton>
+                        </IonButtons>
+                    <IonTitle color="light">Accept Request</IonTitle>
                 </IonToolbar>
             </IonHeader>
             <IonContent fullscreen>
-                <IonList>
-                    {requestList &&
-                        requestList.map((request: any) => (
-                            <IonItemSliding key={request.id} ref={handleSlidingoptionsref}>
-                                <IonItem>
-                                    <IonLabel>{request.name}</IonLabel>
-                                </IonItem>
-                                <IonItemOptions side="end">
-                                    <IonItemOption
-                                        color="success"
-                                        onClick={() => handleAccept(request)}
-                                    >
-                                        Accept
-                                    </IonItemOption>
-                                    <IonItemOption
-                                        color="danger"
-                                        onClick={() => handleReject(request)}
-                                    >
-                                        Reject
-                                    </IonItemOption>
-                                </IonItemOptions>
-                            </IonItemSliding>
-                        ))}
-                </IonList>
-            </IonContent>
-        </IonPage>
-    );
-}
+            <div style={{
+                display:"flex",
+                flexDirection:"row",
+                
+            }}>
+            <IonCard style={{
+                width:"100%",
+                // height:"100px",
+                height: "50px",
+                borderRadius:"20px",
+                background:"linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                // margin:"10px 10px 10px 10px",
+                // padding:"10px 10px 10px 10px",
+                display:"flex",
+                flexDirection:"row",
+                justifyContent:"center",
+                color : "white",
+                bottom: "10px",
+            
+            }}>
+                    <IonCardContent>
+                        <IonCardSubtitle style={{
+                            bottom: "8px",
+                        }}color="light"> Requests 
+                            <IonLabel>
+                            <IonBadge color="danger" style={{
+                                marginLeft: "5px",
+                                size: "small",
+                            }}>
+                            {DATA.length ? DATA.length : null}
+                            </IonBadge>
+                            </IonLabel>
+                            </IonCardSubtitle>
+                    </IonCardContent>
+            </IonCard>
+            </div>
+            {DATA.map((data) => (
+            <IonList>
+                <IonItemSliding key={data.id}ref={slidingOptionsRef}>
+                    <IonItem>
+                        <IonAvatar slot="start">
+                            <img src={data.avatar} />
+                        </IonAvatar>
+                        <IonLabel>
+                            <h2>{data.name}</h2>
+                            <p>{data.message}</p>
+                        </IonLabel>
+                        <IonIcon icon={arrowBack} slot="end" />
+                    </IonItem>
+                    <div style={{display:"flex", flexDirection:"row", justifyContent:"space-between"}}>
+                    <IonItemOptions side="end">
+                    <IonItemOption color="danger" onClick={startRejectingHandler.bind(null, data.id)}>
+                            <IonIcon slot="icon-only" icon={ban} />
+                        </IonItemOption>
+                        <IonItemOption color="success" onClick={startAcceptingHandler.bind(null, data.id)}>
+                            <IonIcon slot="icon-only" icon={checkmark} />
+                        </IonItemOption>
+                    </IonItemOptions>
+                    </div>
+                </IonItemSliding>
+            </IonList>
+            ))}
+            </IonContent>  
+        </IonPage>    
+        </>
+        );
+};
+
 
 export default Request;
-function useAuth(): { currentUser: any; } {
-    throw new Error("Function not implemented.");
-}
-
