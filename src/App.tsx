@@ -59,7 +59,6 @@ const App: React.FC = () => {
 						component={OrganizationDetail}
 					/>
 					{/* <Route exact path="/editorganization" component={EditOrganization} /> */}
-					<Route exact path="/calendar" component={Calendar} />
 				</IonRouterOutlet>
 			</IonReactRouter>
 		</IonApp>
