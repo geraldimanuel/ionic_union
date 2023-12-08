@@ -10,6 +10,7 @@ import CreateOrganization from "./CreateOrganization";
 import Home from "./LandingPage";
 import EventDetail from "./EventDetail";
 import EditOrganization from "./EditOrganization";
+import EditEvent from "./EditEvent";
 import { useHistory } from "react-router-dom";
 import { useState} from "react";
 import Calendar from "./Calendar";
@@ -46,6 +47,7 @@ const Tabs: React.FC = () => {
 				<Route exact path="/createevent" component={CreateEvent} />
                 <Route exact path="/organization/:id" component={OrganizationDetail} />
                 <Route exact path="/organization" component={Organization} />
+                <Route exact path="/events/edit/:id" component={EditEvent} />
                 <Route exact path="/events/:id" component={EventDetail} />
                 <Route exact path="/events" component={Event} />
                 <Route exact path="/editorganization" component={EditOrganization} />

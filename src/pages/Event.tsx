@@ -45,19 +45,19 @@ interface EventData {
 }
 
 const Event: React.FC = () => {
-    const history = useHistory();
+	const history = useHistory();
 	const [searchTerm, setSearchTerm] = useState<string>("");
-  	const [eventData, setEventData] = useState<EventData[]>([]);
+	const [eventData, setEventData] = useState<EventData[]>([]);
 
 	const handleCardClick = (eventId: string) => {
-		history.push(`/events/1`);
+		history.push(`/events/${eventId}`);
 	};
 
 	const filteredEvents = eventData.filter((item) =>
 		Object.values(item.data).some(
-		(value) =>
-			typeof value === "string" &&
-			value.toLowerCase().includes(searchTerm.toLowerCase())
+			(value) =>
+				typeof value === "string" &&
+				value.toLowerCase().includes(searchTerm.toLowerCase())
 		)
 	);
 
@@ -92,14 +92,15 @@ const Event: React.FC = () => {
 		<IonPage style={{ backgroundColor: "DBDBDB" }}>
 			{/* Header untuk dicuri */}
 			<div style={{
-                background:"linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)", 
-                height:"261px", 
-                borderRadius:"0px 0px 32px 32px",
-                padding:"10px 25px",
-                position:"relative",
-                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)"}}>
-                    <div style={{ textAlign: "right", marginTop:"70px" }}>
-                    </div>
+				background: "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
+				height: "261px",
+				borderRadius: "0px 0px 32px 32px",
+				padding: "10px 25px",
+				position: "relative",
+				boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)"
+			}}>
+				<div style={{ textAlign: "right", marginTop: "70px" }}>
+				</div>
 				<IonText color="light">
 					<p>Hello, Kesya!</p>
 					<h1
@@ -139,11 +140,11 @@ const Event: React.FC = () => {
 				</IonText>
 				{/* <img style={{ marginLeft: "10px" }} src="../images/hahaha.png" /> */}
 				{filteredEvents.map((item, index) => (
-						<IonCard
-							key={index}
-							style={{ borderRadius: "10px", marginTop:"30px" }}
-							onClick={() => handleCardClick(item.id)}
-						>
+					<IonCard
+						key={index}
+						style={{ borderRadius: "10px", marginTop: "30px" }}
+						onClick={() => handleCardClick(item.id)}
+					>
 						<img
 							src="../images/cardImage.png"
 							style={{ position: "relative", zIndex: "1" }}

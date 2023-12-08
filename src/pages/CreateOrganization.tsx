@@ -11,20 +11,19 @@ import {
 	IonAlert,
 	IonList,
 	IonItem,
-	IonLabel,
 	IonInput,
 	IonTextarea,
 	IonButton,
 	IonIcon,
-	IonCard,
-	IonCol,
-	IonGrid,
-	IonRow,
+	IonToast,
 } from "@ionic/react";
-import { useState, useEffect } from "react";
-import { arrowBack, pencil } from "ionicons/icons";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { arrowBack } from "ionicons/icons";
 import { addOrganization } from "../firebaseConfig";
+import { useHistory } from "react-router-dom";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+
+const storage = getStorage();
 
 const CreateOrganization: React.FC = () => {
 	const [loading, setLoading] = useState(false);
@@ -37,19 +36,22 @@ const CreateOrganization: React.FC = () => {
 	const [origin, setOrigin] = useState("");
 	const [image, setImage] = useState<File | null>(null);
 	const [imagePreview, setImagePreview] = useState<string | null>(null);
+	const history = useHistory();
+	const [showToast, setShowToast] = useState(false);
+	const [showToastCancel, setShowToastCancel] = useState(false);
+	const [fileName, setFileName] = useState("");
 
-	const handleSubmit = () => {
-		addOrganization(
-			"test",
-			imagePreview,
-			name,
-			description,
-			announcement,
-			category,
-			["admin"]
-		);
+	const addData = (url: string) => {
+		if (name && category.length > 0) {
+			addOrganization("test", url, name, description, announcement, category, [
+				"admin",
+			]);
 
-		// belom error handling pasti masih error, image masih belom konek firestore juga
+			history.push("/home");
+			setShowToast(true);
+		} else {
+			setShowToastCancel(true);
+		}
 	};
 
 	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,10 +59,21 @@ const CreateOrganization: React.FC = () => {
 
 		if (file) {
 			setImage(file);
+			setFileName(file.name);
 
 			const previewURL = URL.createObjectURL(file);
 			setImagePreview(previewURL);
 		}
+	};
+
+	const submitHandler = async () => {
+		const storageRef = ref(storage, fileName);
+
+		uploadBytes(storageRef, image as Blob).then((snapshot) => {
+			getDownloadURL(ref(storage, fileName)).then((url) => {
+				addData(url);
+			});
+		});
 	};
 
 	const goBack = () => {
@@ -69,6 +82,18 @@ const CreateOrganization: React.FC = () => {
 
 	return (
 		<IonPage>
+			<IonToast
+				isOpen={showToast}
+				onDidDismiss={() => setShowToast(false)}
+				message="Event Successfully created!"
+				duration={2000}
+			/>
+			<IonToast
+				isOpen={showToastCancel}
+				onDidDismiss={() => setShowToastCancel(false)}
+				message="Please fill every mandatory fields!"
+				duration={2000}
+			/>
 			<IonContent fullscreen>
 				<div
 					style={{
@@ -114,60 +139,57 @@ const CreateOrganization: React.FC = () => {
 						},
 					]}
 				/>
-				<IonList>
+				<IonList className="ion-padding">
 					<IonItem>
 						<input type="file" accept="image/*" onChange={handleImageChange} />
 					</IonItem>
 					{imagePreview && (
-						<IonItem>
-							<img
-								src={imagePreview}
-								alt="Preview"
-								style={{ width: "100%", maxHeight: "300px", marginTop: "10px" }}
-							/>
-						</IonItem>
+						<img
+							src={imagePreview}
+							alt="Preview"
+							style={{ width: "100%", maxHeight: "300px", marginTop: "10px" }}
+						/>
 					)}
-					<IonItem>
-						<IonInput
-							label="name"
-							labelPlacement="floating"
-							fill="outline"
-							placeholder="Enter name"
-							value={name}
-							onIonChange={(e) => setName(e.detail.value!)}
-						/>
-					</IonItem>
-					<IonItem>
-						<IonTextarea
-							label="Description"
-							labelPlacement="floating"
-							fill="outline"
-							placeholder="Enter description"
-							value={description}
-							onIonChange={(e) => setDescription(e.detail.value!)}
-						/>
-					</IonItem>
-					<IonItem>
-						<IonTextarea
-							label="Announcement"
-							labelPlacement="floating"
-							fill="outline"
-							placeholder="Enter announcement"
-							value={description}
-							onIonChange={(e) => setAnnouncement(e.detail.value!)}
-						/>
-					</IonItem>
-					<IonItem>
-						<IonSelect
-							value={category}
-							placeholder="Select category"
-							onIonChange={(e) => setCategory(e.detail.value as string[])}
-						>
-							<IonSelectOption value="1">Himpunan</IonSelectOption>
-							<IonSelectOption value="2">UKM</IonSelectOption>
-							<IonSelectOption value="3">Media Kampus</IonSelectOption>
-						</IonSelect>
-					</IonItem>
+					<IonInput
+						label="Name*"
+						labelPlacement="floating"
+						fill="outline"
+						placeholder="Enter name"
+						value={name}
+						onIonChange={(e) => setName(e.detail.value!)}
+						style={{ marginTop: "10px" }}
+					/>
+					<IonTextarea
+						label="Description"
+						labelPlacement="floating"
+						fill="outline"
+						placeholder="Enter description"
+						value={description}
+						onIonChange={(e) => setDescription(e.detail.value!)}
+						style={{ marginTop: "10px" }}
+					/>
+					<IonTextarea
+						label="Announcement"
+						labelPlacement="floating"
+						fill="outline"
+						placeholder="Enter announcement"
+						value={description}
+						onIonChange={(e) => setAnnouncement(e.detail.value!)}
+						style={{ marginTop: "10px" }}
+					/>
+					<IonSelect
+						label="Category*"
+						labelPlacement="floating"
+						fill="outline"
+						value={category}
+						placeholder="Select category"
+						onIonChange={(e) => setCategory(e.detail.value as string[])}
+						style={{ marginTop: "10px" }}
+					>
+						<IonSelectOption value="1">Himpunan</IonSelectOption>
+						<IonSelectOption value="2">UKM</IonSelectOption>
+						<IonSelectOption value="3">Media Kampus</IonSelectOption>
+					</IonSelect>
 				</IonList>
 
 				<IonButton
@@ -178,13 +200,13 @@ const CreateOrganization: React.FC = () => {
 						flexDirection: "column",
 						marginLeft: "10px",
 						marginRight: "10px",
-						background:
-							"linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
+						"--background":
+							"linear-gradient(90deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
 						boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
 						justifyContent: "center",
 						alignItems: "center",
 					}}
-					onClick={handleSubmit}
+					onClick={submitHandler}
 				>
 					Create
 				</IonButton>

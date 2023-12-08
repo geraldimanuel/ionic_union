@@ -9,7 +9,6 @@ import {
 	getRedirectResult,
 	onAuthStateChanged,
 } from "firebase/auth";
-import { useHistory } from "react-router-dom";
 import {
 	getFirestore,
 	setDoc,
@@ -22,7 +21,6 @@ import {
 	getDocs,
 	Timestamp,
 } from "firebase/firestore";
-import { useState } from "react";
 
 export const firebaseConfig = {
 	apiKey: "AIzaSyDshXm1Zw3PrgHHjlmLlYZp-YVwrWqWvC8",
@@ -224,6 +222,9 @@ export async function addEvent(
 ) {
 	const eventsCollection = collection(db, "events");
 
+	const user = auth.currentUser;
+	const username = user?.displayName;
+
 	await addDoc(eventsCollection, {
 		origin: origin,
 		heading: heading,
@@ -233,6 +234,7 @@ export async function addEvent(
 		banner_url: bannerUrl,
 		category: category,
 		status: status,
+		created_by: username,
 	});
 }	
 
