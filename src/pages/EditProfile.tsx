@@ -1,5 +1,5 @@
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonLoading, IonGrid, IonRow, IonCol, IonItem, IonLabel, IonInput, IonButton, IonButtons, IonIcon } from "@ionic/react";
-import { arrowBackOutline } from "ionicons/icons";
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonLoading, IonGrid, IonRow, IonCol, IonItem, IonLabel, IonInput, IonButton, IonButtons, IonIcon, IonSelect, IonList, IonSelectOption, IonTextarea, IonCard } from "@ionic/react";
+import { arrowBackOutline, pencil } from "ionicons/icons";
 import { useState, useEffect } from "react";
 import { useHistory } from "react-router";
 import { Link } from "react-router-dom";
@@ -14,6 +14,8 @@ const EditProfile: React.FC = () => {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [confirmPassword, setConfirmPassword] = useState<string>("");
+
+    const [currentUser, setCurrentUser] = useState<any>(null);
 
     const history = useHistory();
 
@@ -75,6 +77,49 @@ const EditProfile: React.FC = () => {
         // return currentUser.updatePassword(password);
     };
 
+    const [imagePreview, setImagePreview] = useState<string>("");
+
+    const handleImageChange = (event: any) => {
+        const image = event.target.files[0];
+        const reader = new FileReader();
+        reader.readAsDataURL(image);
+        reader.onloadend = () => {
+            setImagePreview(reader.result as string);
+        };
+    }
+
+    const handleSubmit = async () => {
+        const goback = () => {
+            window.history.back();
+        }
+
+        if (password !== confirmPassword) {
+            return setError("Passwords do not match");
+        }
+
+        const promises = [];
+        setError("");
+        setLoading(true);
+        
+        if (name !== currentUser.displayName) {
+            promises.push(updateName(name));
+        }
+
+        if (email !== currentUser.email) {
+            promises.push(updateEmail(email));
+        }
+
+        if (password) {
+            promises.push(updatePassword(password));
+        }
+
+        Promise.all(promises)
+
+
+    }
+
+
+
     return (
         <IonPage>
             <IonHeader>
@@ -100,72 +145,162 @@ const EditProfile: React.FC = () => {
             </IonHeader>
             <IonContent fullscreen>
                 {/* <IonLoading isOpen={loading} /> */}
+                <div style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                }}>
                 
                 <IonGrid>
-                    <div style={{
+                    <IonCard style={{
+                        height: "125px",
+                        width: "125px",
+                        borderRadius: "100%",
+                        position: "relative",
+
+                        // display: "flex",
+                        // alignItems: "center",
+                        // justifyContent: "center",
+                    }}>
+                        <IonRow className="ion-text-center" >
+                            <IonCol style={{
+                                borderRadius: "20px",
+                                top: "30px",
+                                marginLeft: "10px",
+                                marginRight: "10px",
+                            }}>
+                                {imagePreview ? (
+                                    <img src={imagePreview} />
+                                ) : (
+                                    <img src="./images/imkom.png" />
+                                )}
+                            </IonCol>
+                        </IonRow>
+                        <IonIcon icon={pencil} style={{
+                            position: "absolute",
+                            top: "80px",
+                            left: "80px",
+                            width: "20px",
+                            color: "white",
+                        }}></IonIcon>
+
+                    </IonCard>
+                </IonGrid>
+                
+                </div>
+                <IonGrid>
+                <div style={{
+                    // height:"56px",
+                    // marginTop:"10px",
+                    // marginBottom:"10px",
+                }}>
+                    <IonItem>
+                        <IonIcon icon={pencil} style={{
+                            position: "absolute",
+                            top: "80px",
+                            left: "80px",
+                            width: "20px",
+                            color: "white",
+                        }}></IonIcon>
+                        <input type="file" accept="image/*" onChange={handleImageChange} />
+                    </IonItem>
+                    <IonItem style={{
+                        left:"5px", 
+                        borderRadius:"28px", 
+                        height:"56px", 
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                        marginTop: "10px",
+                        marginBottom: "10px"}}>
+                    <IonLabel></IonLabel>
+                    <IonInput 
+                        label="Name*"
+                        value={name}
+                        fill="outline"
+                        labelPlacement="floating"
+                        id = "name"
+                        type="text"
+                        placeholder="Enter your name"
+                    />
+                    </IonItem>
+                    <IonItem 
+                    style={{
+                        left:"5px",
+                        borderRadius:"28px", 
+                        height:"56px",
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                        marginTop: "10px",
+                        marginBottom: "10px",
+                        }}>
+                    <IonLabel></IonLabel>
+                    <IonTextarea 
+                        label="Description"
+                        value={email}
+                        fill="outline"
+                        labelPlacement="floating"
+                        id = "description"
+                        placeholder="Enter your description"
+                    />
+                    </IonItem>
+                    <IonItem style={{
+                        left:"5px",
+                        borderRadius:"28px", 
+                        height:"56px",
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                        marginTop: "10px",
+                        marginBottom: "10px",
+                        
+                    }}>
+                    <IonLabel></IonLabel>
+                    <IonTextarea 
+                        label="Password"
+                        value={password}
+                        fill="outline"
+                        labelPlacement="floating"
+                        id = "announcement"
+                        // style={{left:"5px", borderRadius:"28px", height:"56px"}}
+                        placeholder="Enter your announcement"
+                    />
+                    </IonItem>
+                    <IonItem style={{
+                        left:"5px",
+                        borderRadius:"28px", 
+                        height:"56px",
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                        marginTop: "10px",
+                        marginBottom: "10px",
+                    }}>
+                    <IonLabel></IonLabel>
+                    <IonTextarea 
+                        label="Confirm Password"
+                        value={confirmPassword}
+                        fill="outline"
+                        labelPlacement="floating"
+                        id = "events"
+                        placeholder="Enter your events"
+                    />
+                    </IonItem>
+
+                    <IonButton
+                    expand="block"
+                    style={{
+                        borderRadius: "20px",
                         display: "flex",
                         flexDirection: "column",
+                        marginLeft: "10px",
+                        marginRight: "10px",
+                        '--background': 'linear-gradient(90deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)',
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
                         justifyContent: "center",
                         alignItems: "center",
-                    }}>  
-                    <IonRow>
-                        <IonCol>
-                            <img
-                                src="https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png"
-                                alt="profile"
-                                style={{
-                                    width: "50%",
-                                    borderRadius: "100%",
-                                    marginTop: "20px",
-                                }}
-                            />
-                        </IonCol>
-                    </IonRow>
-                    </div>
-                    <IonRow>
-                        <IonCol>
-                            <IonItem>
-                                <IonLabel position="floating">Name</IonLabel>
-                                <IonInput
-                                    type="text"
-                                    value={name}
-                                    onIonChange={(event) => setName(event.detail.value!)}
-                                />
-                            </IonItem>
-                            <IonItem>
-                                <IonLabel position="floating">Email</IonLabel>
-                                <IonInput
-                                    type="email"
-                                    value={email}
-                                    onIonChange={(event) => setEmail(event.detail.value!)}
-                                />
-                            </IonItem>
-                            <IonItem>
-                                <IonLabel position="floating">Password</IonLabel>
-                                <IonInput
-                                    type="password"
-                                    value={password}
-                                    onIonChange={(event) => setPassword(event.detail.value!)}
-                                />
-                            </IonItem>
-                            <IonItem>
-                                <IonLabel position="floating">Confirm Password</IonLabel>
-                                <IonInput
-                                    type="password"
-                                    value={confirmPassword}
-                                    onIonChange={(event) =>
-                                        setConfirmPassword(event.detail.value!)
-                                    }
-                                />
-                            </IonItem>
-
-                            <IonButton expand="block" onClick={handleUpdate} style={{
-                                marginTop: "20px",
-                            }}>
-                                Update
-                            </IonButton>
-                        </IonCol>
-                    </IonRow>
+                        marginBottom: "30px",
+                        marginTop: "30px",
+                    }}
+                    onClick={handleSubmit}
+                >
+                    Save
+                </IonButton>
+                </div>
                 </IonGrid>
             </IonContent>
         </IonPage>

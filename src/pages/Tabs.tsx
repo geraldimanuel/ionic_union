@@ -13,6 +13,7 @@ import EditOrganization from "./EditOrganization";
 import { useHistory } from "react-router-dom";
 import { useEffect, useState} from "react";
 import Request from "./Request";
+import EditProfile from "./EditProfile";
 
 
 const Tabs: React.FC = () => {
@@ -50,18 +51,13 @@ const Tabs: React.FC = () => {
                 <Route exact path="/events" component={Event} />
                 <Route exact path="/editorganization/:id" component={EditOrganization} />
                 <Route exact path="/request" component={Request} />
+                <Route exact path="/editprofile" component={EditProfile} />
+            </IonRouterOutlet>
                 {/* <Route exact path="/calendar" component={Calendar} />
                 <Route exact path="/profile" component={Profile} /> */}
-            </IonRouterOutlet>
 
-            {/* <div style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "center",
-                    alignItems: "center",
-                }}> */}
-			<IonTabBar slot="bottom" className="container" style={{
-                // justifyContent: "center",
+			<IonTabBar slot="bottom" style={{
+
                 borderRadius: "20px",
                 position: "floating",
                 padding: "10px",
