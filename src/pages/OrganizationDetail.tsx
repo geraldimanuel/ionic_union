@@ -1,30 +1,7 @@
-import {
-  IonAvatar,
-  IonBadge,
-  IonButton,
-  IonCard,
-  IonCardHeader,
-  IonButtons,
-  IonCol,
-  IonContent,
-  IonGrid,
-  IonHeader,
-  IonIcon,
-  IonInput,
-  IonItem,
-  IonLabel,
-  IonPage,
-  IonRow,
-  IonText,
-} from "@ionic/react";
-import {
-  calendarNumberOutline,
-  locationOutline,
-  notificationsOutline,
-  arrowBackOutline,
-  searchOutline,
-} from "ionicons/icons";
-import { useHistory } from "react-router-dom";
+import { IonAvatar, IonBadge, IonButton, IonCard, IonCardHeader,IonButtons, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonPage, IonRow, IonText } from "@ionic/react";
+import { calendarNumberOutline, locationOutline, notificationsOutline, arrowBackOutline, searchOutline } from "ionicons/icons";
+import { Link, useHistory } from 'react-router-dom';
+import { pencil } from "ionicons/icons";
 
 const OrganizationDetail: React.FC = () => {
   const history = useHistory();
@@ -65,6 +42,8 @@ const OrganizationDetail: React.FC = () => {
             >
               <IonIcon color="primary" icon={arrowBackOutline} size="large" />
             </IonButton>
+            
+
           </IonButtons>
           <div
             style={{
@@ -76,6 +55,19 @@ const OrganizationDetail: React.FC = () => {
             }}
           >
             <img src="./images/imkom.png" style={{ width: "100px" }} />
+          <IonButtons style={{position: "absolute", top: "10px", marginTop:"10px", right:"0px"}}>
+            <IonButton style={{backgroundColor:"#ffffff", padding:"5px 0px", borderRadius:"100%"}}>
+                <IonIcon color="primary" icon={searchOutline} size="large" />
+            </IonButton>
+            <Link to ="/editorganization/:id">
+            <IonButton style={{backgroundColor:"#ffffff", padding:"5px 0px", borderRadius:"100%"}}>
+                <IonIcon color="primary" icon={pencil} size="large" />
+            </IonButton>
+            </Link>
+            </IonButtons>
+            
+          <div style={{position:"absolute", marginTop:"130px", backgroundColor:"white", borderRadius:"20%", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)"}}>
+            <img src="./images/imkom.png" style={{width:"100px"}} />
           </div>
         </div>
         <IonText color="light">

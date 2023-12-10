@@ -1,7 +1,7 @@
-import { IonApp, IonContent, IonHeader, IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs, IonText, IonTitle, IonToolbar } from "@ionic/react"
+import { IonApp, IonContent, IonGrid, IonHeader, IonIcon, IonLabel, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs, IonText, IonTitle, IonToolbar, useIonRouter } from "@ionic/react"
 import { IonReactRouter } from "@ionic/react-router";
 import { albums, bag, calendar, home, people, person } from "ionicons/icons"
-import { Link, Redirect, Route } from "react-router-dom";
+import { Link, Redirect, Route, useLocation } from "react-router-dom";
 import Organization from "./Organization";
 import OrganizationDetail from "./OrganizationDetail";
 import Event from "./Event";
@@ -12,34 +12,36 @@ import EventDetail from "./EventDetail";
 import EditOrganization from "./EditOrganization";
 import EditEvent from "./EditEvent";
 import { useHistory } from "react-router-dom";
-import { useState} from "react";
 import Calendar from "./Calendar";
 import Profile from "./Profile";
+import { useEffect, useState} from "react";
+import Request from "./Request";
+import EditProfile from "./EditProfile";
 
 
 const Tabs: React.FC = () => {
     
     const history = useHistory();
+    const router = useIonRouter();
     const [isClicked, setIsClicked] = useState<boolean>(false);
 
-    const handleClick = () => {
-        setIsClicked(true);
-        history.push("/organization");
-    }
 
         const tabStyle = {
-            borderRadius: "20px",
-            position: "floating",
-            padding: "10px",
-            bottom: "20px",
-            marginBottom: "15px",
-            marginLeft: "10px",
-            marginRight: "10px",
-            background: "radial-gradient(circle, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
-            boxshadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+            // display: "flex",
+            // justifyContent: "center",
+            // borderRadius: "20px",
+            // position: "floating",
+            // padding: "10px",
+            // bottom: "20px",
+            // marginBottom: "15px",
+            // marginLeft: "10px",
+            // marginRight: "10px",
+            // background: "radial-gradient(circle, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
+            // boxshadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
         }
+        
+        const location = useLocation();
         return(
-            
             <IonTabs>
             <IonRouterOutlet>
                 <Redirect path="/" to ="/home" />
@@ -54,25 +56,48 @@ const Tabs: React.FC = () => {
                 <Route exact path="/editorganization" component={EditOrganization} />
                 <Route exact path="/calendar" component={Calendar} />
                 <Route exact path="/profile" component={Profile} />
+                <Route exact path="/editorganization/:id" component={EditOrganization} />
+                <Route exact path="/request" component={Request} />
+                <Route exact path="/editprofile" component={EditProfile} />
             </IonRouterOutlet>
+                {/* <Route exact path="/calendar" component={Calendar} />
+                <Route exact path="/profile" component={Profile} /> */}
 
-			<IonTabBar slot="bottom" className="container" style={tabStyle}>
-            
-                <IonTabButton tab="organization" href="/organization" style={{
+			<IonTabBar slot="bottom" style={{
+
+                borderRadius: "20px",
+                position: "floating",
+                padding: "10px",
+                bottom: "20px",
+                marginBottom: "15px",
+                marginLeft: "10px",
+                marginRight: "10px",
+                background: "radial-gradient(circle, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
+                boxshadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                display: "flex",
+                justifyContent: "space-around",
+                width: "auto",
+            }}>
+                <IonTabButton tab="organization" href="/organization"  style={{
                     background: "transparent",
                 }}>
                     <IonIcon icon={people} size="small" style={{
-                        color: isClicked ? "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)" : "white",
-                    }}onClick={handleClick}/>
+                        color: location.pathname === "/organization" ? "#75e8ff" : "white",
+                    }}/>
                     <IonText style={{
-                        color: isClicked ? "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)" : "white",
-                    }}onClick={handleClick}><b>Organization</b></IonText>
+                        color: location.pathname === "/organization" ? "#75e8ff" : "white",
+                    }}><b>Organization</b></IonText>
                 </IonTabButton>
                 <IonTabButton tab="events" href="/events" style={{
                     background: "transparent",
                 }}>
-                    <IonIcon icon={albums} color="light" size="small"/>
-                    <IonText color="light"><b>Events</b></IonText>
+                    <IonIcon icon={albums} 
+                    size="small" style={{
+                        color: location.pathname === "/events" ? "#75e8ff" : "white",
+                    }}/>
+                    <IonText color="light" style={{
+                        color: location.pathname === "/events" ? "#75e8ff" : "white",
+                    }}><b>Events</b></IonText>
                 </IonTabButton>
                 <IonTabButton tab="home" href="/home" style={{
 					background: "transparent",
@@ -88,20 +113,30 @@ const Tabs: React.FC = () => {
                 <IonTabButton tab="calendar" href="/calendar" style={{
                     background: "transparent",
                 }}>
-                    <IonIcon icon={calendar} color="light" size="small"/>
-                    <IonText color="light"><b>Calendar</b></IonText>
+                    <IonIcon icon={calendar} size="small" style={{
+                        color: location.pathname === "/calendar" ? "#75e8ff" : "white",
+                    }}/>
+                    <IonText color="light" style={{
+                        color: location.pathname === "/calendar" ? "#75e8ff" : "white",
+                    }}><b>Calendar</b></IonText>
                 </IonTabButton>
                 <IonTabButton tab="profile" href="/profile" style={{
                     background: "transparent",
                 }}>
-                    <IonIcon icon={person} color="light" size="small"/>
-                    <IonText color="light"><b>Profile</b></IonText>
+                    <IonIcon icon={person} size="small" style={{
+                        color: location.pathname === "/profile" ? "#75e8ff" : "white",
+                    }}/>
+                    <IonText color="light" style={{
+                        color: location.pathname === "/profile" ? "#75e8ff" : "white",
+                    }}><b>Profile</b></IonText>
                 </IonTabButton>
             </IonTabBar>
             {/* </div> */}
             </IonTabs>
 
     )
-}
+    }
+
+
 
 export default Tabs;

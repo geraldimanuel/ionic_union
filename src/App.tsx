@@ -36,6 +36,8 @@ import OrganizationDetail from "./pages/OrganizationDetail";
 import Tabs from "./pages/Tabs";
 import EditOrganization from "./pages/EditOrganization";
 import Calendar from "./pages/Calendar";
+import EditProfile from "./pages/EditProfile";
+import Request from "./pages/Request";
 
 setupIonicReact();
 
@@ -44,7 +46,8 @@ const App: React.FC = () => {
 		<IonApp>
 			<IonReactRouter>
 				<IonRouterOutlet id="main">
-					<Redirect exact from="/" to="/home" />
+					{/* <Redirect exact from="/" to="/home" /> */}
+
 					<Route path="/" component={Tabs} />
 					<Route exact path="/landing" component={Home} />
 					<Route exact path="/register" component={Register} />

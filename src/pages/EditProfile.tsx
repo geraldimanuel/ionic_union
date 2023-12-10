@@ -1,73 +1,126 @@
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonLoading, IonAlert, IonList, IonItem, IonLabel, IonInput, IonTextarea, IonButton, IonIcon, IonCard, IonCol, IonGrid, IonRow, IonButtons, IonSelect, IonSelectOption, IonToast } from "@ionic/react";
-import { getFirestore, doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonLoading, IonGrid, IonRow, IonCol, IonItem, IonLabel, IonInput, IonButton, IonButtons, IonIcon, IonSelect, IonList, IonSelectOption, IonTextarea, IonCard } from "@ionic/react";
+import { arrowBackOutline, pencil } from "ionicons/icons";
 import { useState, useEffect } from "react";
-import { useParams, useHistory } from "react-router";
-import Organization from "./Organization";
-import { arrowBack, arrowBackOutline, pencil } from "ionicons/icons";
+import { useHistory } from "react-router";
 import { Link } from "react-router-dom";
-import styled from "styled-components";
-import { addOrganization } from "../firebaseConfig";
 
 
-const EditOrganization: React.FC = () => {
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
-    const [description, setDescription] = useState("");
-    const [announcement, setAnnouncement] = useState("");
-    const [name, setName] = useState("");
-    const [category, setCategory] = useState<string[]>([]);
-    const [status, setStatus] = useState("");
-    const [origin, setOrigin] = useState("");
-    const [image, setImage] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+const EditProfile: React.FC = () => {
+    const [user, setUser] = useState<any>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string>("");
+    const [name, setName] = useState<string>("");
+    const [email, setEmail] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+    const [confirmPassword, setConfirmPassword] = useState<string>("");
+
+    const [currentUser, setCurrentUser] = useState<any>(null);
+
     const history = useHistory();
-    const [showToast, setShowToast] = useState(false);
-    const [showToastCancel, setShowToastCancel] = useState(false);
+
+    // const { currentUser } = useAuth();
+
+    // useEffect(() => {
+    //     if (currentUser) {
+    //         setUser(currentUser);
+    //         setName(currentUser.displayName);
+    //         setEmail(currentUser.email);
+    //     }
+    //     setLoading(false);
+    // }, [currentUser]);
+
+    const handleUpdate = async () => {
+        if (password !== confirmPassword) {
+            return setError("Passwords do not match");
+        }
+
+        // const promises = [];
+        // setError("");
+        // setLoading(true);
+
+        // if (name !== currentUser.displayName) {
+        //     promises.push(updateName(name));
+        // }
+
+        // if (email !== currentUser.email) {
+        //     promises.push(updateEmail(email));
+        // }
+
+        // if (password) {
+        //     promises.push(updatePassword(password));
+        // }
+
+        // Promise.all(promises)
+        //     .then(() => {
+        //         history.push("/home");
+        //     })
+        //     .catch((error) => {
+        //         setError(error.message);
+        //     })
+        //     .finally(() => {
+        //         setLoading(false);
+        //     });
+    };
+
+    const updateName = (name: string) => {
+        // return currentUser.updateProfile({
+        //     displayName: name,
+        // });
+    };
+
+    const updateEmail = (email: string) => {
+        // return currentUser.updateEmail(email);
+    };
+
+    const updatePassword = (password: string) => {
+        // return currentUser.updatePassword(password);
+    };
+
+    const [imagePreview, setImagePreview] = useState<string>("");
+
+    const handleImageChange = (event: any) => {
+        const image = event.target.files[0];
+        const reader = new FileReader();
+        reader.readAsDataURL(image);
+        reader.onloadend = () => {
+            setImagePreview(reader.result as string);
+        };
+    }
 
     const handleSubmit = async () => {
         const goback = () => {
             window.history.back();
         }
 
-        if (!name || !category) {
-            setShowToastCancel(true);
-        } else {
-            setLoading(true);
-            const organizationRef = doc(getFirestore(), "organizations");
-            await updateDoc(organizationRef, {
-                name,
-                description,
-                announcement,
-                category,
-            });
-            if (image) {
-                // await addOrganization(id, image);
-            }
-            setLoading(false);
-            setShowToast(true);
-            history.push("/organization");
+        if (password !== confirmPassword) {
+            return setError("Passwords do not match");
         }
-        goback();
+
+        const promises = [];
+        setError("");
+        setLoading(true);
+        
+        if (name !== currentUser.displayName) {
+            promises.push(updateName(name));
+        }
+
+        if (email !== currentUser.email) {
+            promises.push(updateEmail(email));
+        }
+
+        if (password) {
+            promises.push(updatePassword(password));
+        }
+
+        Promise.all(promises)
+
+
     }
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-
-        if (file) {
-            setImage(file);
-
-            const previewURL = URL.createObjectURL(file);
-            setImagePreview(previewURL);
-        }
-    };
-
-    const goBack = () => {
-        window.history.back();
-    };
 
 
     return (
-        
         <IonPage>
             <IonHeader>
                 <IonToolbar color="linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)"style={{
@@ -80,28 +133,18 @@ const EditOrganization: React.FC = () => {
 					boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
                 
                 }}>
-                        <IonButtons style={{ position: "absolute", top:"5px", bottom: "20px"}}>
-                            <IonButton style={{ backgroundColor: "#FFFFFF", borderRadius: "100%" }} onClick={goBack}>
+                <Link to="/profile">
+                        <IonButtons style={{ position: "absolute", top: "10px", marginTop: "10px", bottom: "20px"}}>
+                            <IonButton style={{ backgroundColor: "#FFFFFF", borderRadius: "100%" }}>
                                 <IonIcon color="#095797" icon={arrowBackOutline} size="large" />
                             </IonButton>
                         </IonButtons>
-                    <IonTitle color="light">Edit Organization</IonTitle>
+                        </Link>
+                    <IonTitle color="light">Edit Profile</IonTitle>
                 </IonToolbar>
             </IonHeader>
-
-            <IonToast
-                isOpen={showToast}
-                onDidDismiss={() => setShowToast(true)}
-                message="Organization Successfully edited!"
-                duration={2000}
-            />
-            <IonToast
-                isOpen={showToastCancel}
-                onDidDismiss={() => setShowToastCancel(false)}
-                message="Please fill every mandatory fields!"
-                duration={2000}
-            />
             <IonContent fullscreen>
+                {/* <IonLoading isOpen={loading} /> */}
                 <div style={{
                     display: "flex",
                     flexDirection: "column",
@@ -113,6 +156,10 @@ const EditOrganization: React.FC = () => {
                     <IonCard style={{
                         height: "125px",
                         width: "125px",
+                        borderRadius: "100%",
+                        position: "relative",
+
+                        // display: "flex",
                         // alignItems: "center",
                         // justifyContent: "center",
                     }}>
@@ -140,22 +187,14 @@ const EditOrganization: React.FC = () => {
 
                     </IonCard>
                 </IonGrid>
+                
                 </div>
-
-                <IonLoading isOpen={loading} />
-                <IonAlert
-                    isOpen={!!error}
-                    message={error}
-                    buttons={[
-                        {
-                            text: "Ok",
-                            handler: () => {
-                                setError("");
-                            },
-                        },
-                    ]}
-                />
-                <IonList className="ion-padding">
+                <IonGrid>
+                <div style={{
+                    // height:"56px",
+                    // marginTop:"10px",
+                    // marginBottom:"10px",
+                }}>
                     <IonItem>
                         <IonIcon icon={pencil} style={{
                             position: "absolute",
@@ -166,21 +205,6 @@ const EditOrganization: React.FC = () => {
                         }}></IonIcon>
                         <input type="file" accept="image/*" onChange={handleImageChange} />
                     </IonItem>
-                    {/* {imagePreview && (
-                        <img
-                            src={imagePreview}
-                            alt="Preview"
-                            style={{ width: "100%", maxHeight: "300px", marginTop: "10px" }}
-                        />
-                    )} */}
-                </IonList>
-
-                <IonGrid>
-                <div style={{
-                    // height:"56px",
-                    // marginTop:"10px",
-                    // marginBottom:"10px",
-                }}>
                     <IonItem style={{
                         left:"5px", 
                         borderRadius:"28px", 
@@ -211,7 +235,7 @@ const EditOrganization: React.FC = () => {
                     <IonLabel></IonLabel>
                     <IonTextarea 
                         label="Description"
-                        value={description}
+                        value={email}
                         fill="outline"
                         labelPlacement="floating"
                         id = "description"
@@ -229,8 +253,8 @@ const EditOrganization: React.FC = () => {
                     }}>
                     <IonLabel></IonLabel>
                     <IonTextarea 
-                        label="Announcement"
-                        value={announcement}
+                        label="Password"
+                        value={password}
                         fill="outline"
                         labelPlacement="floating"
                         id = "announcement"
@@ -245,23 +269,16 @@ const EditOrganization: React.FC = () => {
                         boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
                         marginTop: "10px",
                         marginBottom: "10px",
-                        
-                    
                     }}>
                     <IonLabel></IonLabel>
-                    <IonSelect 
-                        label="Category*"
-                        value={category}
+                    <IonTextarea 
+                        label="Confirm Password"
+                        value={confirmPassword}
                         fill="outline"
                         labelPlacement="floating"
-                        id = "category"
-                        // style={{left:"5px", borderRadius:"28px", height:"56px"}}
-                        placeholder="Select category"
-                    >
-                        <IonSelectOption value="1">Himpunan</IonSelectOption>
-                        <IonSelectOption value="2">UKM</IonSelectOption>
-                        <IonSelectOption value="3">Media Kampus</IonSelectOption>
-                    </IonSelect>
+                        id = "events"
+                        placeholder="Enter your events"
+                    />
                     </IonItem>
 
                     <IonButton
@@ -285,11 +302,9 @@ const EditOrganization: React.FC = () => {
                 </IonButton>
                 </div>
                 </IonGrid>
-
             </IonContent>
-
         </IonPage>
     );
 }
 
-export default EditOrganization;
+export default EditProfile;
