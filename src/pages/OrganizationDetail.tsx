@@ -45,6 +45,7 @@ const OrganizationDetail: React.FC = () => {
             
 
           </IonButtons>
+          </div>
           <div
             style={{
               position: "absolute",
