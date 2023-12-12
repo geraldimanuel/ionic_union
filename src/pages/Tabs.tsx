@@ -10,7 +10,10 @@ import CreateOrganization from "./CreateOrganization";
 import Home from "./LandingPage";
 import EventDetail from "./EventDetail";
 import EditOrganization from "./EditOrganization";
+import EditEvent from "./EditEvent";
 import { useHistory } from "react-router-dom";
+import Calendar from "./Calendar";
+import Profile from "./Profile";
 import { useEffect, useState} from "react";
 import Request from "./Request";
 import EditProfile from "./EditProfile";
@@ -47,8 +50,12 @@ const Tabs: React.FC = () => {
 				<Route exact path="/createevent" component={CreateEvent} />
                 <Route exact path="/organization/:id" component={OrganizationDetail} />
                 <Route exact path="/organization" component={Organization} />
+                <Route exact path="/events/edit/:id" component={EditEvent} />
                 <Route exact path="/events/:id" component={EventDetail} />
                 <Route exact path="/events" component={Event} />
+                <Route exact path="/editorganization" component={EditOrganization} />
+                <Route exact path="/calendar" component={Calendar} />
+                <Route exact path="/profile" component={Profile} />
                 <Route exact path="/editorganization/:id" component={EditOrganization} />
                 <Route exact path="/request" component={Request} />
                 <Route exact path="/editprofile" component={EditProfile} />
