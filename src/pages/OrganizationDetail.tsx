@@ -29,11 +29,9 @@ const OrganizationDetail: React.FC = () => {
 
           </IonButtons>
           <IonButtons style={{position: "absolute", top: "10px", marginTop:"10px", right:"0px"}}>
-            <IonButton style={{backgroundColor:"#ffffff", padding:"5px 0px", borderRadius:"100%"}}>
-                <IonIcon color="primary" icon={searchOutline} size="large" />
-            </IonButton>
             <Link to ="/editorganization/:id">
-            <IonButton style={{backgroundColor:"#ffffff", padding:"5px 0px", borderRadius:"100%"}}>
+            <IonButton style={{backgroundColor:"#ffffff", padding:"5px 0px", borderRadius:"100%",
+                marginRight:"15px"}}>
                 <IonIcon color="primary" icon={pencil} size="large" />
             </IonButton>
             </Link>

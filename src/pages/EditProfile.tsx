@@ -1,147 +1,135 @@
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonLoading, IonGrid, IonRow, IonCol, IonItem, IonLabel, IonInput, IonButton, IonButtons, IonIcon, IonSelect, IonList, IonSelectOption, IonTextarea, IonCard } from "@ionic/react";
-import { arrowBackOutline, pencil } from "ionicons/icons";
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonLoading, IonGrid, IonRow, IonCol, IonItem, IonLabel, IonInput, IonButton, IonButtons, IonIcon, IonSelect, IonList, IonSelectOption, IonTextarea, IonCard, IonAvatar } from "@ionic/react";
+import { arrowBack, arrowBackOutline, pencil } from "ionicons/icons";
 import { useState, useEffect } from "react";
 import { useHistory } from "react-router";
 import { Link } from "react-router-dom";
 
 
+interface User {
+    id: number;
+    name: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+    profile_picture: string;
+}
 
 const EditProfile: React.FC = () => {
-    const [user, setUser] = useState<any>(null);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string>("");
+
+   const [user, setUser] = useState<User>({
+        id: 1,
+        name: "Bella",
+        email: "bella@gmail",
+        password: "123",
+        confirmPassword: "123",
+        profile_picture: "./images/profiles/bella.jpg",
+    });
+
+    const [image, setImage] = useState<File>();
+    const [imagePreview, setImagePreview] = useState<string>();
     const [name, setName] = useState<string>("");
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [confirmPassword, setConfirmPassword] = useState<string>("");
 
-    const [currentUser, setCurrentUser] = useState<any>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string>();
 
     const history = useHistory();
 
-    // const { currentUser } = useAuth();
 
-    // useEffect(() => {
-    //     if (currentUser) {
-    //         setUser(currentUser);
-    //         setName(currentUser.displayName);
-    //         setEmail(currentUser.email);
-    //     }
-    //     setLoading(false);
-    // }, [currentUser]);
-
-    const handleUpdate = async () => {
-        if (password !== confirmPassword) {
-            return setError("Passwords do not match");
+    useEffect(() => {
+        const user = localStorage.getItem("user");
+        if (user) {
+            setUser(JSON.parse(user));
         }
+        setLoading(false);
+    }, []);
 
-        // const promises = [];
-        // setError("");
-        // setLoading(true);
-
-        // if (name !== currentUser.displayName) {
-        //     promises.push(updateName(name));
-        // }
-
-        // if (email !== currentUser.email) {
-        //     promises.push(updateEmail(email));
-        // }
-
-        // if (password) {
-        //     promises.push(updatePassword(password));
-        // }
-
-        // Promise.all(promises)
-        //     .then(() => {
-        //         history.push("/home");
-        //     })
-        //     .catch((error) => {
-        //         setError(error.message);
-        //     })
-        //     .finally(() => {
-        //         setLoading(false);
-        //     });
-    };
-
-    const updateName = (name: string) => {
-        // return currentUser.updateProfile({
-        //     displayName: name,
-        // });
-    };
-
-    const updateEmail = (email: string) => {
-        // return currentUser.updateEmail(email);
-    };
-
-    const updatePassword = (password: string) => {
-        // return currentUser.updatePassword(password);
-    };
-
-    const [imagePreview, setImagePreview] = useState<string>("");
-
-    const handleImageChange = (event: any) => {
-        const image = event.target.files[0];
+    const handleImageChange = (e: any) => {
+        const file = e.target.files[0];
+        setImage(file);
         const reader = new FileReader();
-        reader.readAsDataURL(image);
         reader.onloadend = () => {
             setImagePreview(reader.result as string);
         };
+        reader.readAsDataURL(file);
+    };
+
+    const handleSubmit = () => {
+        const data = new FormData();
+        data.append("name", name);
+        data.append("email", email);
+        data.append("password", password);
+        data.append("confirmPassword", confirmPassword);
+        data.append("profile_picture", image as Blob);
+
+        fetch("http://localhost:5000/users", {
+            method: "POST",
+            body: data,
+        })
+            .then((res) => res.json())
+            .then((res) => {
+                if (res.error) {
+                    setError(res.error);
+                } else {
+                    localStorage.setItem("user", JSON.stringify(res));
+                    history.push("/profile");
+                }
+            });
     }
 
-    const handleSubmit = async () => {
-        const goback = () => {
-            window.history.back();
+
+    const goBack = () => {
+        window.history.back();
+    };
+
+    useEffect(() => {
+        const selectedUser = localStorage.getItem("user");
+        if (selectedUser) {
+            setName(JSON.parse(selectedUser).name);
+            setEmail(JSON.parse(selectedUser).email);
+            setPassword(JSON.parse(selectedUser).password);
+            setConfirmPassword(JSON.parse(selectedUser).confirmPassword);
+
         }
-
-        if (password !== confirmPassword) {
-            return setError("Passwords do not match");
-        }
-
-        const promises = [];
-        setError("");
-        setLoading(true);
-        
-        if (name !== currentUser.displayName) {
-            promises.push(updateName(name));
-        }
-
-        if (email !== currentUser.email) {
-            promises.push(updateEmail(email));
-        }
-
-        if (password) {
-            promises.push(updatePassword(password));
-        }
-
-        Promise.all(promises)
-
-
-    }
+    }, []);
 
 
 
     return (
         <IonPage>
             <IonHeader>
-                <IonToolbar color="linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)"style={{
-                    background: "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
+            <div
+					style={{
+						background:
+							"linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
+						height: "80px",
+						borderRadius: "0px 0px 32px 0px",
+						padding: "10px 25px",
+						position: "relative",
+						boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+						display: "grid",
+						gridTemplateColumns: "auto 1fr",
+						alignItems: "center",
+					}}
+				>
+					<IonButtons onClick={goBack}>
+						<IonButton>
+							<IonIcon
+								icon={arrowBack}
+								style={{
+									color: "white",
+									fontSize: "20px",
+								}}
+							></IonIcon>
+						</IonButton>
+					</IonButtons>
 
-                    height: "80px",
-					borderRadius: "0px 0px 32px 32px",
-					padding: "10px 25px",
-					position: "relative",
-					boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                
-                }}>
-                <Link to="/profile">
-                        <IonButtons style={{ position: "absolute", top: "10px", marginTop: "10px", bottom: "20px"}}>
-                            <IonButton style={{ backgroundColor: "#FFFFFF", borderRadius: "100%" }}>
-                                <IonIcon color="#095797" icon={arrowBackOutline} size="large" />
-                            </IonButton>
-                        </IonButtons>
-                        </Link>
-                    <IonTitle color="light">Edit Profile</IonTitle>
-                </IonToolbar>
+					<IonTitle color="light" style={{ textAlign: "center" }}>
+						Edit Profile
+					</IonTitle>
+				</div>
             </IonHeader>
             <IonContent fullscreen>
                 {/* <IonLoading isOpen={loading} /> */}
@@ -153,28 +141,24 @@ const EditProfile: React.FC = () => {
                 }}>
                 
                 <IonGrid>
-                    <IonCard style={{
-                        height: "125px",
-                        width: "125px",
-                        borderRadius: "100%",
-                        position: "relative",
-
-                        // display: "flex",
-                        // alignItems: "center",
-                        // justifyContent: "center",
-                    }}>
+                    {/* <IonCard style={{ */}
+                        
+                    {/* }}> */}
                         <IonRow className="ion-text-center" >
                             <IonCol style={{
                                 borderRadius: "20px",
-                                top: "30px",
+                                top: "10px",
                                 marginLeft: "10px",
                                 marginRight: "10px",
+                                
                             }}>
-                                {imagePreview ? (
-                                    <img src={imagePreview} />
-                                ) : (
-                                    <img src="./images/imkom.png" />
-                                )}
+                                <IonAvatar style={{
+                                    width: "100px",
+                                    height: "100px",
+                                    
+                                }}>
+                                    <img src={user.profile_picture} />
+                                </IonAvatar>
                             </IonCol>
                         </IonRow>
                         <IonIcon icon={pencil} style={{
@@ -185,7 +169,7 @@ const EditProfile: React.FC = () => {
                             color: "white",
                         }}></IonIcon>
 
-                    </IonCard>
+                    {/* </IonCard> */}
                 </IonGrid>
                 
                 </div>
@@ -214,13 +198,14 @@ const EditProfile: React.FC = () => {
                         marginBottom: "10px"}}>
                     <IonLabel></IonLabel>
                     <IonInput 
-                        label="Name*"
+                        label="Name"
                         value={name}
                         fill="outline"
                         labelPlacement="floating"
                         id = "name"
-                        type="text"
                         placeholder="Enter your name"
+                        onIonChange={(e) => setName(e.detail.value!)}
+                        
                     />
                     </IonItem>
                     <IonItem 
@@ -234,12 +219,13 @@ const EditProfile: React.FC = () => {
                         }}>
                     <IonLabel></IonLabel>
                     <IonTextarea 
-                        label="Description"
+                        label="Email"
                         value={email}
                         fill="outline"
                         labelPlacement="floating"
-                        id = "description"
-                        placeholder="Enter your description"
+                        id = "email"
+                        placeholder="Enter your email"
+                        onIonChange={(e) => setEmail(e.detail.value!)}
                     />
                     </IonItem>
                     <IonItem style={{
@@ -257,9 +243,10 @@ const EditProfile: React.FC = () => {
                         value={password}
                         fill="outline"
                         labelPlacement="floating"
-                        id = "announcement"
+                        id = "password"
                         // style={{left:"5px", borderRadius:"28px", height:"56px"}}
-                        placeholder="Enter your announcement"
+                        placeholder="Enter your password"
+                        onIonChange={(e) => setPassword(e.detail.value!)}
                     />
                     </IonItem>
                     <IonItem style={{
@@ -276,8 +263,9 @@ const EditProfile: React.FC = () => {
                         value={confirmPassword}
                         fill="outline"
                         labelPlacement="floating"
-                        id = "events"
-                        placeholder="Enter your events"
+                        id = "confirmPassword"
+                        placeholder="Confirm your password"
+                        onIonChange={(e) => setConfirmPassword(e.detail.value!)}
                     />
                     </IonItem>
 

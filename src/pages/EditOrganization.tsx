@@ -16,8 +16,6 @@ const EditOrganization: React.FC = () => {
     const [announcement, setAnnouncement] = useState("");
     const [name, setName] = useState("");
     const [category, setCategory] = useState<string[]>([]);
-    const [status, setStatus] = useState("");
-    const [origin, setOrigin] = useState("");
     const [image, setImage] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const history = useHistory();
@@ -70,23 +68,36 @@ const EditOrganization: React.FC = () => {
         
         <IonPage>
             <IonHeader>
-                <IonToolbar color="linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)"style={{
-                    background: "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
+            <div
+					style={{
+						background:
+							"linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
+						height: "80px",
+						borderRadius: "0px 0px 32px 0px",
+						padding: "10px 25px",
+						position: "relative",
+						boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+						display: "grid",
+						gridTemplateColumns: "auto 1fr",
+						alignItems: "center",
+					}}
+				>
+					<IonButtons onClick={goBack}>
+						<IonButton>
+							<IonIcon
+								icon={arrowBack}
+								style={{
+									color: "white",
+									fontSize: "20px",
+								}}
+							></IonIcon>
+						</IonButton>
+					</IonButtons>
 
-                    height: "80px",
-					borderRadius: "0px 0px 32px 32px",
-					padding: "10px 25px",
-					position: "relative",
-					boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                
-                }}>
-                        <IonButtons style={{ position: "absolute", top:"5px", bottom: "20px"}}>
-                            <IonButton style={{ backgroundColor: "#FFFFFF", borderRadius: "100%" }} onClick={goBack}>
-                                <IonIcon color="#095797" icon={arrowBackOutline} size="large" />
-                            </IonButton>
-                        </IonButtons>
-                    <IonTitle color="light">Edit Organization</IonTitle>
-                </IonToolbar>
+					<IonTitle color="light" style={{ textAlign: "center" }}>
+						Edit Organization
+					</IonTitle>
+				</div>
             </IonHeader>
 
             <IonToast
