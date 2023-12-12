@@ -1,17 +1,9 @@
-<<<<<<< HEAD
 import { IonAvatar, IonButton, IonButtons, IonCard, IonCol, IonContent, IonGrid, IonIcon, IonPage, IonRow, IonText } from "@ionic/react";
 import { query, collection, where, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "../firebaseConfig";
 import { calendarClearOutline, locationOutline, pencil } from "ionicons/icons";
 import { Link } from "react-router-dom";
-=======
-import { IonAvatar, IonButton, IonCard, IonCol, IonContent, IonGrid, IonIcon, IonPage, IonRow, IonText } from "@ionic/react";
-import { query, collection, where, getDocs } from "firebase/firestore";
-import { useEffect, useState } from "react";
-import { db } from "../firebaseConfig";
-import { calendarClearOutline, locationOutline } from "ionicons/icons";
->>>>>>> features/frontend/kesya
 
 interface User {
     email: string;
@@ -159,7 +151,6 @@ const Profile: React.FC = () => {
                 </IonAvatar>
 
                 <h1>{user.name}</h1>
-<<<<<<< HEAD
                 <IonButtons style={{position: "absolute", top: "10px", marginTop:"10px", right:"0px"}}>
                 <Link to ="/editprofile">
                 <IonButton style={{backgroundColor:"#ffffff", padding:"5px 0px", borderRadius:"100%",
@@ -168,8 +159,6 @@ const Profile: React.FC = () => {
                 </IonButton>
                 </Link>
                 </IonButtons>
-=======
->>>>>>> features/frontend/kesya
                 <h3>{user.email}</h3>
 
                 <h2>My Organization</h2>
