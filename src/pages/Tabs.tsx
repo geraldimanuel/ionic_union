@@ -92,11 +92,23 @@ const Tabs: React.FC = () => {
 					component={EditOrganization}
 				/>
 
+				<Route
+					exact
+					path="/nav/editevent"
+					component={EditEvent}
+				/>
+
+				<Route
+					exact
+					path="/nav/editevent/:id"
+					component={EditEvent}
+				/>
+
 				<Route exact path="/nav/profile" component={Profile} />
 				<Route exact path="/nav/calendar" component={Calendar} />
 				<Route exact path="/nav/profile" component={Profile} />
 
-				<Route exact path="/events/edit/:id" component={EditEvent} />
+				{/* <Route exact path="/events/edit/:id" component={EditEvent} /> */}
 				<Route exact path="/request" component={Request} />
 				<Route exact path="/editprofile" component={EditProfile} />
 			</IonRouterOutlet>

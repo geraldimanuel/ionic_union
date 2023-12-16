@@ -200,17 +200,7 @@ const EventDetail: React.FC = () => {
   };
 
   const handleSettingsClick = () => {
-    history.push(`/events/edit/${id}`);
-  };
-
-  const handleAttend = () => {
-    // setLoggedUser((prev) => ({ ...prev, attended: [...prev.attended, eventId] }));
-    setToastMessage("You confirmed to attend this event");
-  };
-
-  const handleDecline = () => {
-    // setLoggedUser((prev) => ({ ...prev, declined: [...prev.declined, eventId] }));
-    setToastMessage("You confirmed you can't attend this event");
+    history.push(`/nav/editevent/${id}`);
   };
 
   const handleAttendClick = async (eventId: string) => {
