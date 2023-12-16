@@ -29,13 +29,17 @@ import "@ionic/react/css/display.css";
 import "./theme/variables.css";
 import Admin from "./pages/Admin";
 
-import { onAuthStateChanged } from "@firebase/auth";
+import { onAuthStateChanged, getAuth } from "@firebase/auth";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import Organization from "./pages/Organization";
 import OrganizationDetail from "./pages/OrganizationDetail";
 import Tabs from "./pages/Tabs";
 import EditOrganization from "./pages/EditOrganization";
 import Calendar from "./pages/Calendar";
+import Profile from "./pages/Profile";
+import { useState } from "react";
+
+import { useHistory } from "react-router-dom";
 import EditProfile from "./pages/EditProfile";
 import Request from "./pages/Request";
 
@@ -46,22 +50,26 @@ const App: React.FC = () => {
 		<IonApp>
 			<IonReactRouter>
 				<IonRouterOutlet id="main">
-					{/* <Redirect exact from="/" to="/home" /> */}
+					<Redirect exact from="/" to="/login" />
+					<Route path="/nav" component={Tabs} />
 
-					<Route path="/" component={Tabs} />
-					<Route exact path="/landing" component={Home} />
-					<Route exact path="/register" component={Register} />
-					<Route exact path="/login" component={Login} />
-					<Route exact path="/admin" component={Admin} />
-					<Route exact path="/event" component={Event} />
-					<Route exact path="/event" component={Event} />
+					<Route path="/register" component={Register} />
+					<Route path="/login" component={Login} />
+					<Route path="/admin" component={Admin} />
+					{/* <Route path="/event" component={Event} />
+					<Route path="/event" component={Event} />
+					<Route path="/event/1" component={EventDetail} /> */}
 					{/* <Route exact path="/organization" component={Organization} /> */}
+					{/* <Route path="/organization/:id" component={OrganizationDetail} /> */}
+					{/* <Route  path="/editorganization" component={EditOrganization} /> */}
+					{/* <Route path="/calendar" component={Calendar} /> */}
+
 					<Route
 						exact
-						path="/organization/:id"
-						component={OrganizationDetail}
+						path="/nav/createorganization"
+						component={CreateOrganization}
 					/>
-					{/* <Route exact path="/editorganization" component={EditOrganization} /> */}
+					<Route exact path="/nav/createevent" component={CreateEvent} />
 				</IonRouterOutlet>
 			</IonReactRouter>
 		</IonApp>
