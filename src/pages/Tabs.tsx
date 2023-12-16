@@ -30,6 +30,7 @@ import Profile from "./Profile";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import Login from "./Login";
 import Calendar from "./Calendar";
+import EditProfile from "./EditProfile";
 
 const Tabs: React.FC = () => {
 	const history = useHistory();
@@ -40,7 +41,6 @@ const Tabs: React.FC = () => {
 		history.push("/organization");
 	};
 
-<<<<<<< Updated upstream
 	const auth = getAuth();
 
 	onAuthStateChanged(auth, (user) => {
@@ -90,38 +90,8 @@ const Tabs: React.FC = () => {
 				<Route exact path="/nav/profile" component={Profile} />
 				<Route exact path="/nav/calendar" component={Calendar} />
 				<Route exact path="/nav/profile" component={Profile} />
+				<Route exact path="/nav/editprofile" component={EditProfile} />
 			</IonRouterOutlet>
-=======
-        const tabStyle = {
-            borderRadius: "20px",
-            position: "floating",
-            padding: "10px",
-            bottom: "20px",
-            marginBottom: "15px",
-            marginLeft: "10px",
-            marginRight: "10px",
-            background: "radial-gradient(circle, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
-            boxshadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-        }
-        return(
-            
-            <IonTabs>
-            <IonRouterOutlet>
-                <Redirect path="/" to ="/home" />
-                <Route exact path="/home" component={Home} />
-                <Route exact path="/createorganization" component={CreateOrganization} />
-				<Route exact path="/createevent" component={CreateEvent} />
-                <Route exact path="/organization/:id" component={OrganizationDetail} />
-                <Route exact path="/organization" component={Organization} />
-                <Route exact path="/events/edit/:id" component={EditEvent} />
-                <Route exact path="/events/:id" component={EventDetail} />
-                <Route exact path="/events" component={Event} />
-                <Route exact path="/editorganization" component={EditOrganization} />
-                <Route exact path="/calendar" component={Calendar} />
-                <Route exact path="/profile" component={Profile} />
-				{/* <Route exact path="/editprofile" component={EditProfile} /> */}
-            </IonRouterOutlet>
->>>>>>> Stashed changes
 
 			<IonTabBar slot="bottom" className="container" style={tabStyle}>
 				<IonTabButton
