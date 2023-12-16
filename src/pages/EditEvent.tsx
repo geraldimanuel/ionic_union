@@ -243,9 +243,6 @@ const EditEvent: React.FC = () => {
 
         const eventDocRef = doc(db, "events", id);
         await updateDoc(eventDocRef, updatedEventData);
-
-        setShowToast(true);
-        setLoading(false);
       } else {
         const updatedEventData = {
           heading,
@@ -259,13 +256,7 @@ const EditEvent: React.FC = () => {
 
         const eventDocRef = doc(db, "events", id);
         await updateDoc(eventDocRef, updatedEventData);
-
-        setShowToast(true);
-        setLoading(false);
       }
-
-      //   const eventDocRef = doc(db, "events", id);
-      //   await updateDoc(eventDocRef, updatedEventData);
 
       setShowToast(true);
       setLoading(false);

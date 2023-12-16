@@ -11,69 +11,123 @@ import {
 	IonToolbar,
 	IonItem,
 	IonLabel,
-	IonRouterLink,
 	IonCard,
 	IonGrid,
 	IonRow,
 	IonCol,
-} from "@ionic/react";
-import {
-	notificationsOutline,
-	searchOutline,
-	calendarNumberOutline,
-	locationOutline,
-	appsOutline,
+	IonRouterLink
+  } from "@ionic/react";
+  import {
 	add,
-} from "ionicons/icons";
-import Swiper from "swiper";
-import { Navigation, Pagination } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import { useEffect, useState } from "react";
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../firebaseConfig";
-import { Link, useHistory } from "react-router-dom";
-
-interface Event {
-	id: number;
-	date: Date;
-	title: string;
-	time: string;
-	location: string;
-}
-
-const eventData: Event[] = [
-	{
-		id: 1,
-		date: new Date("2023-12-04T14:00:00"),
-		title: "Talkshow B-Land 2023",
-		time: "14.00 - 16.00 WIB",
-		location: "Lecture Hall",
-	},
-	{
-		id: 2,
-		date: new Date("2023-12-05T10:00:00"),
-		title: "Workshop XYZ",
-		time: "10.00 - 12.00 WIB",
-		location: "Conference Room",
-	},
-	{
-		id: 3,
-		date: new Date("2023-12-06T18:00:00"),
-		title: "Seminar ABC",
-		time: "18.00 - 20.00 WIB",
-		location: "Auditorium",
-	},
-];
-
-const logged_user = {
-	user: "Kesya",
-	attended: [1, 2],
-};
-
-const Home: React.FC = () => {
+	locationOutline,
+	calendarNumberOutline,
+  } from "ionicons/icons";
+  import "swiper/css";
+  import "swiper/css/navigation";
+  import "swiper/css/pagination";
+  import { useEffect, useState } from "react";
+  import { collection, getDocs, query, where, getDoc, doc, updateDoc, arrayUnion, onSnapshot } from "firebase/firestore";
+  import { useHistory } from "react-router-dom";
+  import { getAuth, onAuthStateChanged } from "firebase/auth";
+  import { addEvent, db } from "../firebaseConfig";
+  
+  interface EventData {
+	id: string;
+	data: {
+	  banner_url: string;
+	  date: string;
+	  description: string;
+	  heading: string;
+	  location: string;
+	  origin: string;
+	  // Add other properties as per your actual data structure
+	};
+  }
+  
+  interface UserData {
+	  id: string;
+	  data: {
+		email: string;
+		event_attended: string[];
+		event_declined: string[];
+		name: string;
+		origin: string;
+		profile_picture: string;
+		role: string;
+	  };
+	}
+  
+  const Home: React.FC = () => {
 	const history = useHistory();
+	const [searchTerm, setSearchTerm] = useState<string>("");
+	const [eventData, setEventData] = useState<EventData[]>([]);
+	const [userData, setUserData] = useState<UserData[]>([]);
+	const [loggedUserEvent, setLoggedUserEvent] = useState<string[]>([]);
+	const auth = getAuth();
+  
+	const handleCardClick = (eventId: string) => {
+	  history.push(`events/${eventId}`);
+	};
+  
+	const filteredEvents = eventData.filter((item) =>
+	  Object.values(item.data).some(
+		(value) =>
+		  typeof value === "string" &&
+		  value.toLowerCase().includes(searchTerm.toLowerCase())
+	  )
+	);
+  
+	useEffect(() => {
+	  const q = query(collection(db, "users"), where("email", "==", auth.currentUser?.email));
+	
+	  const unsubscribe = onSnapshot(q, (querySnapshot) => {
+		const users: UserData[] = [];
+		querySnapshot.forEach((doc) => {
+		  const userData: UserData = {
+			id: doc.id,
+			data: doc.data() as {
+			  email: string;
+			  event_attended: string[];
+			  event_declined: string[];
+			  name: string;
+			  origin: string;
+			  profile_picture: string;
+			  role: string;
+			},
+		  };
+		  users.push(userData);
+		});
+	
+		setUserData(users);
+		setLoggedUserEvent(users[0].data.event_attended.concat(users[0].data.event_declined));
+	  });
+	
+	  return () => unsubscribe();
+	}, [db]);  
+  
+	useEffect(() => {
+	  async function fetchEventData() {
+		const origin = "your_origin_value"; 
+		const q = query(collection(db, "events"), where("status", "==", "Public"));
+	
+		try {
+		  const querySnapshot = await getDocs(q);
+		  const events : any = [];
+		  querySnapshot.forEach((doc) => {
+			events.push({ id: doc.id, data: doc.data() });
+		  });
+	
+		  const filteredEvents = events.filter((event : any) => loggedUserEvent.includes(event.id));
+	
+		  setEventData(filteredEvents);
+		} catch (error) {
+		  console.error("Error fetching data:", error);
+		}
+	  }
+	
+	  fetchEventData();
+	}, [loggedUserEvent]); 
+
 
 	const handleClickEvent = () => {
 		history.push(`/nav/createevent`);
@@ -83,10 +137,8 @@ const Home: React.FC = () => {
 		history.push(`/nav/createorganization`);
 	};
 
-	//ini untuk sort yg dihadirin sama logged user aja + sort date
-	const sortedEventData: Event[] = eventData
-		.filter((event) => logged_user.attended.includes(event.id))
-		.sort((a, b) => b.date.getTime() - a.date.getTime());
+	// const sortedEventData: EventData[] = eventData
+	// 	.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
 	const formatEventDate = (date: Date) => {
 		const options: Intl.DateTimeFormatOptions = {
@@ -97,7 +149,9 @@ const Home: React.FC = () => {
 		return date.toLocaleDateString(undefined, options);
 	};
 
-	return (
+	
+
+	if (eventData && eventData.length > 0) return (
 		<IonPage style={{ backgroundColor: "DBDBDB" }}>
 			<div
 				style={{
@@ -112,7 +166,7 @@ const Home: React.FC = () => {
 			>
 				<div style={{ textAlign: "right", marginTop: "70px" }}></div>
 				<IonText color="light">
-					<p>Hello, Kesya!</p>
+					<p>Hello, {auth.currentUser?.displayName}!</p>
 					<h1
 						style={{
 							fontSize: "32px",
@@ -163,26 +217,26 @@ const Home: React.FC = () => {
 					</h2>
 				</IonText>
 				{eventData.length > 0 ? (
-					sortedEventData.map((event) => (
-						<IonRouterLink key={event.id} routerLink={`/event/${event.id}`}>
+					eventData.map((event : any) => (
+						<IonRouterLink key={event.id} routerLink={`/nav/events/${event.id}`}>
 							<IonCard>
 								<IonGrid>
 									<IonRow>
 										<IonCol style={{ backgroundColor: "#D93D3D" }} size="3">
 											<h1 style={{ textAlign: "center", color: "white" }}>
-												{formatEventDate(event.date)}
+												{event.data.date}
 											</h1>
 										</IonCol>
 										<IonCol>
 											<IonRow>
-												<h3 style={{ marginLeft: "5px" }}>{event.title}</h3>
+												<h3 style={{ marginLeft: "5px" }}>{event.data.heading}</h3>
 											</IonRow>
 											<IonRow>
 												<IonCol size="1">
 													<IonIcon icon={calendarNumberOutline}></IonIcon>
 												</IonCol>
 												<IonCol>
-													<small>{event.time}</small>
+													<small>{event.data.date}</small>
 												</IonCol>
 											</IonRow>
 											<IonRow>
@@ -190,7 +244,7 @@ const Home: React.FC = () => {
 													<IonIcon icon={locationOutline}></IonIcon>
 												</IonCol>
 												<IonCol>
-													<small>{event.location}</small>
+													<small>{event.data.location}</small>
 												</IonCol>
 											</IonRow>
 										</IonCol>
