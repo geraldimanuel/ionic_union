@@ -38,9 +38,9 @@ const Organization: React.FC = () => {
 	const [searchTerm, setSearchTerm] = useState<string>("");
 	const [orgData, setOrgData] = useState<OrgData[]>([]);
 
-	// const handleCardClick = (orgId: string) => {
-	// 	history.push(`/nav/organization/${orgId}`);
-	// };
+	const handleCardClick = (orgId: string) => {
+		history.push(`/nav/organization/${orgId}`);
+	};
 
 	// const filteredOrgs = orgData.filter((item) =>
 	// 	Object.values(item.data).some(
@@ -215,21 +215,22 @@ const Organization: React.FC = () => {
 
 				<IonGrid>
 					{orgData.map((item, index) => (
-						<a key={index} href={`/nav/organization/${item.origin_id}`}>
-							<IonCard key={index} style={{ height: "125px" }}>
-								<IonRow
-									className="ion-text-center"
-									style={{ marginTop: "30px" }}
-								>
-									<IonCol size="4">
-										<img src={item.logo_url} />
-									</IonCol>
-									<IonCol size="4">
-										<h3>{item.origin_name}</h3>
-									</IonCol>
-								</IonRow>
-							</IonCard>
-						</a>
+						// <a key={index} href={`/nav/organization/${item.origin_id}`}>
+						<IonCard
+							key={index}
+							style={{ height: "125px" }}
+							onClick={() => handleCardClick(item.origin_id)}
+						>
+							<IonRow className="ion-text-center" style={{ marginTop: "30px" }}>
+								<IonCol size="4">
+									<img src={item.logo_url} />
+								</IonCol>
+								<IonCol size="4">
+									<h3>{item.origin_name}</h3>
+								</IonCol>
+							</IonRow>
+						</IonCard>
+						// </a>
 					))}
 				</IonGrid>
 			</IonContent>
