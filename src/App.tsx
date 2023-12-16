@@ -29,15 +29,20 @@ import "@ionic/react/css/display.css";
 import "./theme/variables.css";
 import Admin from "./pages/Admin";
 
-import { onAuthStateChanged } from "@firebase/auth";
+import { onAuthStateChanged, getAuth } from "@firebase/auth";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import Organization from "./pages/Organization";
 import OrganizationDetail from "./pages/OrganizationDetail";
 import Tabs from "./pages/Tabs";
 import EditOrganization from "./pages/EditOrganization";
 import Calendar from "./pages/Calendar";
+<<<<<<< HEAD
 import EditProfile from "./pages/EditProfile";
 import Request from "./pages/Request";
+=======
+import Profile from "./pages/Profile";
+import { useState } from "react";
+>>>>>>> features/backend/auth
 
 setupIonicReact();
 
@@ -46,6 +51,7 @@ const App: React.FC = () => {
 		<IonApp>
 			<IonReactRouter>
 				<IonRouterOutlet id="main">
+<<<<<<< HEAD
 					{/* <Redirect exact from="/" to="/home" /> */}
 
 					<Route path="/" component={Tabs} />
@@ -62,6 +68,21 @@ const App: React.FC = () => {
 						component={OrganizationDetail}
 					/>
 					{/* <Route exact path="/editorganization" component={EditOrganization} /> */}
+=======
+					<Redirect exact from="/" to="/nav" />
+					<Route path="/nav" component={Tabs} />
+
+					<Route path="/register" component={Register} />
+					<Route path="/login" component={Login} />
+					<Route path="/admin" component={Admin} />
+					{/* <Route path="/event" component={Event} />
+					<Route path="/event" component={Event} />
+					<Route path="/event/1" component={EventDetail} /> */}
+					{/* <Route exact path="/organization" component={Organization} /> */}
+					{/* <Route path="/organization/:id" component={OrganizationDetail} /> */}
+					{/* <Route  path="/editorganization" component={EditOrganization} /> */}
+					{/* <Route path="/calendar" component={Calendar} /> */}
+>>>>>>> features/backend/auth
 				</IonRouterOutlet>
 			</IonReactRouter>
 		</IonApp>
