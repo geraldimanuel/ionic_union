@@ -101,13 +101,10 @@ const Request: React.FC = () => {
             }}>
             <IonCard style={{
                 width:"100%",
-                // height:"100px",
                 height: "50px",
                 borderRadius:"20px",
                 background:"linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
                 boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                // margin:"10px 10px 10px 10px",
-                // padding:"10px 10px 10px 10px",
                 display:"flex",
                 flexDirection:"row",
                 justifyContent:"center",

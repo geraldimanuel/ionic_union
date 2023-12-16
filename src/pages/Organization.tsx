@@ -79,7 +79,6 @@ const Organization: React.FC = () => {
 
     return (
         <IonPage style={{backgroundColor:"DBDBDB"}}>
-            {/* Header untuk dicuri */}
 			<div style={{
                 background:"linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)", 
                 height:"261px", 

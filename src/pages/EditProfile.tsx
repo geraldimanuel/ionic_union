@@ -244,7 +244,6 @@ const EditProfile: React.FC = () => {
                         fill="outline"
                         labelPlacement="floating"
                         id = "password"
-                        // style={{left:"5px", borderRadius:"28px", height:"56px"}}
                         placeholder="Enter your password"
                         onIonChange={(e) => setPassword(e.detail.value!)}
                     />

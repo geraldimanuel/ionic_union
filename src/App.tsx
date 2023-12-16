@@ -36,13 +36,8 @@ import OrganizationDetail from "./pages/OrganizationDetail";
 import Tabs from "./pages/Tabs";
 import EditOrganization from "./pages/EditOrganization";
 import Calendar from "./pages/Calendar";
-<<<<<<< HEAD
-import EditProfile from "./pages/EditProfile";
-import Request from "./pages/Request";
-=======
 import Profile from "./pages/Profile";
 import { useState } from "react";
->>>>>>> features/backend/auth
 
 setupIonicReact();
 
@@ -51,24 +46,6 @@ const App: React.FC = () => {
 		<IonApp>
 			<IonReactRouter>
 				<IonRouterOutlet id="main">
-<<<<<<< HEAD
-					{/* <Redirect exact from="/" to="/home" /> */}
-
-					<Route path="/" component={Tabs} />
-					<Route exact path="/landing" component={Home} />
-					<Route exact path="/register" component={Register} />
-					<Route exact path="/login" component={Login} />
-					<Route exact path="/admin" component={Admin} />
-					<Route exact path="/event" component={Event} />
-					<Route exact path="/event" component={Event} />
-					{/* <Route exact path="/organization" component={Organization} /> */}
-					<Route
-						exact
-						path="/organization/:id"
-						component={OrganizationDetail}
-					/>
-					{/* <Route exact path="/editorganization" component={EditOrganization} /> */}
-=======
 					<Redirect exact from="/" to="/nav" />
 					<Route path="/nav" component={Tabs} />
 
@@ -82,7 +59,6 @@ const App: React.FC = () => {
 					{/* <Route path="/organization/:id" component={OrganizationDetail} /> */}
 					{/* <Route  path="/editorganization" component={EditOrganization} /> */}
 					{/* <Route path="/calendar" component={Calendar} /> */}
->>>>>>> features/backend/auth
 				</IonRouterOutlet>
 			</IonReactRouter>
 		</IonApp>

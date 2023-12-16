@@ -13,7 +13,6 @@ interface EventData {
 		heading: string;
 		location: string;
 		origin: string;
-		// Add other properties as per your actual data structure
 	};
 }
 
@@ -101,14 +100,6 @@ const Calendar: React.FC = () => {
                     }}>Let's find 
                     your timeline on calendar!</h1>
                 </IonText>
-                {/* <IonItem style={{top:"30px", borderRadius:"28px", height:"56px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)"}}>
-                    <IonLabel><IonIcon icon={searchOutline} /></IonLabel>
-                    <IonInput 
-                        style={{left:"5px", borderRadius:"28px", height:"56px"}}
-                        type="text"
-                        placeholder="Search here. . ."
-                    />
-                </IonItem> */}
             </div>
 
             <IonContent className="ion-padding">
@@ -116,7 +107,6 @@ const Calendar: React.FC = () => {
                     <IonDatetime 
                     presentation="date"
                     onIonChange={(e) => dateChanged(e.detail.value)}
-                    // dayValues utk highlight hari yang ada eventnya
                     >
                     </IonDatetime>
                 </IonCard>
