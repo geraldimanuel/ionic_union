@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 <<<<<<< Updated upstream
 import {
@@ -32,15 +33,22 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 =======
 import { IonAvatar, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonIcon, IonModal, IonPage, IonRow, IonText } from "@ionic/react";
+=======
+import { IonAvatar, IonButton, IonButtons, IonCard, IonCol, IonContent, IonGrid, IonIcon, IonModal, IonPage, IonRow, IonText, IonTitle } from "@ionic/react";
+>>>>>>> Stashed changes
 import { query, collection, where, getDocs } from "firebase/firestore";
 >>>>>>> Stashed changes
 import { useEffect, useState } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 import { useHistory } from "react-router-dom";
 =======
 import { calendarClearOutline, chevronForwardOutline, locationOutline, pencilOutline, people, peopleOutline } from "ionicons/icons";
+=======
+import { arrowBack, calendarClearOutline, chevronForwardOutline, locationOutline, pencilOutline, peopleOutline } from "ionicons/icons";
+>>>>>>> Stashed changes
 import { Link } from "react-router-dom";
 
 interface User {
@@ -222,6 +230,7 @@ const Profile: React.FC = () => {
 		console.log(eventData);
 	}, [db]);
 
+<<<<<<< Updated upstream
 	return (
 		<IonPage style={{ backgroundColor: "DBDBDB" }}>
 			<div
@@ -318,6 +327,8 @@ const Profile: React.FC = () => {
 	);
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> Stashed changes
 	const [showMyOrganizationsModal, setShowMyOrganizationsModal] = useState(false);
   	const [showMyEventsModal, setShowMyEventsModal] = useState(false);
 
@@ -327,31 +338,35 @@ const Profile: React.FC = () => {
   	const openMyEventsModal = () => setShowMyEventsModal(true);
   	const closeMyEventsModal = () => setShowMyEventsModal(false);
 
+<<<<<<< Updated upstream
+=======
+	const goBack = () => {
+        window.history.back();
+    };
+
+
+>>>>>>> Stashed changes
   return (
     <IonPage style={{ backgroundColor: "DBDBDB" }}>
       <div
-        style={{
-          background:
-            "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
-          height: "231px",
-          borderRadius: "0px 0px 32px 32px",
-          padding: "10px 25px",
-          position: "relative",
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-        }}
-      >
-        <div style={{ textAlign: "right", marginTop: "70px" }}></div>
-        <IonText color="light">
-          <p>Hello, Bella!</p>
-          <h1
-            style={{
-              fontSize: "32px",
-            }}
-          >
-            Welcome to <br></br> UNION!
-          </h1>
-        </IonText>
-      </div>
+                    style={{
+                        background:
+                            "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
+                        height: "80px",
+                        borderRadius: "0px 0px 32px 0px",
+                        padding: "10px 25px",
+                        position: "relative",
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                        display: "grid",
+                        gridTemplateColumns: "auto 1fr",
+                        alignItems: "center",
+                    }}
+                >
+
+                    <IonTitle color="light" style={{ textAlign: "center" }}>
+                        My Profile
+                    </IonTitle>
+                </div>
 
       <IonContent>
             <IonCard 
@@ -368,6 +383,7 @@ const Profile: React.FC = () => {
 
                 <h1>{user.name}</h1>
                 <h3>{user.email}</h3>
+<<<<<<< Updated upstream
 				
 
         {/* Tombol Edit Profile */}
@@ -379,6 +395,18 @@ const Profile: React.FC = () => {
 			padding: "0px 20px",
 			bottom: "10px",
 
+=======
+			<div style={{
+			// display: "flex",
+			// flexDirection: 'column',
+			alignItems: 'center',
+			width: "100%",
+			// height: "100%",
+			
+			bottom: "20px",
+			paddingBottom: "10px",
+
+>>>>>>> Stashed changes
 		}}>
 
 		<Link to="/edit-profile">
@@ -403,6 +431,7 @@ const Profile: React.FC = () => {
 		</div>
 
 		<IonModal isOpen={showMyOrganizationsModal} onDidDismiss={closeMyOrganizationsModal}>
+<<<<<<< Updated upstream
 		<h2>My Organization</h2>
 		<IonGrid style={{ marginTop: "-20px" }}>
                     {orgData.map((item, index) => (
@@ -422,6 +451,92 @@ const Profile: React.FC = () => {
                             </IonRow>
                         </IonCard>
                     ))}
+                </IonGrid> 
+			<IonButton onClick={() => setShowMyOrganizationsModal(false)}>
+				Close
+			</IonButton>
+		</IonModal>
+
+		<IonModal isOpen={showMyEventsModal} onDidDismiss={closeMyEventsModal}>
+=======
+>>>>>>> Stashed changes
+		<div style={{
+			display: "flex",
+			flexDirection: 'column',
+			alignItems: 'center',
+			width: "100%",
+			padding: "0px 20px",
+			bottom: "10px",
+
+		}}>
+<<<<<<< Updated upstream
+			<h2>My Events</h2>
+			</div>
+		<IonGrid style={{ marginTop: "-20px" }}>
+					{eventData.map((item, index) => (
+						<IonCard
+							key={index}
+						>
+							<IonRow
+								style={{ width: "200px", height: "70px"}} 
+								className="ion-text-center"
+							>
+								<IonCol size="4">
+									<img src={item.data.banner_url} />
+								</IonCol>
+								<IonCol>
+									<h3>{item.data.heading}</h3>
+								</IonCol>
+							</IonRow>
+						</IonCard>
+					))}
+				</IonGrid> 
+			<IonButton onClick={() => setShowMyEventsModal(false)}>
+				Close
+			</IonButton>
+		</IonModal>
+
+				
+
+
+		
+      
+				
+				
+
+                {/* <h2>My Organization</h2>
+                <IonGrid style={{ marginTop: "-20px" }}>
+=======
+		<h2>My Organization</h2>
+		</div>
+		<IonGrid style={{ marginTop: "-20px" }}>
+>>>>>>> Stashed changes
+                    {orgData.map((item, index) => (
+                        <IonCard
+                            key={index}
+                        >
+                            <IonRow
+                                style={{ width: "200px", height: "70px"}} 
+                                className="ion-text-center"
+                            >
+                                <IonCol style={{
+
+								}}size="4">
+                                    <img src={item.data.logo_url} />
+                                </IonCol>
+
+                                <IonCol>
+                                    <h3>{item.data.origin_name}</h3>
+                                </IonCol>
+                            </IonRow>
+                        </IonCard>
+                    ))}
+<<<<<<< Updated upstream
+                </IonGrid> */}
+
+
+                
+=======
                 </IonGrid> 
 			<IonButton onClick={() => setShowMyOrganizationsModal(false)}>
 				Close
@@ -464,37 +579,8 @@ const Profile: React.FC = () => {
 			</IonButton>
 		</IonModal>
 
-				
 
-
-		
-      
-				
-				
-
-                {/* <h2>My Organization</h2>
-                <IonGrid style={{ marginTop: "-20px" }}>
-                    {orgData.map((item, index) => (
-                        <IonCard
-                            key={index}
-                        >
-                            <IonRow
-                                style={{ width: "200px", height: "70px"}} 
-                                className="ion-text-center"
-                            >
-                                <IonCol size="4">
-                                    <img src={item.data.logo_url} />
-                                </IonCol>
-                                <IonCol>
-                                    <h3>{item.data.origin_name}</h3>
-                                </IonCol>
-                            </IonRow>
-                        </IonCard>
-                    ))}
-                </IonGrid> */}
-
-
-                
+>>>>>>> Stashed changes
                 
             </IonCard>
       </IonContent>
