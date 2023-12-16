@@ -74,7 +74,17 @@ const OrganizationDetail: React.FC = () => {
 
 			try {
 				const orgSnapshot = await getDoc(orgRef);
-				const orgData = orgSnapshot.data() as OrgData;
+
+				const orgData: OrgData = {
+					origin_id: orgSnapshot.id,
+					logo_url: orgSnapshot.data()?.logo_url,
+					origin_name: orgSnapshot.data()?.origin_name,
+					description: orgSnapshot.data()?.description,
+					announcement: orgSnapshot.data()?.announcement,
+					type: orgSnapshot.data()?.type,
+					admin: orgSnapshot.data()?.admin,
+					members: orgSnapshot.data()?.members,
+				};
 				setOrganizationData(orgData);
 
 				// console.log(orgData);
@@ -166,16 +176,7 @@ const OrganizationDetail: React.FC = () => {
 							right: "0px",
 						}}
 					>
-						<IonButton
-							style={{
-								backgroundColor: "#ffffff",
-								padding: "5px 0px",
-								borderRadius: "100%",
-							}}
-						>
-							<IonIcon color="primary" icon={searchOutline} size="large" />
-						</IonButton>
-						<Link to="/editorganization/:id">
+						<Link to={`/nav/editorganization/${organizationData?.origin_id}`}>
 							<IonButton
 								style={{
 									backgroundColor: "#ffffff",
@@ -261,9 +262,9 @@ const OrganizationDetail: React.FC = () => {
 
 				<h2>Members</h2>
 
-				{organizationData?.members.map((member) => {
+				{organizationData?.members.map((member, index) => {
 					return (
-						<IonItem lines="none">
+						<IonItem key={index} lines="none">
 							<IonAvatar slot="start">
 								<img src="./images/profiles/bella.jpg" />
 							</IonAvatar>

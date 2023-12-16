@@ -21,6 +21,7 @@ import {
 	where,
 	getDocs,
 	Timestamp,
+	updateDoc,
 } from "firebase/firestore";
 
 export const firebaseConfig = {
@@ -227,6 +228,24 @@ export async function addOrganization(
 	// 	admin: [email],
 	// 	members: [email],
 	// });
+}
+
+export async function updateOrganization(
+	origin_id: string,
+	logo_url: string | null,
+	origin_name: string,
+	description: string,
+	announcement: string,
+	type: string[],
+) {
+	
+	await updateDoc(doc(db, "organizations", origin_id), {
+		logo_url: logo_url,
+		origin_name: origin_name,
+		description: description,
+		announcement: announcement,
+		type: [type],
+	});	
 }
 
 export async function requestJoinOrganization(
