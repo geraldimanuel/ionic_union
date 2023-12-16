@@ -1,316 +1,467 @@
-import React, { useState } from "react";
 import {
-    IonContent,
-    IonIcon,
-    IonGrid,
-    IonRow,
-    IonPage,
-    IonText,
-    IonButton,
-    IonButtons,
-    IonToast,
+  IonButton,
+  IonContent,
+  IonHeader,
+  IonInput,
+  IonPage,
+  IonIcon,
+  IonTitle,
+  IonText,
+  IonBadge,
+  IonToolbar,
+  IonItem,
+  IonLabel,
+  IonCard,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonToast,
+  IonButtons,
 } from "@ionic/react";
-import "./Home.css";
-import { useParams, useHistory } from 'react-router-dom';
 import {
-    calendarClearOutline,
-    locationOutline,
-    arrowBackOutline,
-    settingsOutline,
+  arrowBackOutline,
+  settingsOutline,
+  calendarClearOutline,
+  locationOutline,
+  appsOutline,
 } from "ionicons/icons";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { useEffect, useState } from "react";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  getDoc,
+  doc,
+  updateDoc,
+  arrayUnion,
+  onSnapshot,
+} from "firebase/firestore";
+import { useHistory, useParams } from "react-router-dom";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { addEvent, db } from "../firebaseConfig";
 
-interface Event {
-    id: number;
-    date: Date;
-    title: string;
-    time: string;
-    location: string;
-    organization: string;
+interface EventData {
+  id: string;
+  data: {
+    banner_url: string;
+    date: string;
     description: string;
-    type: string;
-    user: string;
+    heading: string;
+    location: string;
+    origin: string;
+    created_by: string;
+    category: string;
+  };
 }
 
-interface LoggedUser {
-    user: string;
-    attended: number[];
-    declined: number[];
+interface OrgData {
+  id: string;
+  data: {
+    logo_url: string;
+    origin_name: string;
+  };
 }
 
-const eventData: Event[] = [
-    {
-        id: 1,
-        date: new Date('2023-12-04T14:00:00'),
-        title: 'Talkshow B-Land 2023',
-        time: '14.00 - 16.00 WIB',
-        location: 'Lecture Hall',
-        organization: 'HMIF',
-        description: 'Exciting talkshow about B-Land in 2023.',
-        type: 'Talkshow',
-        user: 'Kesya',
-    },
-    {
-        id: 2,
-        date: new Date('2023-12-05T10:00:00'),
-        title: 'Workshop XYZ',
-        time: '10.00 - 12.00 WIB',
-        location: 'Conference Room',
-        organization: 'UMN Radio',
-        description: 'Interactive workshop on XYZ topics.',
-        type: 'Workshop',
-        user: 'Geri',
-    },
-    {
-        id: 3,
-        date: new Date('2023-12-06T18:00:00'),
-        title: 'Seminar ABC',
-        time: '18.00 - 20.00 WIB',
-        location: 'Auditorium',
-        organization: 'Im\'Kom',
-        description: 'In-depth seminar discussing ABC subjects.',
-        type: 'Seminar',
-        user: 'Bella',
-    },
-];
-
+interface UserData {
+  id: string;
+  data: {
+    email: string;
+    event_attended: string[];
+    event_declined: string[];
+    name: string;
+    origin: string;
+    profile_picture: string;
+    role: string;
+  };
+}
 
 const EventDetail: React.FC = () => {
-    const { id } = useParams<{ id: string }>();
-    const eventId = parseInt(id, 10);
-    const history = useHistory();
-    const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const { id } = useParams<{ id: string }>();
+  const history = useHistory();
+  const [eventData, setEventData] = useState<EventData[]>([]);
+  const [userData, setUserData] = useState<UserData[]>([]);
+  const [orgData, setOrgData] = useState<OrgData[]>([]);
+  const [orgThisData, setOrgThisData] = useState<OrgData[]>([]);
+  const [loggedUserEvent, setLoggedUserEvent] = useState<string[]>([]);
+  const [isIdInLoggedUserEvent, setIsIdInLoggedUserEvent] =
+    useState<boolean>(false);
+  const [isCurrentUserEventCreator, setIsCurrentUserEventCreator] =
+    useState<boolean>(false);
+  const auth = getAuth();
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-    const event = eventData.find((e) => e.id === eventId);
+  useEffect(() => {
+    const q = query(
+      collection(db, "users"),
+      where("email", "==", auth.currentUser?.email)
+    );
 
-    const [loggedUser, setLoggedUser] = useState<LoggedUser>({
-        user: 'Kesya',
-        attended: [],
-        declined: [],
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const users: UserData[] = [];
+      querySnapshot.forEach((doc) => {
+        const userData: UserData = {
+          id: doc.id,
+          data: doc.data() as {
+            email: string;
+            event_attended: string[];
+            event_declined: string[];
+            name: string;
+            origin: string;
+            profile_picture: string;
+            role: string;
+          },
+        };
+        users.push(userData);
+      });
+
+      setUserData(users);
+      setLoggedUserEvent(
+        users[0].data.event_attended.concat(users[0].data.event_declined)
+      );
     });
 
-    const isCurrentUserEventCreator = event?.user === loggedUser.user;
+    return () => unsubscribe();
+  }, [db]);
 
-    if (!event) {
-        history.push('/home');
-        return null;
+  useEffect(() => {
+    const q = query(collection(db, "organizations"));
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const orgs: OrgData[] = [];
+      querySnapshot.forEach((doc) => {
+        const orgData: OrgData = {
+          id: doc.id,
+          data: doc.data() as {
+            origin_name: string;
+            logo_url: string;
+          },
+        };
+        orgs.push(orgData);
+      });
+
+      setOrgData(orgs);
+    });
+
+    return () => unsubscribe();
+  }, [db, eventData]);
+
+  useEffect(() => {
+    if (userData && userData.length > 0 && id) {
+      setIsIdInLoggedUserEvent(loggedUserEvent.includes(id));
+    } else {
+      setIsIdInLoggedUserEvent(false);
+    }
+  }, [userData, id]);
+
+  useEffect(() => {
+    async function fetchEventData() {
+      const origin = "your_origin_value";
+      const q = query(collection(db, "events"));
+
+      try {
+        const querySnapshot = await getDocs(q);
+        const events: any = [];
+        querySnapshot.forEach((doc) => {
+          events.push({ id: doc.id, data: doc.data() });
+        });
+
+        const filteredEvents = events.filter((event: any) =>
+          id.includes(event.id)
+        );
+
+        setEventData(filteredEvents);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     }
 
-    const goBack = () => {
-        window.history.back();
-    };
+    fetchEventData();
+  }, [loggedUserEvent]);
 
-    const handleSettingsClick = () => {
-        history.push(`/events/edit/${id}`);
-    };
+  useEffect(() => {
+    if (eventData && eventData.length > 0) {
+      const filteredOrgData = orgData.filter(
+        (org) => org.id === eventData[0].data.origin
+      );
+      setOrgThisData(filteredOrgData);
+      const createdBy = eventData[0].data.created_by;
+      setIsCurrentUserEventCreator(createdBy === auth.currentUser?.displayName);
+    } else {
+      setIsCurrentUserEventCreator(false);
+    }
+  }, [eventData, orgData]);
 
-    const formatDate = (date: Date) => {
-        const options: Intl.DateTimeFormatOptions = {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-        };
-        return date.toLocaleDateString(undefined, options);
-    };
+  const goBack = () => {
+    window.history.back();
+  };
 
-    const handleAttend = () => {
-        setLoggedUser((prev) => ({ ...prev, attended: [...prev.attended, eventId] }));
-        setToastMessage('You confirmed to attend this event');
-    };
+  const handleSettingsClick = () => {
+    history.push(`/events/edit/${id}`);
+  };
 
-    const handleDecline = () => {
-        setLoggedUser((prev) => ({ ...prev, declined: [...prev.declined, eventId] }));
-        setToastMessage("You confirmed you can't attend this event");
-    };
+  const handleAttend = () => {
+    // setLoggedUser((prev) => ({ ...prev, attended: [...prev.attended, eventId] }));
+    setToastMessage("You confirmed to attend this event");
+  };
 
-    const hasAttendedOrDeclined = loggedUser.attended.includes(eventId) || loggedUser.declined.includes(eventId);
+  const handleDecline = () => {
+    // setLoggedUser((prev) => ({ ...prev, declined: [...prev.declined, eventId] }));
+    setToastMessage("You confirmed you can't attend this event");
+  };
 
+  const handleAttendClick = async (eventId: string) => {
+    try {
+      const userDocRef = doc(db, "users", userData[0].id);
+  
+      await updateDoc(userDocRef, {
+        event_attended: arrayUnion(eventId),
+      });
+  
+      setUserData(userData.map(user => ({
+        ...user,
+        data: {
+          ...user.data,
+          event_attended: Array.isArray(user.data.event_attended)
+            ? user.data.event_attended
+            : [user.data.event_attended as string],
+        },
+      }))); 
+
+      setToastMessage("You confirmed to attend this event");   
+  
+    } catch (error) {
+      console.error("Error updating user data:", error);
+    }
+  };
+  
+  const handleDeclinedClick = async (eventId: string) => {
+    try {
+      const userDocRef = doc(db, "users", userData[0].id);
+  
+      await updateDoc(userDocRef, {
+        event_declined: arrayUnion(eventId),
+      });
+  
+      setUserData(userData.map(user => ({
+        ...user,
+        data: {
+          ...user.data,
+          event_declined: Array.isArray(user.data.event_declined)
+            ? user.data.event_declined
+            : [user.data.event_declined as string],
+        },
+      })));     
+      
+      setToastMessage("You confirmed you can't attend this event");
+  
+    } catch (error) {
+      console.error("Error updating user data:", error);
+    }
+  };
+
+  if (eventData && eventData.length > 0)
     return (
-        <IonPage>
-            <IonContent fullscreen>
-                <div style={{ width: "100%", height: "300px" }}>
-                    <div style={{ position: "relative" }}>
-                        <img
-                            src="./images/cardImage.png"
-                            style={{ width: "100%", height: "250px", objectFit: "cover" }}
-                        />
-                        <div
-                            style={{
-                                position: "absolute",
-                                top: 0,
-                                left: 0,
-                                width: "100%",
-                                height: "100%",
-                                background:
-                                    "linear-gradient(0deg, rgba(18,84,136,1) 0%, rgba(55,202,236,0) 100%)",
-                            }}
-                        ></div>
-                    </div>
-                    <div
-                        style={{
-                            position: "absolute",
-                            top: 10,
-                            width: "100%",
-                            display: "flex",
-                            justifyContent: "space-between",
-                            padding: "0px 15px",
-                            boxSizing: "border-box",
-                        }}
-                    >
-                        <IonButtons style={{ marginTop: '10px' }}>
-                            <IonButton
-                                style={{
-                                    backgroundColor: '#095797',
-                                    padding: '5px 0px',
-                                    borderRadius: '100%',
-                                }}
-                                onClick={goBack}
-                            >
-                                <IonIcon color="light" icon={arrowBackOutline} size="large" />
-                            </IonButton>
-                        </IonButtons>
+      <IonPage>
+        <IonContent fullscreen>
+          <div style={{ width: "100%", height: "300px" }}>
+            <div style={{ position: "relative" }}>
+              <img
+                src={eventData[0].data.banner_url}
+                style={{ width: "100%", height: "250px", objectFit: "cover" }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  background:
+                    "linear-gradient(0deg, rgba(18,84,136,1) 0%, rgba(55,202,236,0) 100%)",
+                }}
+              ></div>
+            </div>
+            <div
+              style={{
+                position: "absolute",
+                top: 10,
+                width: "100%",
+                display: "flex",
+                justifyContent: "space-between",
+                padding: "0px 15px",
+                boxSizing: "border-box",
+              }}
+            >
+              <IonButtons style={{ marginTop: "10px" }}>
+                <IonButton
+                  style={{
+                    backgroundColor: "#095797",
+                    padding: "5px 0px",
+                    borderRadius: "100%",
+                  }}
+                  onClick={goBack}
+                >
+                  <IonIcon color="light" icon={arrowBackOutline} size="large" />
+                </IonButton>
+              </IonButtons>
 
-                        {isCurrentUserEventCreator && (
-                            <IonButtons>
-                                <IonButton
-                                    style={{
-                                        backgroundColor: '#095797',
-                                        padding: '5px 0px',
-                                        borderRadius: '100%',
-                                    }}
-                                    onClick={handleSettingsClick}
-                                >
-                                    <IonIcon color="light" icon={settingsOutline} size="large" />
-                                </IonButton>
-                            </IonButtons>
-                        )}
-                    </div>
-                    <div
-                        style={{
-                            position: "absolute",
-                            top: "160px",
-                            left: "25px",
-                            zIndex: "2",
-                            backgroundColor: "#2A93D5",
-                            width: "59px",
-                            height: "18px",
-                            borderRadius: "21px",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            marginBottom: "10px",
-                        }}
-                    >
-                        <IonText color="light" className="ion-text-center">
-                            <p className="small">
-                                <b>{event.type}</b>
-                            </p>
-                        </IonText>
-                    </div>
-                    <div
-                        style={{
-                            width: "100%",
-                            zIndex: "2",
-                            padding: "10px 25px",
-                            position: "absolute",
-                            top: "30px",
-                            marginTop: "130px",
-                        }}
-                    >
-                        <IonText color="light">
-                            <h1>{event.title}</h1>
-                        </IonText>
-                    </div>
-                </div>
-                <div style={{ padding: "0px 25px", marginTop: "-50px" }}>
-                    <IonText>
-                        <p>Organizations: </p>
-                    </IonText>
-                    <IonGrid style={{ display: "flex" }}>
-                        <IonRow className="ion-align-items-center ion-justify-content-center">
-                            <img src="./images/imkom.png" />
-                            <IonText style={{ marginLeft: "10px" }}>
-                                <p>{event.organization}</p>
-                            </IonText>
-                        </IonRow>
-                    </IonGrid>
-                    <IonText color="dark">
-                        <div
-                            style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                alignItems: "center",
-                                marginTop: "20px",
-                            }}
-                        >
-                            <IonIcon icon={calendarClearOutline} />{" "}
-                            <small style={{ marginLeft: "10px" }}>
-                                {formatDate(event.date)}
-                            </small>{" "}
-                            <br></br>
-                        </div>
-                        <div
-                            style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                alignItems: "center",
-                            }}
-                        >
-                            <IonIcon icon={locationOutline} />{" "}
-                            <small style={{ marginLeft: "10px" }}>
-                                {event.location}
-                            </small>
-                        </div>
-                    </IonText>
-                    <IonText>
-                        <p style={{ textAlign: "justify", marginTop: "20px" }}>
-                            {event.description}
-                        </p>
-                    </IonText>
-                    <div
-                        style={{
-                            marginTop: '10px',
-                            display: 'flex',
-                            flexDirection: 'row',
-                            gap: '40px',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            marginBottom: '15px',
-                        }}
-                    >
-                        {!hasAttendedOrDeclined ? (
-                            <>
-                                <IonButton
-                                    color="secondary"
-                                    style={{ borderRadius: '10px', width: '146px' }}
-                                    onClick={() => {
-                                        handleAttend();
-                                    }}
-                                >
-                                    Attend
-                                </IonButton>
-                                <IonButton
-                                    color="danger"
-                                    style={{ borderRadius: '10px', width: '146px' }}
-                                    onClick={() => {
-                                        handleDecline();
-                                    }}
-                                >
-                                    Decline
-                                </IonButton>
-                            </>
-                        ) : (
-                            <p>You already confirmed your attendance or declined this event. This event will shown on your home if you confirmed to attend.</p>
-                        )}
-                    </div>
-                </div>
-            </IonContent>
-            <IonToast
-                isOpen={!!toastMessage}
-                onDidDismiss={() => setToastMessage(null)}
-                message={toastMessage || ''}
-                duration={2000}
-            />
-        </IonPage>
+              {isCurrentUserEventCreator && (
+                <IonButtons>
+                  <IonButton
+                    style={{
+                      backgroundColor: "#095797",
+                      padding: "5px 0px",
+                      borderRadius: "100%",
+                    }}
+                    onClick={handleSettingsClick}
+                  >
+                    <IonIcon
+                      color="light"
+                      icon={settingsOutline}
+                      size="large"
+                    />
+                  </IonButton>
+                </IonButtons>
+              )}
+            </div>
+            <div
+              style={{
+                position: "absolute",
+                top: "160px",
+                left: "25px",
+                zIndex: "2",
+                backgroundColor: "#2A93D5",
+                width: "59px",
+                height: "18px",
+                borderRadius: "21px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                marginBottom: "10px",
+              }}
+            >
+              <IonText color="light" className="ion-text-center">
+                <p className="small">
+                  <b>{eventData[0].data.category}</b>
+                </p>
+              </IonText>
+            </div>
+            <div
+              style={{
+                width: "100%",
+                zIndex: "2",
+                padding: "10px 25px",
+                position: "absolute",
+                top: "30px",
+                marginTop: "130px",
+              }}
+            >
+              <IonText color="light">
+                <h1>{eventData[0].data.heading}</h1>
+              </IonText>
+            </div>
+          </div>
+          <div style={{ padding: "0px 25px", marginTop: "-50px" }}>
+            <IonText>
+              <p>Organizations: </p>
+            </IonText>
+            <IonGrid style={{ display: "flex" }}>
+              <IonRow className="ion-align-items-center ion-justify-content-center">
+                {orgThisData.length > 0 && (
+                  <img
+                    src={orgThisData[0].data.logo_url}
+                    alt="Organization Logo"
+                    width={60}
+                    height={60}
+                    style={{ borderRadius: "100%" }}
+                  />
+                )}
+                <IonText style={{ marginLeft: "10px" }}>
+                  <p>{eventData[0].data.origin}</p>
+                </IonText>
+              </IonRow>
+            </IonGrid>
+            <IonText color="dark">
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginTop: "20px",
+                }}
+              >
+                <IonIcon icon={calendarClearOutline} />{" "}
+                <small style={{ marginLeft: "10px" }}>
+                  {eventData[0].data.date}
+                </small>{" "}
+                <br></br>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <IonIcon icon={locationOutline} />{" "}
+                <small style={{ marginLeft: "10px" }}>
+                  {eventData[0].data.location}
+                </small>
+              </div>
+            </IonText>
+            <IonText>
+              <p style={{ textAlign: "justify", marginTop: "20px" }}>
+                {eventData[0].data.description}
+              </p>
+            </IonText>
+            <div
+              style={{
+                marginTop: "10px",
+                display: "flex",
+                flexDirection: "row",
+                gap: "40px",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: "15px",
+              }}
+            >
+              {!isIdInLoggedUserEvent ? (
+                <>
+                  <IonButton
+                    color="secondary"
+                    style={{ borderRadius: "10px", width: "146px" }}
+                    onClick={() => handleAttendClick(id)}
+                  >
+                    Attend
+                  </IonButton>
+                  <IonButton
+                    color="danger"
+                    style={{ borderRadius: "10px", width: "146px" }}
+                    onClick={() => handleDeclinedClick(id)}
+                  >
+                    Decline
+                  </IonButton>
+                </>
+              ) : (
+                <p>
+                  You already confirmed your attendance or declined this event.
+                  This event will shown on your home if you confirmed to attend.
+                </p>
+              )}
+            </div>
+          </div>
+        </IonContent>
+        <IonToast
+          isOpen={!!toastMessage}
+          onDidDismiss={() => setToastMessage(null)}
+          message={toastMessage || ""}
+          duration={2000}
+        />
+      </IonPage>
     );
 };
 

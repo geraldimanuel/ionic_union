@@ -58,11 +58,6 @@ interface UserData {
 	};
   }
 
-  // const updateUserData = async (userId: string, newData: { data: UserData['data'] }) => {
-	// const userDocRef = doc(db, "users", userId);
-	// await updateDoc(userDocRef, newData);
-  // };
-
 const Event: React.FC = () => {
   const history = useHistory();
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -72,7 +67,7 @@ const Event: React.FC = () => {
   const auth = getAuth();
 
   const handleCardClick = (eventId: string) => {
-    history.push(`/events/${eventId}`);
+    history.push(`events/${eventId}`);
   };
 
   const filteredEvents = eventData.filter((item) =>
@@ -241,7 +236,7 @@ const Event: React.FC = () => {
           <IonCard
             key={index}
             style={{ borderRadius: "10px", marginTop: "30px" }}
-            // onClick={() => handleCardClick(item.id)}
+            onClick={() => handleCardClick(item.id)}
           >
             <img
               src={item.data.banner_url}
