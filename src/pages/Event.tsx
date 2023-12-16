@@ -27,9 +27,10 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { useEffect, useState } from "react";
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../firebaseConfig";
+import { collection, getDocs, query, where, getDoc, doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { useHistory } from "react-router-dom";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { addEvent, db } from "../firebaseConfig";
 
 interface EventData {
   id: string;
@@ -44,10 +45,31 @@ interface EventData {
   };
 }
 
+interface UserData {
+	id: string;
+	data: {
+	  email: string;
+	  event_attended: string;
+	  event_declined: string;
+	  name: string;
+	  origin: string;
+	  profile_picture: string;
+	  role: string;
+	};
+  }
+
+//   const updateUserData = async (userId: string, newData: { data: UserData['data'] }) => {
+// 	const userDocRef = doc(db, "users", userId);
+// 	await updateDoc(userDocRef, newData);
+//   };
+
 const Event: React.FC = () => {
   const history = useHistory();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [eventData, setEventData] = useState<EventData[]>([]);
+  const [userData, setUserData] = useState<UserData[]>([]);
+  const auth = getAuth();
+  const logged_user_event = userData[0].data.event_attended.concat(userData[0].data.event_declined)
 
   const handleCardClick = (eventId: string) => {
     history.push(`/events/${eventId}`);
@@ -62,25 +84,47 @@ const Event: React.FC = () => {
   );
 
   useEffect(() => {
-    async function fetchEventData() {
-      const origin = "your_origin_value"; // Replace 'your_origin_value' with the actual value
-      const q = query(collection(db, "events"), where("origin", "==", "hmif"));
+    async function fetchUserData() {
+      const q = query(collection(db, "users"), where("email", "==", auth.currentUser?.email));
 
       try {
         const querySnapshot = await getDocs(q);
-        const events: any = [];
+        const users: any = [];
         querySnapshot.forEach((doc) => {
-          // Push each document's data to the events array
-          events.push({ id: doc.id, data: doc.data() });
+          users.push({ id: doc.id, data: doc.data() });
         });
-        setEventData(events); // Set the state with retrieved data
+        setUserData(users); 
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     }
+	
+    fetchUserData();
+  }, [db]);
 
-    fetchEventData();
-  }, [db]); // Make sure to specify dependencies or leave it empty if it's a one-time fetch
+  useEffect(() => {
+	async function fetchEventData() {
+	  const origin = "your_origin_value"; 
+	  const q = query(collection(db, "events"), where("status", "==", "Public"));
+  
+	  try {
+		const querySnapshot = await getDocs(q);
+		const events : any = [];
+		querySnapshot.forEach((doc) => {
+		  events.push({ id: doc.id, data: doc.data() });
+		});
+  
+		const filteredEvents = events.filter((event : any) => !logged_user_event.includes(event.id));
+  
+		setEventData(filteredEvents);
+	  } catch (error) {
+		console.error("Error fetching data:", error);
+	  }
+	}
+  
+	// Call the fetchEventData function
+	fetchEventData();
+  }, [logged_user_event]); // Add logged_user_event as a dependency to re-run the effect when it changes
 
   // Check if eventData is empty or undefined before accessing its properties
 
@@ -88,9 +132,20 @@ const Event: React.FC = () => {
     console.log(eventData);
   }
 
-  const handleAttendClick = () => {
-    console.log("Attend button clicked!");
-  };
+const handleAttendClick = async (eventId: string) => {
+  const updatedUserData = userData.map(user => ({
+    ...user,
+    data: {
+      ...user.data,
+      event_attended: arrayUnion(eventId),
+    },
+  }));
+
+  const currentUserData = updatedUserData[0];
+//   console.log(currentUserData)
+//   await updateUserData(currentUserData.id, { data: currentUserData.data });
+};
+
 
   const handleDeclineClick = () => {
     console.log("Decline button clicked!");
@@ -112,7 +167,7 @@ const Event: React.FC = () => {
       >
         <div style={{ textAlign: "right", marginTop: "70px" }}></div>
         <IonText color="light">
-          <p>Hello, Kesya!</p>
+          <p>Hello, {auth.currentUser?.displayName}!</p>
           <h1
             style={{
               fontSize: "32px",
@@ -224,7 +279,7 @@ const Event: React.FC = () => {
                 <IonButton
                   color="secondary"
                   style={{ borderRadius: "10px", width: "146px" }}
-                  onClick={handleAttendClick}
+                  onClick={() => handleAttendClick(item.id)}
                 >
                   Attend
                 </IonButton>
