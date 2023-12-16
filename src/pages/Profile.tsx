@@ -30,8 +30,10 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { useEffect, useState } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../firebaseConfig";
+import { addMembers, db } from "../firebaseConfig";
 import { useHistory } from "react-router-dom";
+
+import { getAuth, signOut } from "firebase/auth";
 
 interface EventData {
 	id: string;
@@ -46,14 +48,12 @@ interface EventData {
 	};
 }
 
+const auth = getAuth();
+
 const Profile: React.FC = () => {
 	const history = useHistory();
 	const [searchTerm, setSearchTerm] = useState<string>("");
 	const [eventData, setEventData] = useState<EventData[]>([]);
-
-	const handleCardClick = (eventId: string) => {
-		history.push(`/events/1`);
-	};
 
 	const filteredEvents = eventData.filter((item) =>
 		Object.values(item.data).some(
@@ -86,8 +86,8 @@ const Profile: React.FC = () => {
 
 	// Check if eventData is empty or undefined before accessing its properties
 
-	function printData() {
-		console.log(eventData);
+	function addMembersFunction() {
+		addMembers("FaMlbVeEAGBoAQic6h4C", "coba@gmail.com");
 	}
 
 	return (
@@ -136,7 +136,18 @@ const Profile: React.FC = () => {
 				</IonItem>
 			</div>
 
-			<IonContent style={{ top: "40px" }} className="ion-padding"></IonContent>
+			<IonContent style={{ top: "40px" }} className="ion-padding">
+				<IonButton
+					color={"danger"}
+					onClick={() => {
+						signOut(auth);
+						history.push("/login");
+					}}
+				>
+					SignOut
+				</IonButton>
+				<IonButton onClick={addMembersFunction}>Add Member</IonButton>
+			</IonContent>
 		</IonPage>
 	);
 };

@@ -43,9 +43,7 @@ const CreateOrganization: React.FC = () => {
 
 	const addData = (url: string) => {
 		if (name && category.length > 0) {
-			addOrganization("test", url, name, description, announcement, category, [
-				"admin",
-			]);
+			addOrganization(url, name, description, announcement, category);
 
 			history.push("/home");
 			setShowToast(true);

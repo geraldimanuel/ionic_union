@@ -24,7 +24,7 @@ import Home from "./LandingPage";
 import EventDetail from "./EventDetail";
 import EditOrganization from "./EditOrganization";
 import { useHistory } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Profile from "./Profile";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import Login from "./Login";
@@ -32,24 +32,9 @@ import Calendar from "./Calendar";
 
 const Tabs: React.FC = () => {
 	const history = useHistory();
-	const [isClicked, setIsClicked] = useState<boolean>(false);
-
-	const handleClick = () => {
-		setIsClicked(true);
-		history.push("/organization");
-	};
-
-	// const [isLogged, setIsLogged] = useState<boolean>(false);
 	const auth = getAuth();
 
-	onAuthStateChanged(auth, (user) => {
-		if (user) {
-			console.log("User is signed in");
-			// setIsLogged(true);
-		}
-		// User is signed out
-		else console.log("User is not signed in");
-	});
+	const [isClicked, setIsClicked] = useState<boolean>(false);
 
 	const tabStyle = {
 		borderRadius: "20px",
@@ -63,17 +48,28 @@ const Tabs: React.FC = () => {
 			"radial-gradient(circle, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
 		boxshadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
 	};
+
+	useEffect(() => {
+		const unsubscribe = onAuthStateChanged(auth, (user) => {
+			if (user) {
+				console.log("User is signed in");
+			} else {
+				console.log("User is not signed in");
+				history.push("/login");
+			}
+		});
+
+		return () => {
+			// Clean up the listener to avoid memory leaks
+			unsubscribe();
+		};
+	}, []);
+
 	return (
 		<IonTabs>
 			<IonRouterOutlet>
 				<Redirect exact path="/nav" to="/nav/home" />
 				<Route exact path="/nav/home" component={Home} />
-				<Route
-					exact
-					path="/nav/createorganization"
-					component={CreateOrganization}
-				/>
-				<Route exact path="/nav/createevent" component={CreateEvent} />
 
 				<Route exact path="/nav/organization" component={Organization} />
 				<Route path="/nav/organization/:id" component={OrganizationDetail} />
@@ -93,7 +89,7 @@ const Tabs: React.FC = () => {
 
 			<IonTabBar slot="bottom" className="container" style={tabStyle}>
 				<IonTabButton
-					tab="events"
+					tab="organization"
 					href="/nav/organization"
 					style={{
 						background: "transparent",
@@ -107,7 +103,6 @@ const Tabs: React.FC = () => {
 								? "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)"
 								: "white",
 						}}
-						onClick={handleClick}
 					/>
 					<IonText
 						style={{
@@ -115,7 +110,6 @@ const Tabs: React.FC = () => {
 								? "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)"
 								: "white",
 						}}
-						onClick={handleClick}
 					>
 						<b>Organization</b>
 					</IonText>

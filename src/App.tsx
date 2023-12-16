@@ -39,6 +39,8 @@ import Calendar from "./pages/Calendar";
 import Profile from "./pages/Profile";
 import { useState } from "react";
 
+import { useHistory } from "react-router-dom";
+
 setupIonicReact();
 
 const App: React.FC = () => {
@@ -46,7 +48,7 @@ const App: React.FC = () => {
 		<IonApp>
 			<IonReactRouter>
 				<IonRouterOutlet id="main">
-					<Redirect exact from="/" to="/nav" />
+					<Redirect exact from="/" to="/login" />
 					<Route path="/nav" component={Tabs} />
 
 					<Route path="/register" component={Register} />
@@ -59,6 +61,13 @@ const App: React.FC = () => {
 					{/* <Route path="/organization/:id" component={OrganizationDetail} /> */}
 					{/* <Route  path="/editorganization" component={EditOrganization} /> */}
 					{/* <Route path="/calendar" component={Calendar} /> */}
+
+					<Route
+						exact
+						path="/nav/createorganization"
+						component={CreateOrganization}
+					/>
+					<Route exact path="/nav/createevent" component={CreateEvent} />
 				</IonRouterOutlet>
 			</IonReactRouter>
 		</IonApp>
