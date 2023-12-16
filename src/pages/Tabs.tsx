@@ -121,7 +121,7 @@ const Tabs: React.FC = () => {
 			>
 				<IonTabButton
 					tab="organization"
-					href="/organization"
+					href="/nav/organization"
 					style={{
 						background: "transparent",
 					}}
@@ -131,13 +131,13 @@ const Tabs: React.FC = () => {
 						size="small"
 						style={{
 							color:
-								location.pathname === "/organization" ? "#75e8ff" : "white",
+								location.pathname === "/nav/organization" ? "#75e8ff" : "white",
 						}}
 					/>
 					<IonText
 						style={{
 							color:
-								location.pathname === "/organization" ? "#75e8ff" : "white",
+								location.pathname === "/nav/organization" ? "#75e8ff" : "white",
 						}}
 					>
 						<b>Organization</b>
@@ -145,7 +145,7 @@ const Tabs: React.FC = () => {
 				</IonTabButton>
 				<IonTabButton
 					tab="events"
-					href="/events"
+					href="/nav/events"
 					style={{
 						background: "transparent",
 					}}
@@ -154,13 +154,13 @@ const Tabs: React.FC = () => {
 						icon={albums}
 						size="small"
 						style={{
-							color: location.pathname === "/events" ? "#75e8ff" : "white",
+							color: location.pathname === "/nav/events" ? "#75e8ff" : "white",
 						}}
 					/>
 					<IonText
 						color="light"
 						style={{
-							color: location.pathname === "/events" ? "#75e8ff" : "white",
+							color: location.pathname === "/nav/events" ? "#75e8ff" : "white",
 						}}
 					>
 						<b>Events</b>
@@ -168,7 +168,7 @@ const Tabs: React.FC = () => {
 				</IonTabButton>
 				<IonTabButton
 					tab="home"
-					href="/home"
+					href="/nav/home"
 					style={{
 						background: "transparent",
 						marginBottom: "10px",
@@ -189,7 +189,7 @@ const Tabs: React.FC = () => {
 				</IonTabButton>
 				<IonTabButton
 					tab="calendar"
-					href="/calendar"
+					href="/nav/calendar"
 					style={{
 						background: "transparent",
 					}}
@@ -198,13 +198,15 @@ const Tabs: React.FC = () => {
 						icon={calendar}
 						size="small"
 						style={{
-							color: location.pathname === "/calendar" ? "#75e8ff" : "white",
+							color:
+								location.pathname === "/nav/calendar" ? "#75e8ff" : "white",
 						}}
 					/>
 					<IonText
 						color="light"
 						style={{
-							color: location.pathname === "/calendar" ? "#75e8ff" : "white",
+							color:
+								location.pathname === "/nav/calendar" ? "#75e8ff" : "white",
 						}}
 					>
 						<b>Calendar</b>
@@ -212,7 +214,7 @@ const Tabs: React.FC = () => {
 				</IonTabButton>
 				<IonTabButton
 					tab="profile"
-					href="/profile"
+					href="/nav/profile"
 					style={{
 						background: "transparent",
 					}}
@@ -221,13 +223,13 @@ const Tabs: React.FC = () => {
 						icon={person}
 						size="small"
 						style={{
-							color: location.pathname === "/profile" ? "#75e8ff" : "white",
+							color: location.pathname === "/nav/profile" ? "#75e8ff" : "white",
 						}}
 					/>
 					<IonText
 						color="light"
 						style={{
-							color: location.pathname === "/profile" ? "#75e8ff" : "white",
+							color: location.pathname === "/nav/profile" ? "#75e8ff" : "white",
 						}}
 					>
 						<b>Profile</b>

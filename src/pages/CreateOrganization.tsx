@@ -40,12 +40,13 @@ const CreateOrganization: React.FC = () => {
 	const [showToast, setShowToast] = useState(false);
 	const [showToastCancel, setShowToastCancel] = useState(false);
 	const [fileName, setFileName] = useState("");
+	const [orgId, setOrgId] = useState("");
 
 	const addData = (url: string) => {
 		if (name && category.length > 0) {
 			addOrganization(url, name, description, announcement, category);
 
-			history.push("/home");
+			history.push("/nav/home");
 			setShowToast(true);
 		} else {
 			setShowToastCancel(true);
@@ -148,6 +149,15 @@ const CreateOrganization: React.FC = () => {
 							style={{ width: "100%", maxHeight: "300px", marginTop: "10px" }}
 						/>
 					)}
+					{/* <IonInput
+						label="Organization ID"
+						labelPlacement="floating"
+						fill="outline"
+						placeholder="Format: NAME-GEN (ex: HMIF-14)"
+						value={orgId}
+						onIonChange={(e) => setOrgId(e.detail.value!)}
+						style={{ marginTop: "10px" }}
+					/> */}
 					<IonInput
 						label="Name*"
 						labelPlacement="floating"

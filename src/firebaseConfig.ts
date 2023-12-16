@@ -216,6 +216,17 @@ export async function addOrganization(
 		admin: [email],
 		members: [email],
 	});
+
+	// await setDoc(doc(db, "organizations", origin_id), {
+	// 	origin_id: origin_id,
+	// 	logo_url: logo_url,
+	// 	origin_name: origin_name,
+	// 	description: description,
+	// 	announcement: announcement,
+	// 	type: type,
+	// 	admin: [email],
+	// 	members: [email],
+	// });
 }
 
 export async function requestJoinOrganization(
