@@ -27,7 +27,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { useEffect, useState } from "react";
-import { collection, getDocs, query, where, getDoc, doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { collection, getDocs, query, where, getDoc, doc, updateDoc, arrayUnion, onSnapshot } from "firebase/firestore";
 import { useHistory } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { addEvent, db } from "../firebaseConfig";
@@ -49,8 +49,8 @@ interface UserData {
 	id: string;
 	data: {
 	  email: string;
-	  event_attended: string;
-	  event_declined: string;
+	  event_attended: string[];
+	  event_declined: string[];
 	  name: string;
 	  origin: string;
 	  profile_picture: string;
@@ -58,18 +58,18 @@ interface UserData {
 	};
   }
 
-//   const updateUserData = async (userId: string, newData: { data: UserData['data'] }) => {
-// 	const userDocRef = doc(db, "users", userId);
-// 	await updateDoc(userDocRef, newData);
-//   };
+  // const updateUserData = async (userId: string, newData: { data: UserData['data'] }) => {
+	// const userDocRef = doc(db, "users", userId);
+	// await updateDoc(userDocRef, newData);
+  // };
 
 const Event: React.FC = () => {
   const history = useHistory();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [eventData, setEventData] = useState<EventData[]>([]);
   const [userData, setUserData] = useState<UserData[]>([]);
+  const [loggedUserEvent, setLoggedUserEvent] = useState<string[]>([]);
   const auth = getAuth();
-  const logged_user_event = userData[0].data.event_attended.concat(userData[0].data.event_declined)
 
   const handleCardClick = (eventId: string) => {
     history.push(`/events/${eventId}`);
@@ -84,23 +84,32 @@ const Event: React.FC = () => {
   );
 
   useEffect(() => {
-    async function fetchUserData() {
-      const q = query(collection(db, "users"), where("email", "==", auth.currentUser?.email));
-
-      try {
-        const querySnapshot = await getDocs(q);
-        const users: any = [];
-        querySnapshot.forEach((doc) => {
-          users.push({ id: doc.id, data: doc.data() });
-        });
-        setUserData(users); 
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    }
-	
-    fetchUserData();
-  }, [db]);
+    const q = query(collection(db, "users"), where("email", "==", auth.currentUser?.email));
+  
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const users: UserData[] = [];
+      querySnapshot.forEach((doc) => {
+        const userData: UserData = {
+          id: doc.id,
+          data: doc.data() as {
+            email: string;
+            event_attended: string[];
+            event_declined: string[];
+            name: string;
+            origin: string;
+            profile_picture: string;
+            role: string;
+          },
+        };
+        users.push(userData);
+      });
+  
+      setUserData(users);
+      setLoggedUserEvent(users[0].data.event_attended.concat(users[0].data.event_declined));
+    });
+  
+    return () => unsubscribe();
+  }, [db]);  
 
   useEffect(() => {
 	async function fetchEventData() {
@@ -114,7 +123,7 @@ const Event: React.FC = () => {
 		  events.push({ id: doc.id, data: doc.data() });
 		});
   
-		const filteredEvents = events.filter((event : any) => !logged_user_event.includes(event.id));
+		const filteredEvents = events.filter((event : any) => !loggedUserEvent.includes(event.id));
   
 		setEventData(filteredEvents);
 	  } catch (error) {
@@ -122,33 +131,57 @@ const Event: React.FC = () => {
 	  }
 	}
   
-	// Call the fetchEventData function
 	fetchEventData();
-  }, [logged_user_event]); // Add logged_user_event as a dependency to re-run the effect when it changes
-
-  // Check if eventData is empty or undefined before accessing its properties
+  }, [loggedUserEvent]); 
 
   function printData() {
     console.log(eventData);
   }
 
-const handleAttendClick = async (eventId: string) => {
-  const updatedUserData = userData.map(user => ({
-    ...user,
-    data: {
-      ...user.data,
-      event_attended: arrayUnion(eventId),
-    },
-  }));
-
-  const currentUserData = updatedUserData[0];
-//   console.log(currentUserData)
-//   await updateUserData(currentUserData.id, { data: currentUserData.data });
-};
-
-
-  const handleDeclineClick = () => {
-    console.log("Decline button clicked!");
+  const handleAttendClick = async (eventId: string) => {
+    try {
+      const userDocRef = doc(db, "users", userData[0].id);
+  
+      await updateDoc(userDocRef, {
+        event_attended: arrayUnion(eventId),
+      });
+  
+      setUserData(userData.map(user => ({
+        ...user,
+        data: {
+          ...user.data,
+          event_attended: Array.isArray(user.data.event_attended)
+            ? user.data.event_attended
+            : [user.data.event_attended as string],
+        },
+      })));      
+  
+    } catch (error) {
+      console.error("Error updating user data:", error);
+    }
+  };
+  
+  const handleDeclinedClick = async (eventId: string) => {
+    try {
+      const userDocRef = doc(db, "users", userData[0].id);
+  
+      await updateDoc(userDocRef, {
+        event_declined: arrayUnion(eventId),
+      });
+  
+      setUserData(userData.map(user => ({
+        ...user,
+        data: {
+          ...user.data,
+          event_declined: Array.isArray(user.data.event_declined)
+            ? user.data.event_declined
+            : [user.data.event_declined as string],
+        },
+      })));      
+  
+    } catch (error) {
+      console.error("Error updating user data:", error);
+    }
   };
 
   return (
@@ -208,7 +241,7 @@ const handleAttendClick = async (eventId: string) => {
           <IonCard
             key={index}
             style={{ borderRadius: "10px", marginTop: "30px" }}
-            onClick={() => handleCardClick(item.id)}
+            // onClick={() => handleCardClick(item.id)}
           >
             <img
               src={item.data.banner_url}
@@ -286,7 +319,7 @@ const handleAttendClick = async (eventId: string) => {
                 <IonButton
                   color="danger"
                   style={{ borderRadius: "10px", width: "146px" }}
-                  onClick={handleDeclineClick}
+                  onClick={() => handleDeclinedClick(item.id)}
                 >
                   Decline
                 </IonButton>
