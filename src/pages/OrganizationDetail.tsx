@@ -24,7 +24,8 @@ import {
 	arrowBackOutline,
 	searchOutline,
 } from "ionicons/icons";
-import { useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
+import { pencil } from "ionicons/icons";
 
 const OrganizationDetail: React.FC = () => {
 	const history = useHistory();
@@ -66,6 +67,36 @@ const OrganizationDetail: React.FC = () => {
 							<IonIcon color="primary" icon={arrowBackOutline} size="large" />
 						</IonButton>
 					</IonButtons>
+					<IonButtons
+						style={{
+							position: "absolute",
+							top: "10px",
+							marginTop: "10px",
+							right: "0px",
+						}}
+					>
+						<IonButton
+							style={{
+								backgroundColor: "#ffffff",
+								padding: "5px 0px",
+								borderRadius: "100%",
+							}}
+						>
+							<IonIcon color="primary" icon={searchOutline} size="large" />
+						</IonButton>
+						<Link to="/editorganization/:id">
+							<IonButton
+								style={{
+									backgroundColor: "#ffffff",
+									padding: "5px 0px",
+									borderRadius: "100%",
+								}}
+							>
+								<IonIcon color="primary" icon={pencil} size="large" />
+							</IonButton>
+						</Link>
+					</IonButtons>
+
 					<div
 						style={{
 							position: "absolute",

@@ -23,12 +23,15 @@ import CreateOrganization from "./CreateOrganization";
 import Home from "./LandingPage";
 import EventDetail from "./EventDetail";
 import EditOrganization from "./EditOrganization";
+import EditEvent from "./EditEvent";
 import { useHistory } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Profile from "./Profile";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import Login from "./Login";
 import Calendar from "./Calendar";
+import EditProfile from "./EditProfile";
+import Request from "./Request";
 
 const Tabs: React.FC = () => {
 	const history = useHistory();
@@ -82,15 +85,43 @@ const Tabs: React.FC = () => {
 					path="/nav/editorganization"
 					component={EditOrganization}
 				/>
+
+				<Route
+					exact
+					path="/nav/editorganization/:id"
+					component={EditOrganization}
+				/>
+
 				<Route exact path="/nav/profile" component={Profile} />
 				<Route exact path="/nav/calendar" component={Calendar} />
 				<Route exact path="/nav/profile" component={Profile} />
+
+				<Route exact path="/events/edit/:id" component={EditEvent} />
+				<Route exact path="/request" component={Request} />
+				<Route exact path="/editprofile" component={EditProfile} />
 			</IonRouterOutlet>
 
-			<IonTabBar slot="bottom" className="container" style={tabStyle}>
+			<IonTabBar
+				slot="bottom"
+				style={{
+					borderRadius: "20px",
+					position: "floating",
+					padding: "10px",
+					bottom: "20px",
+					marginBottom: "15px",
+					marginLeft: "10px",
+					marginRight: "10px",
+					background:
+						"radial-gradient(circle, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
+					boxshadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+					display: "flex",
+					justifyContent: "space-around",
+					width: "auto",
+				}}
+			>
 				<IonTabButton
 					tab="organization"
-					href="/nav/organization"
+					href="/organization"
 					style={{
 						background: "transparent",
 					}}
@@ -99,16 +130,14 @@ const Tabs: React.FC = () => {
 						icon={people}
 						size="small"
 						style={{
-							color: isClicked
-								? "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)"
-								: "white",
+							color:
+								location.pathname === "/organization" ? "#75e8ff" : "white",
 						}}
 					/>
 					<IonText
 						style={{
-							color: isClicked
-								? "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)"
-								: "white",
+							color:
+								location.pathname === "/organization" ? "#75e8ff" : "white",
 						}}
 					>
 						<b>Organization</b>
@@ -116,19 +145,30 @@ const Tabs: React.FC = () => {
 				</IonTabButton>
 				<IonTabButton
 					tab="events"
-					href="/nav/events"
+					href="/events"
 					style={{
 						background: "transparent",
 					}}
 				>
-					<IonIcon icon={albums} color="light" size="small" />
-					<IonText color="light">
+					<IonIcon
+						icon={albums}
+						size="small"
+						style={{
+							color: location.pathname === "/events" ? "#75e8ff" : "white",
+						}}
+					/>
+					<IonText
+						color="light"
+						style={{
+							color: location.pathname === "/events" ? "#75e8ff" : "white",
+						}}
+					>
 						<b>Events</b>
 					</IonText>
 				</IonTabButton>
 				<IonTabButton
 					tab="home"
-					href="/nav/home"
+					href="/home"
 					style={{
 						background: "transparent",
 						marginBottom: "10px",
@@ -149,25 +189,47 @@ const Tabs: React.FC = () => {
 				</IonTabButton>
 				<IonTabButton
 					tab="calendar"
-					href="/nav/calendar"
+					href="/calendar"
 					style={{
 						background: "transparent",
 					}}
 				>
-					<IonIcon icon={calendar} color="light" size="small" />
-					<IonText color="light">
+					<IonIcon
+						icon={calendar}
+						size="small"
+						style={{
+							color: location.pathname === "/calendar" ? "#75e8ff" : "white",
+						}}
+					/>
+					<IonText
+						color="light"
+						style={{
+							color: location.pathname === "/calendar" ? "#75e8ff" : "white",
+						}}
+					>
 						<b>Calendar</b>
 					</IonText>
 				</IonTabButton>
 				<IonTabButton
 					tab="profile"
-					href="/nav/profile"
+					href="/profile"
 					style={{
 						background: "transparent",
 					}}
 				>
-					<IonIcon icon={person} color="light" size="small" />
-					<IonText color="light">
+					<IonIcon
+						icon={person}
+						size="small"
+						style={{
+							color: location.pathname === "/profile" ? "#75e8ff" : "white",
+						}}
+					/>
+					<IonText
+						color="light"
+						style={{
+							color: location.pathname === "/profile" ? "#75e8ff" : "white",
+						}}
+					>
 						<b>Profile</b>
 					</IonText>
 				</IonTabButton>

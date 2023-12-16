@@ -40,6 +40,8 @@ import Profile from "./pages/Profile";
 import { useState } from "react";
 
 import { useHistory } from "react-router-dom";
+import EditProfile from "./pages/EditProfile";
+import Request from "./pages/Request";
 
 setupIonicReact();
 

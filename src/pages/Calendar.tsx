@@ -1,7 +1,71 @@
-import { IonBadge, IonButton, IonCard, IonCardHeader, IonCol, IonContent, IonDatetime, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonPage, IonRow, IonText } from "@ionic/react";
-import { notificationsOutline, searchOutline } from "ionicons/icons";
+import { IonBadge, IonButton, IonCard, IonCardHeader, IonCardSubtitle, IonCol, IonContent, IonDatetime, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonPage, IonRow, IonText } from "@ionic/react";
+import { calendarClearOutline, locationOutline, notificationsOutline, searchOutline } from "ionicons/icons";
+import { useEffect, useState } from "react";
+import { useHistory } from "react-router";
+import { format, parseISO } from "date-fns";
+
+interface EventData {
+	id: string;
+	data: {
+		banner_url: string;
+		date: string;
+		description: string;
+		heading: string;
+		location: string;
+		origin: string;
+		// Add other properties as per your actual data structure
+	};
+}
 
 const Calendar: React.FC = () => {
+    const history = useHistory();
+    const [selectedDate, setSelectedDate] = useState<string>("");
+  	const [eventData, setEventData] = useState<EventData[]>([
+        {
+            id: "1",
+            data: {
+                banner_url: "./images/imkom.png",
+                date: "2023-12-08",
+                description: "join yuk!",
+                heading: "imkom",
+                location: "function hall",
+                origin: "Im'Kom",
+            },
+        },
+        {
+            id: "2",
+            data: {
+                banner_url: "./images/radio.png",
+                date: "2023-12-20",
+                description: "final stage",
+                heading: "umn redio",
+                location: "ruang",
+                origin: "UMN Radio",
+            },
+        },
+    ]);
+
+    useEffect(() => {
+        console.log("selectedDate: ", selectedDate);
+    }, [selectedDate]);
+
+    const filteredEvents = eventData.filter((item) =>
+		Object.values(item.data).some(
+		(value) =>
+			typeof value === "string" &&
+			value.toLowerCase().includes(selectedDate.toLowerCase())
+		)
+	);
+
+    const handleCardClick = (eventId: string) => {
+		history.push(`/events/1`);
+	};
+
+    const dateChanged = (value: any) => {
+        let formattedDate = format(parseISO(value), "yyyy-MM-dd");
+        setSelectedDate(formattedDate);
+    };
+
     return (
         <IonPage style={{backgroundColor:"DBDBDB"}}>
             {/* Header untuk dicuri */}
@@ -47,11 +111,194 @@ const Calendar: React.FC = () => {
             </div>
 
             <IonContent className="ion-padding">
-                <IonDatetime 
-                style={{marginTop: "20px"}}
-                // dayValues utk highlight hari yang ada eventnya
-                >
-                </IonDatetime>
+                <IonCard>
+                    <IonDatetime 
+                    presentation="date"
+                    onIonChange={(e) => dateChanged(e.detail.value)}
+                    // dayValues utk highlight hari yang ada eventnya
+                    >
+                    </IonDatetime>
+                </IonCard>
+                
+                { selectedDate === "" ? 
+                eventData.map((item, index) => (
+						<IonCard
+							key={index}
+							style={{ borderRadius: "10px", marginTop:"30px" }}
+							onClick={() => handleCardClick(item.id)}
+						>
+						<img
+							src="../images/cardImage.png"
+							style={{ position: "relative", zIndex: "1" }}
+						/>
+						<div
+							style={{
+								zIndex: "2",
+								top: "-150px",
+								left: "10px",
+								backgroundColor: "#2a93d5",
+								height: "22px",
+								width: "64px",
+								borderRadius: "10px",
+								position: "relative",
+								display: "flex",
+								alignItems: "center",
+								justifyContent: "center",
+							}}
+						>
+							<IonText
+								color="light"
+								style={{ textAlign: "center", paddingBottom: "5px" }}
+							>
+								<small>
+									<b>Concert</b>
+								</small>
+							</IonText>
+						</div>
+						<div style={{ padding: "0px 10px", marginTop: "-30px" }}>
+							<IonText color="dark">
+								<h2>{item.data.heading}</h2>
+								<div
+									style={{
+										display: "flex",
+										flexDirection: "row",
+										alignItems: "center",
+									}}
+								>
+									<IonIcon icon={calendarClearOutline} />{" "}
+									<small style={{ marginLeft: "10px" }}>{item.data.date}</small>{" "}
+									<br></br>
+								</div>
+								<div
+									style={{
+										display: "flex",
+										flexDirection: "row",
+										alignItems: "center",
+									}}
+								>
+									<IonIcon icon={locationOutline} />{" "}
+									<small style={{ marginLeft: "10px" }}>
+										{item.data.location}
+									</small>
+								</div>
+							</IonText>
+							<div
+								style={{
+									marginTop: "10px",
+									display: "flex",
+									flexDirection: "row",
+									gap: "40px",
+									alignItems: "center",
+									justifyContent: "center",
+									marginBottom: "15px",
+								}}
+							>
+								<IonButton
+									color="secondary"
+									style={{ borderRadius: "10px", width: "146px" }}
+								>
+									Attend
+								</IonButton>
+								<IonButton
+									color="danger"
+									style={{ borderRadius: "10px", width: "146px" }}
+								>
+									Decline
+								</IonButton>
+							</div>
+						</div>
+					</IonCard>
+				))
+                :
+                filteredEvents.map((item, index) => (
+                    <IonCard
+                        key={index}
+                        style={{ borderRadius: "10px", marginTop:"30px" }}
+                        onClick={() => handleCardClick(item.id)}
+                    >
+                    <img
+                        src="../images/cardImage.png"
+                        style={{ position: "relative", zIndex: "1" }}
+                    />
+                    <div
+                        style={{
+                            zIndex: "2",
+                            top: "-150px",
+                            left: "10px",
+                            backgroundColor: "#2a93d5",
+                            height: "22px",
+                            width: "64px",
+                            borderRadius: "10px",
+                            position: "relative",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                        }}
+                    >
+                        <IonText
+                            color="light"
+                            style={{ textAlign: "center", paddingBottom: "5px" }}
+                        >
+                            <small>
+                                <b>Concert</b>
+                            </small>
+                        </IonText>
+                    </div>
+                    <div style={{ padding: "0px 10px", marginTop: "-30px" }}>
+                        <IonText color="dark">
+                            <h2>{item.data.heading}</h2>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                }}
+                            >
+                                <IonIcon icon={calendarClearOutline} />{" "}
+                                <small style={{ marginLeft: "10px" }}>{item.data.date}</small>{" "}
+                                <br></br>
+                            </div>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                }}
+                            >
+                                <IonIcon icon={locationOutline} />{" "}
+                                <small style={{ marginLeft: "10px" }}>
+                                    {item.data.location}
+                                </small>
+                            </div>
+                        </IonText>
+                        <div
+                            style={{
+                                marginTop: "10px",
+                                display: "flex",
+                                flexDirection: "row",
+                                gap: "40px",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                marginBottom: "15px",
+                            }}
+                        >
+                            <IonButton
+                                color="secondary"
+                                style={{ borderRadius: "10px", width: "146px" }}
+                            >
+                                Attend
+                            </IonButton>
+                            <IonButton
+                                color="danger"
+                                style={{ borderRadius: "10px", width: "146px" }}
+                            >
+                                Decline
+                            </IonButton>
+                        </div>
+                    </div>
+                </IonCard>
+                ))
+            }
             </IonContent>
         </IonPage>
     );
