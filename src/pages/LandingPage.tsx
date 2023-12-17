@@ -15,38 +15,44 @@ import {
 	IonGrid,
 	IonRow,
 	IonCol,
-	IonRouterLink
-  } from "@ionic/react";
-  import {
-	add,
-	locationOutline,
-	calendarNumberOutline,
-  } from "ionicons/icons";
-  import "swiper/css";
-  import "swiper/css/navigation";
-  import "swiper/css/pagination";
-  import { useEffect, useState } from "react";
-  import { collection, getDocs, query, where, getDoc, doc, updateDoc, arrayUnion, onSnapshot } from "firebase/firestore";
-  import { useHistory } from "react-router-dom";
-  import { getAuth, onAuthStateChanged } from "firebase/auth";
-  import { addEvent, db } from "../firebaseConfig";
-  
-  interface EventData {
+	IonRouterLink,
+} from "@ionic/react";
+import { add, locationOutline, calendarNumberOutline } from "ionicons/icons";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { useEffect, useState } from "react";
+import {
+	collection,
+	getDocs,
+	query,
+	where,
+	getDoc,
+	doc,
+	updateDoc,
+	arrayUnion,
+	onSnapshot,
+} from "firebase/firestore";
+import { useHistory } from "react-router-dom";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { addEvent, db } from "../firebaseConfig";
+
+interface EventData {
 	id: string;
 	data: {
-	  banner_url: string;
-	  date: string;
-	  description: string;
-	  heading: string;
-	  location: string;
-	  origin: string;
-	  // Add other properties as per your actual data structure
+		banner_url: string;
+		date: string;
+		description: string;
+		heading: string;
+		location: string;
+		origin: string;
+		// Add other properties as per your actual data structure
 	};
-  }
-  
-  interface UserData {
-	  id: string;
-	  data: {
+}
+
+interface UserData {
+	id: string;
+	data: {
 		email: string;
 		event_attended: string[];
 		event_declined: string[];
@@ -54,63 +60,120 @@ import {
 		origin: string;
 		profile_picture: string;
 		role: string;
-	  };
-	}
-  
-  const Home: React.FC = () => {
+	};
+}
+
+const Home: React.FC = () => {
 	const [eventData, setEventData] = useState<EventData[]>([]);
 	const [userData, setUserData] = useState<UserData[]>([]);
 	const [loggedUserEvent, setLoggedUserEvent] = useState<string[]>([]);
 	const history = useHistory();
 	const auth = getAuth();
-  
-	useEffect(() => {
-		const userQuery = query(collection(db, "users"), where("email", "==", auth.currentUser?.email));
-		const userUnsubscribe = onSnapshot(userQuery, (userQuerySnapshot) => {
-		  const users: UserData[] = [];
-		  userQuerySnapshot.forEach((userDoc) => {
-			const userData: UserData = {
-			  id: userDoc.id,
-			  data: userDoc.data() as {
-				email: string;
-				event_attended: string[];
-				event_declined: string[];
-				name: string;
-				origin: string;
-				profile_picture: string;
-				role: string;
-			  },
-			};
-			users.push(userData);
-		  });
-	  
-		  setUserData(users);
-		  setLoggedUserEvent(users[0].data.event_attended.concat(users[0].data.event_declined));
-		});
-	  
-		const eventQuery = query(collection(db, "events"), where("status", "==", "Public"));
-		const eventUnsubscribe = onSnapshot(eventQuery, (eventQuerySnapshot) => {
-		  const events: any = [];
-		  eventQuerySnapshot.forEach((eventDoc) => {
-			events.push({ id: eventDoc.id, data: eventDoc.data() });
-		  });
-	  
-		  const filteredEvents = events.filter((event: any) => loggedUserEvent.includes(event.id));
-		  setEventData(filteredEvents);
-		});
-	  
-		return () => {
-		  userUnsubscribe();
-		  eventUnsubscribe();
-		};
-	  }, [db, history]);	
 
-	  useEffect(() => {
-		const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
-		});
-	
-		return () => unsubscribeAuth();
-	  }, [auth]);
+	// useEffect(() => {
+	// 	const userQuery = query(collection(db, "users"), where("email", "==", auth.currentUser?.email));
+	// 	const userUnsubscribe = onSnapshot(userQuery, (userQuerySnapshot) => {
+	// 	  const users: UserData[] = [];
+	// 	  userQuerySnapshot.forEach((userDoc) => {
+	// 		const userData: UserData = {
+	// 		  id: userDoc.id,
+	// 		  data: userDoc.data() as {
+	// 			email: string;
+	// 			event_attended: string[];
+	// 			event_declined: string[];
+	// 			name: string;
+	// 			origin: string;
+	// 			profile_picture: string;
+	// 			role: string;
+	// 		  },
+	// 		};
+	// 		users.push(userData);
+	// 	  });
+
+	// 	  setUserData(users);
+	// 	  setLoggedUserEvent(users[0].data.event_attended.concat(users[0].data.event_declined));
+	// 	});
+
+	// 	const eventQuery = query(collection(db, "events"), where("status", "==", "Public"));
+	// 	const eventUnsubscribe = onSnapshot(eventQuery, (eventQuerySnapshot) => {
+	// 	  const events: any = [];
+	// 	  eventQuerySnapshot.forEach((eventDoc) => {
+	// 		events.push({ id: eventDoc.id, data: eventDoc.data() });
+	// 	  });
+
+	// 	  const filteredEvents = events.filter((event: any) => loggedUserEvent.includes(event.id));
+	// 	  setEventData(filteredEvents);
+	// 	});
+
+	// 	return () => {
+	// 	  userUnsubscribe();
+	// 	  eventUnsubscribe();
+	// 	};
+	//   }, [db, history]);
+
+	//   useEffect(() => {
+	// 	const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+	// 	});
+
+	// 	return () => unsubscribeAuth();
+	//   }, [auth]);
+
+	useEffect(() => {
+		const fetchUserData = async () => {
+			try {
+				const userQuery = query(
+					collection(db, "users"),
+					where("email", "==", auth.currentUser?.email)
+				);
+				const userQuerySnapshot = await getDocs(userQuery);
+				const users: UserData[] = [];
+
+				userQuerySnapshot.forEach((userDoc) => {
+					const userData: UserData = {
+						id: userDoc.id,
+						data: userDoc.data() as {
+							email: string;
+							event_attended: string[];
+							event_declined: string[];
+							name: string;
+							origin: string;
+							profile_picture: string;
+							role: string;
+						},
+					};
+					users.push(userData);
+				});
+
+				setUserData(users);
+				if (users.length > 0) {
+					const loggedUserEvent = users[0].data.event_attended.concat(
+						users[0].data.event_declined
+					);
+					setLoggedUserEvent(loggedUserEvent);
+
+					const eventQuery = query(
+						collection(db, "events"),
+						where("status", "==", "Public")
+					);
+					const eventQuerySnapshot = await getDocs(eventQuery);
+					const events: any[] = [];
+
+					eventQuerySnapshot.forEach((eventDoc) => {
+						events.push({ id: eventDoc.id, data: eventDoc.data() });
+					});
+
+					const filteredEvents = events.filter((event) =>
+						loggedUserEvent.includes(event.id)
+					);
+					setEventData(filteredEvents);
+				}
+			} catch (error) {
+				console.error("Error fetching data:", error);
+			}
+		};
+
+		fetchUserData();
+	}, [eventData]);
 
 	return (
 		<IonPage style={{ backgroundColor: "DBDBDB" }}>
@@ -178,8 +241,11 @@ import {
 					</h2>
 				</IonText>
 				{eventData.length > 0 ? (
-					eventData.map((event : any) => (
-						<IonRouterLink key={event.id} routerLink={`/nav/events/${event.id}`}>
+					eventData.map((event: any) => (
+						<IonRouterLink
+							key={event.id}
+							routerLink={`/nav/events/${event.id}`}
+						>
 							<IonCard>
 								<IonGrid>
 									<IonRow>
@@ -190,7 +256,9 @@ import {
 										</IonCol>
 										<IonCol>
 											<IonRow>
-												<h3 style={{ marginLeft: "5px" }}>{event.data.heading}</h3>
+												<h3 style={{ marginLeft: "5px" }}>
+													{event.data.heading}
+												</h3>
 											</IonRow>
 											<IonRow>
 												<IonCol size="1">
