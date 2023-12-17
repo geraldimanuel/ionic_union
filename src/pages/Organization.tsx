@@ -1,21 +1,37 @@
-import { IonBadge, IonButton, IonCard, IonCardHeader, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonPage, IonRow, IonText } from "@ionic/react";
+import {
+	IonBadge,
+	IonButton,
+	IonCard,
+	IonCardHeader,
+	IonCol,
+	IonContent,
+	IonGrid,
+	IonHeader,
+	IonIcon,
+	IonInput,
+	IonItem,
+	IonLabel,
+	IonPage,
+	IonRow,
+	IonText,
+} from "@ionic/react";
 import { query, collection, where, getDocs } from "firebase/firestore";
 import { notificationsOutline, searchOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
-import { useHistory } from 'react-router-dom';
+import { useHistory } from "react-router-dom";
 import { db } from "../firebaseConfig";
 import { tr } from "date-fns/locale";
 import { getAuth } from "firebase/auth";
 
 interface OrgData {
-	id: string;
-	data: {
-		logo_url: string;
-		description: string;
-        announcement: string;
-		origin_name: string;
-		// Add other properties as per your actual data structure
-	};
+	origin_id: string;
+	logo_url: string;
+	origin_name: string;
+	description: string;
+	announcement: string;
+	type: string;
+	admin: string[];
+	member: string[];
 }
 
 const Organization: React.FC = () => {
@@ -30,34 +46,42 @@ const Organization: React.FC = () => {
 		history.push(`/nav/organization/${orgId}`);
 	};
 
-	const filteredOrgs = orgData.filter((item) =>
-		Object.values(item.data).some(
-		(value) =>
-			typeof value === "string" &&
-			value.toLowerCase().includes(searchTerm.toLowerCase())
-		)
-	);
+	// const filteredOrgs = orgData.filter((item) =>
+	// 	Object.values(item.data).some(
+	// 		(value) =>
+	// 			typeof value === "string" &&
+	// 			value.toLowerCase().includes(searchTerm.toLowerCase())
+	// 	)
+	// );
 
 	useEffect(() => {
 		async function fetchOrganizationData() {
-			const origin = "your_origin_value"; // Replace 'your_origin_value' with the actual value
-			const getOrgs = query(collection(db, "organizations"), where("origin", "==", "hmif"));
+			const q = query(collection(db, "organizations"));
 
 			try {
-				const querySnapshot = await getDocs(getOrgs);
-				const orgs: any = [];
+				const querySnapshot = await getDocs(q);
+				const orgData: OrgData[] = [];
 				querySnapshot.forEach((doc) => {
-					// Push each document's data to the events array
-					orgs.push({ id: doc.id, data: doc.data() });
+					// map one by one
+					orgData.push({
+						origin_id: doc.id,
+						logo_url: doc.data().logo_url,
+						origin_name: doc.data().origin_name,
+						description: doc.data().description,
+						announcement: doc.data().announcement,
+						type: doc.data().type,
+						admin: doc.data().admin,
+						member: doc.data().member,
+					});
 				});
-				setOrgData(orgs); // Set the state with retrieved data
+				setOrgData(orgData);
 			} catch (error) {
-				console.error("Error fetching data:", error);
+				console.log(error);
 			}
 		}
 
-        // fetchOrganizationData(); masih kosong
-	}, [db]); 
+		fetchOrganizationData();
+	}, [db]);
 
 	useEffect(() => {
 		// get all organizations data where logged user in member array
@@ -97,17 +121,21 @@ const Organization: React.FC = () => {
 		console.log(orgData);
 	}
 
-    return (
-        <IonPage style={{backgroundColor:"DBDBDB"}}>
-			<div style={{
-                background:"linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)", 
-                height:"261px", 
-                borderRadius:"0px 0px 32px 32px",
-                padding:"10px 25px",
-                position:"relative",
-                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)"}}>
-                    <div style={{ textAlign: "right", marginTop:"70px" }}>
-                    </div>
+	return (
+		<IonPage style={{ backgroundColor: "DBDBDB" }}>
+			{/* Header untuk dicuri */}
+			<div
+				style={{
+					background:
+						"linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
+					height: "261px",
+					borderRadius: "0px 0px 32px 32px",
+					padding: "10px 25px",
+					position: "relative",
+					boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+				}}
+			>
+				<div style={{ textAlign: "right", marginTop: "70px" }}></div>
 				<IonText color="light">
 					<p>Hello, Bella!</p>
 					<h1
@@ -162,29 +190,32 @@ const Organization: React.FC = () => {
 					))}
 				</IonItem>
 
-                <IonGrid>
-                    {filteredOrgs.map((item, index) => (
-                        <IonCard 
-                            key={index}
-                            onClick={() => handleCardClick(item.id)}
-                            style={{ height: "125px"}}
-                        >
-                            <IonRow className="ion-text-center" style={{ marginTop: "30px" }}>
-                                <IonCol size="4">
-                                    <img src={item.data.logo_url} />
-                                </IonCol>
-                                <IonCol size="4">
-                                    <h3>{item.data.origin_name}</h3>
-                                </IonCol>
-                            </IonRow>
-                        </IonCard>
-                        ))
-                    }
-                </IonGrid>
-            </IonContent>
-        </IonPage>
-    );
-}
+				<h2>Organizations</h2>
+				<IonItem lines="none" className="catWrapper">
+					<IonButton
+						onClick={() => printData()}
+						// color="isClicked() ? 'secondary' : 'primary'"
+						color="secondary"
+						className="catItem"
+					>
+						<small className="catText">All</small>
+					</IonButton>
+					<IonButton className="catItem">
+						<small className="catText">Himpunan</small>
+					</IonButton>
+					<IonButton className="catItem">
+						<small className="catText">Media Kampus</small>
+					</IonButton>
+					<IonButton className="catItem">
+						<small className="catText">UKM Olahraga</small>
+					</IonButton>
+					<IonButton className="catItem">
+						<small className="catText">UKM Seni</small>
+					</IonButton>
+					<IonButton className="catItem">
+						<small className="catText">UKM Seni</small>
+					</IonButton>
+				</IonItem>
 
 				<IonGrid>
 					{orgData.map((item, index) => (
