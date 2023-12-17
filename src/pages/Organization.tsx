@@ -137,7 +137,7 @@ const Organization: React.FC = () => {
 			>
 				<div style={{ textAlign: "right", marginTop: "70px" }}></div>
 				<IonText color="light">
-					<p>Hello, Bella!</p>
+					<p>Hello, {auth.currentUser?.displayName}!</p>
 					<h1
 						style={{
 							fontSize: "32px",
