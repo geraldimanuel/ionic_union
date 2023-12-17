@@ -6,94 +6,99 @@ import { Link } from "react-router-dom";
 
 
 interface User {
-    id: number;
-    name: string;
     email: string;
-    password: string;
-    confirmPassword: string;
+    event_attended: string[];
+    event_declined: string[];
+    name: string;
+    origin: string[];
     profile_picture: string;
 }
 
 const EditProfile: React.FC = () => {
 
-   const [user, setUser] = useState<User>({
-        id: 1,
-        name: "Bella",
-        email: "bella@gmail",
-        password: "123",
-        confirmPassword: "123",
-        profile_picture: "./images/profiles/bella.jpg",
-    });
-
     const [image, setImage] = useState<File>();
     const [imagePreview, setImagePreview] = useState<string>();
     const [name, setName] = useState<string>("");
     const [email, setEmail] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
-    const [confirmPassword, setConfirmPassword] = useState<string>("");
 
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>();
 
     const history = useHistory();
 
+    const goBack = () => {
+        window.history.back();
 
-    useEffect(() => {
-        const user = localStorage.getItem("user");
-        if (user) {
-            setUser(JSON.parse(user));
-        }
-        setLoading(false);
-    }, []);
-
-    const handleImageChange = (e: any) => {
-        const file = e.target.files[0];
-        setImage(file);
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setImagePreview(reader.result as string);
-        };
-        reader.readAsDataURL(file);
-    };
-
-    const handleSubmit = () => {
-        const data = new FormData();
-        data.append("name", name);
-        data.append("email", email);
-        data.append("password", password);
-        data.append("confirmPassword", confirmPassword);
-        data.append("profile_picture", image as Blob);
-
-        fetch("http://localhost:5000/users", {
-            method: "POST",
-            body: data,
-        })
-            .then((res) => res.json())
-            .then((res) => {
-                if (res.error) {
-                    setError(res.error);
-                } else {
-                    localStorage.setItem("user", JSON.stringify(res));
-                    history.push("/profile");
-                }
-            });
     }
 
+    const [user, setUser] = useState<User>({
+		email: "bellass@gmail.com",
+		event_attended: ["imkom", "umnradio"],
+		event_declined: [],
+		name: "bella",
+		origin: ["imkom", "umnradio"],
+		profile_picture: "./images/profiles/bella.jpg",
+	});
 
-    const goBack = () => {
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const selectedImage = e.target.files[0];
+            setImage(selectedImage);
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setImagePreview(e.target!.result as string);
+            };
+            reader.readAsDataURL(selectedImage);
+        }
+    };
+
+    const editProfile = async (
+        name: string,
+        email: string,
+        image?: File
+    ) => {
+        const formData = new FormData();
+        if (image) {
+            formData.append("image", image);
+        }
+        formData.append("name", name);
+        formData.append("email", email);
+
+        const response = await fetch("http://localhost:8100/nav/profile", {
+            method: "PUT",
+            body: formData,
+            credentials: "include",
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message || "Could not edit profile.");
+        }
+        return data.user;
+    }
+
+    const handleSubmit = async () => {
+        try {
+            setLoading(true);
+            setError(undefined);
+            const user = await editProfile(
+                name,
+                email,
+                image
+            );
+            setUser(user);
+            setLoading(false);
+            history.push("/profile");
+        } catch (error) {
+            // setError(error.message);
+            setLoading(false);
+        }
+        // history.push("nav/profile");
         window.history.back();
     };
 
-    useEffect(() => {
-        const selectedUser = localStorage.getItem("user");
-        if (selectedUser) {
-            setName(JSON.parse(selectedUser).name);
-            setEmail(JSON.parse(selectedUser).email);
-            setPassword(JSON.parse(selectedUser).password);
-            setConfirmPassword(JSON.parse(selectedUser).confirmPassword);
 
-        }
-    }, []);
+
 
 
 
@@ -228,7 +233,7 @@ const EditProfile: React.FC = () => {
                         onIonChange={(e) => setEmail(e.detail.value!)}
                     />
                     </IonItem>
-                    <IonItem style={{
+                    {/* <IonItem style={{
                         left:"5px",
                         borderRadius:"28px", 
                         height:"56px",
@@ -247,8 +252,8 @@ const EditProfile: React.FC = () => {
                         placeholder="Enter your password"
                         onIonChange={(e) => setPassword(e.detail.value!)}
                     />
-                    </IonItem>
-                    <IonItem style={{
+                    </IonItem> */}
+                    {/* <IonItem style={{
                         left:"5px",
                         borderRadius:"28px", 
                         height:"56px",
@@ -266,7 +271,7 @@ const EditProfile: React.FC = () => {
                         placeholder="Confirm your password"
                         onIonChange={(e) => setConfirmPassword(e.detail.value!)}
                     />
-                    </IonItem>
+                    </IonItem> */}
 
                     <IonButton
                     expand="block"
