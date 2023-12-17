@@ -29,6 +29,7 @@ import { db } from "../firebaseConfig";
 import { useHistory } from "react-router-dom";
 import { arrowBack, calendarClearOutline, chevronForwardOutline, locationOutline, pencilOutline, peopleOutline } from "ionicons/icons";
 import { Link } from "react-router-dom";
+import { getAuth } from "firebase/auth";
 
 interface User {
     email: string;
@@ -64,34 +65,65 @@ interface EventData {
 }
 
 const Profile: React.FC = () => {
-	const [user, setUser] = useState<User>({
-		email: "bellass@gmail.com",
-		event_attended: ["imkom", "umnradio"],
-		event_declined: [],
-		name: "bella",
-		origin: ["imkom", "umnradio"],
-		profile_picture: "./images/profiles/bella.jpg",
-	});
-	const [orgData, setOrgData] = useState<OrgData[]>([
-		{
-			id: "1",
-			data: {
-				logo_url: "./images/imkom.png",
-				description: "Lorem ipsum dolor sit amet",
-				announcement: "Lorem ipsum dolor sit amet",
-				origin_name: "Im'Kom",
-			},
-		},
-		{
-			id: "2",
-			data: {
-				logo_url: "./images/radio.png",
-				description: "Lorem ipsum dolor sit amet",
-				announcement: "Lorem ipsum dolor sit amet",
-				origin_name: "UMN Radio",
-			},
-		},
-	]);
+	// const [user, setUser] = useState<User>({
+	// 	email: "bellass@gmail.com",
+	// 	event_attended: ["imkom", "umnradio"],
+	// 	event_declined: [],
+	// 	name: "bella",
+	// 	origin: ["imkom", "umnradio"],
+	// 	profile_picture: "./images/profiles/bella.jpg",
+	// });
+
+	const auth = getAuth();
+	// const user = auth.currentUser;
+
+	// const [orgData, setOrgData] = useState<OrgData[]>([
+	// 	{
+	// 		id: "1",
+	// 		data: {
+	// 			logo_url: "./images/imkom.png",
+	// 			description: "Lorem ipsum dolor sit amet",
+	// 			announcement: "Lorem ipsum dolor sit amet",
+	// 			origin_name: "Im'Kom",
+	// 		},
+	// 	},
+	// 	{
+	// 		id: "2",
+	// 		data: {
+	// 			logo_url: "./images/radio.png",
+	// 			description: "Lorem ipsum dolor sit amet",
+	// 			announcement: "Lorem ipsum dolor sit amet",
+	// 			origin_name: "UMN Radio",
+	// 		},
+	// 	},
+	// ]);
+	const [orgData, setOrgData] = useState<OrgData[]>([]);
+
+	useEffect(() => {
+		async function fetchOrgData() {
+			const origin = "your_origin_value"; // Replace 'your_origin_value' with the actual value
+			const getOrgs = query(
+				collection(db, "organizations"),
+				where("origin", "==", "hmif")
+			);
+
+			try {
+				const querySnapshot = await getDocs(getOrgs);
+				const orgs: any = [];
+				querySnapshot.forEach((doc) => {
+					orgs.push({ id: doc.id, data: doc.data() });
+				});
+				setOrgData(orgs);
+			} catch (error) {
+				console.error("Error fetching data:", error);
+			}
+		}
+
+		fetchOrgData();
+	}
+	, [db]);
+
+
 	const [eventData, setEventData] = useState<EventData[]>([]);
 
 	useEffect(() => {
@@ -163,11 +195,14 @@ const Profile: React.FC = () => {
             }}
             >
                 <IonAvatar style={{ width: "100px", height: "100px", marginTop: "10px" }}>
-                    <img src={user.profile_picture} />
+                    {/* <img src={user.profile_picture} /> */}
+					{/* <img src={auth.currentUser?.photoURL} /> */}
                 </IonAvatar>
 
-                <h1>{user.name}</h1>
-                <h3>{user.email}</h3>
+                {/* <h1>{user.name}</h1> */}
+                {/* <h3>{user.email}</h3> */}
+				<h1>{auth.currentUser?.displayName}</h1>
+				<h3>{auth.currentUser?.email}</h3>
 			<div style={{
 			// display: "flex",
 			// flexDirection: 'column',
