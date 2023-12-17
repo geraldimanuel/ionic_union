@@ -58,100 +58,61 @@ import {
 	}
   
   const Home: React.FC = () => {
-	const history = useHistory();
-	const [searchTerm, setSearchTerm] = useState<string>("");
 	const [eventData, setEventData] = useState<EventData[]>([]);
 	const [userData, setUserData] = useState<UserData[]>([]);
 	const [loggedUserEvent, setLoggedUserEvent] = useState<string[]>([]);
+	const history = useHistory();
 	const auth = getAuth();
   
-	const handleCardClick = (eventId: string) => {
-	  history.push(`events/${eventId}`);
-	};
-  
-	const filteredEvents = eventData.filter((item) =>
-	  Object.values(item.data).some(
-		(value) =>
-		  typeof value === "string" &&
-		  value.toLowerCase().includes(searchTerm.toLowerCase())
-	  )
-	);
-  
 	useEffect(() => {
-	  const q = query(collection(db, "users"), where("email", "==", auth.currentUser?.email));
-	
-	  const unsubscribe = onSnapshot(q, (querySnapshot) => {
-		const users: UserData[] = [];
-		querySnapshot.forEach((doc) => {
-		  const userData: UserData = {
-			id: doc.id,
-			data: doc.data() as {
-			  email: string;
-			  event_attended: string[];
-			  event_declined: string[];
-			  name: string;
-			  origin: string;
-			  profile_picture: string;
-			  role: string;
-			},
-		  };
-		  users.push(userData);
+		const userQuery = query(collection(db, "users"), where("email", "==", auth.currentUser?.email));
+		const userUnsubscribe = onSnapshot(userQuery, (userQuerySnapshot) => {
+		  const users: UserData[] = [];
+		  userQuerySnapshot.forEach((userDoc) => {
+			const userData: UserData = {
+			  id: userDoc.id,
+			  data: userDoc.data() as {
+				email: string;
+				event_attended: string[];
+				event_declined: string[];
+				name: string;
+				origin: string;
+				profile_picture: string;
+				role: string;
+			  },
+			};
+			users.push(userData);
+		  });
+	  
+		  setUserData(users);
+		  setLoggedUserEvent(users[0].data.event_attended.concat(users[0].data.event_declined));
+		});
+	  
+		const eventQuery = query(collection(db, "events"), where("status", "==", "Public"));
+		const eventUnsubscribe = onSnapshot(eventQuery, (eventQuerySnapshot) => {
+		  const events: any = [];
+		  eventQuerySnapshot.forEach((eventDoc) => {
+			events.push({ id: eventDoc.id, data: eventDoc.data() });
+		  });
+	  
+		  const filteredEvents = events.filter((event: any) => loggedUserEvent.includes(event.id));
+		  setEventData(filteredEvents);
+		});
+	  
+		return () => {
+		  userUnsubscribe();
+		  eventUnsubscribe();
+		};
+	  }, [db, history]);	
+
+	  useEffect(() => {
+		const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
 		});
 	
-		setUserData(users);
-		setLoggedUserEvent(users[0].data.event_attended.concat(users[0].data.event_declined));
-	  });
-	
-	  return () => unsubscribe();
-	}, [db]);  
-  
-	useEffect(() => {
-	  async function fetchEventData() {
-		const origin = "your_origin_value"; 
-		const q = query(collection(db, "events"), where("status", "==", "Public"));
-	
-		try {
-		  const querySnapshot = await getDocs(q);
-		  const events : any = [];
-		  querySnapshot.forEach((doc) => {
-			events.push({ id: doc.id, data: doc.data() });
-		  });
-	
-		  const filteredEvents = events.filter((event : any) => loggedUserEvent.includes(event.id));
-	
-		  setEventData(filteredEvents);
-		} catch (error) {
-		  console.error("Error fetching data:", error);
-		}
-	  }
-	
-	  fetchEventData();
-	}, [loggedUserEvent]); 
+		return () => unsubscribeAuth();
+	  }, [auth]);
 
-
-	const handleClickEvent = () => {
-		history.push(`/nav/createevent`);
-	};
-
-	const handleClickOrganization = () => {
-		history.push(`/nav/createorganization`);
-	};
-
-	// const sortedEventData: EventData[] = eventData
-	// 	.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
-
-	const formatEventDate = (date: Date) => {
-		const options: Intl.DateTimeFormatOptions = {
-			day: "2-digit",
-			month: "short",
-			year: "2-digit",
-		};
-		return date.toLocaleDateString(undefined, options);
-	};
-
-	
-
-	if (eventData && eventData.length > 0) return (
+	return (
 		<IonPage style={{ backgroundColor: "DBDBDB" }}>
 			<div
 				style={{
