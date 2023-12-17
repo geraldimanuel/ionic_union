@@ -218,7 +218,19 @@ export async function requestJoinOrganization(
 	const user = auth.currentUser;
 	const email = user?.email;
 
-	await setDoc(doc(db, "requests"), {
+	// if same email already request to same organization then do nothing
+	const q = query(collection(db, "requests"), where("origin_id", "==", origin_id), where("email", "==", email));
+	const querySnapshot = await getDocs(q);
+	querySnapshot.forEach((doc) => {
+		console.log(doc.id, " => ", doc.data());
+	});
+
+	if (querySnapshot.size > 0) {
+		console.log("already requested");
+		return;
+	}
+
+	await addDoc(collection(db, "requests"), {
 		origin_id: origin_id,
 		email: email,
 	});

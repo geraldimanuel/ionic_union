@@ -23,6 +23,8 @@ import { db } from "../firebaseConfig";
 import { tr } from "date-fns/locale";
 import { getAuth } from "firebase/auth";
 
+import "./Home.css";
+
 interface OrgData {
 	origin_id: string;
 	logo_url: string;
@@ -175,6 +177,7 @@ const Organization: React.FC = () => {
 							key={index}
 							className="orgItem"
 							onClick={() => handleCardClick(item.origin_id)}
+							style={{ dropShadow: "0 4px 8px rgba(0, 0, 0, 0.1)" }}
 						>
 							<IonGrid className="orgGrid">
 								<IonRow>
@@ -225,7 +228,7 @@ const Organization: React.FC = () => {
 							style={{ height: "125px" }}
 							onClick={() => handleCardClick(item.origin_id)}
 						>
-							<IonRow className="ion-text-center" style={{ marginTop: "30px" }}>
+							<IonRow className="ion-text-center">
 								<IonCol size="4">
 									<img src={item.logo_url} />
 								</IonCol>

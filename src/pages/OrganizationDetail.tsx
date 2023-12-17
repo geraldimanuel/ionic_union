@@ -35,7 +35,8 @@ import {
 	query,
 	where,
 } from "firebase/firestore";
-import { db } from "../firebaseConfig";
+import { db, requestJoinOrganization } from "../firebaseConfig";
+import { getAuth } from "firebase/auth";
 
 interface OrgData {
 	origin_id: string;
@@ -63,6 +64,12 @@ const OrganizationDetail: React.FC = () => {
 	const history = useHistory();
 	const [organizationData, setOrganizationData] = useState<OrgData>();
 	const [eventData, setEventData] = useState<EventData[]>([]);
+	const auth = getAuth();
+	const [isRequest, setIsRequest] = useState(false);
+
+	const currentUser = auth.currentUser?.email;
+
+	const isMember = organizationData?.members.includes(currentUser!);
 
 	const { id } = useParams<{ id: string }>();
 
@@ -131,6 +138,11 @@ const OrganizationDetail: React.FC = () => {
 		fetchOrganizationsEvents();
 	}, []);
 
+	function requestHandler() {
+		requestJoinOrganization(id);
+		setIsRequest(true);
+	}
+
 	const goBack = () => {
 		window.history.back();
 	};
@@ -141,7 +153,7 @@ const OrganizationDetail: React.FC = () => {
 				style={{
 					background:
 						"linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
-					height: "261px",
+					height: "230px",
 					borderRadius: "0px 0px 32px 32px",
 					padding: "10px 25px",
 					position: "relative",
@@ -192,28 +204,35 @@ const OrganizationDetail: React.FC = () => {
 					<div
 						style={{
 							position: "absolute",
-							marginTop: "130px",
+							// marginTop: "130px",
+							top: "180px",
 							backgroundColor: "white",
 							borderRadius: "20%",
 							boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+							zIndex: 1,
 						}}
 					>
-						<img src={organizationData?.logo_url} style={{ width: "100px" }} />
+						<img
+							src={organizationData?.logo_url}
+							style={{ width: "100px", borderRadius: "20%" }}
+						/>
 					</div>
 				</div>
 				<IonText color="light">
 					<h1
 						style={{
-							fontSize: "28px",
-							marginTop: "190px",
-							marginLeft: "150px",
+							fontSize: "26px",
+							marginTop: "160px",
+							marginLeft: "130px",
 						}}
 					>
 						{organizationData?.origin_name}
 					</h1>
 				</IonText>
 			</div>
-
+			{!isMember && !isRequest && (
+				<IonButton onClick={requestHandler}>Request to Join</IonButton>
+			)}
 			<IonContent className="ion-padding">
 				<h2>Description</h2>
 				<p>{organizationData?.description}</p>

@@ -12,7 +12,7 @@ import {
 } from "@ionic/react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { loginWithGooglePopup, registerUser } from "../firebaseConfig";
+import { registerUser } from "../firebaseConfig";
 import { logoGoogle } from "ionicons/icons";
 
 const Register: React.FC = () => {
@@ -62,7 +62,13 @@ const Register: React.FC = () => {
 
 				<button onClick={loginWithGooglePopup}>Sign in With Google</button> */}
 
-				<div style={{ background: "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)", height: "100%" }}>
+				<div
+					style={{
+						background:
+							"linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
+						height: "100%",
+					}}
+				>
 					<div
 						style={{
 							borderRadius: "40px 40px 0px 0px",
