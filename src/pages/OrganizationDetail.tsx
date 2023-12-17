@@ -18,16 +18,109 @@ import {
 	IonText,
 } from "@ionic/react";
 import {
+	collection,
+	query,
+	where,
+	doc,
+	getDoc,
+	getDocs,
+} from "firebase/firestore";
+import {
 	calendarNumberOutline,
 	locationOutline,
 	notificationsOutline,
 	arrowBackOutline,
 	searchOutline,
+	pencil,
 } from "ionicons/icons";
-import { useHistory } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useHistory, useParams } from "react-router-dom";
+import { db } from "../firebaseConfig";
+import {} from "firebase/firestore";
+
+interface OrgData {
+	origin_id: string;
+	logo_url: string;
+	origin_name: string;
+	description: string;
+	announcement: string;
+	type: string;
+	admin: string[];
+	members: string[];
+}
+
+interface EventData {
+	banner_url: string;
+	date: string;
+	description: string;
+	heading: string;
+	location: string;
+	origin: string;
+	created_by: string;
+	category: string;
+}
 
 const OrganizationDetail: React.FC = () => {
 	const history = useHistory();
+	const [organizationData, setOrganizationData] = useState<OrgData>();
+	const [eventData, setEventData] = useState<EventData[]>([]);
+
+	const { id } = useParams<{ id: string }>();
+
+	useEffect(() => {
+		async function fetchClickedOrganizationData() {
+			// const orgRef = doc(db, "organizations", id);
+			// make ref where document id is equal to id
+			const orgRef = doc(db, "organizations", id);
+
+			try {
+				const orgSnapshot = await getDoc(orgRef);
+				const orgData = orgSnapshot.data() as OrgData;
+				setOrganizationData(orgData);
+
+				// console.log(orgData);
+			} catch (error) {
+				console.log(error);
+			}
+		}
+
+		fetchClickedOrganizationData();
+		console.log(organizationData);
+	}, []);
+
+	useEffect(() => {
+		async function fetchOrganizationsEvents() {
+			// get all events where origin is equal to organization id
+			const q = query(collection(db, "events"), where("origin", "==", id));
+
+			try {
+				const querySnapshot = await getDocs(q);
+				const tempEventData: EventData[] = [];
+
+				querySnapshot.forEach((doc) => {
+					const eventData: EventData = {
+						banner_url: doc.data().banner_url,
+						date: doc.data().date,
+						description: doc.data().description,
+						heading: doc.data().heading,
+						location: doc.data().location,
+						origin: doc.data().origin,
+						created_by: doc.data().created_by,
+						category: doc.data().category,
+					};
+					tempEventData.push(eventData);
+				});
+
+				setEventData(tempEventData);
+				// console.log(tempEventData);
+				console.log(eventData);
+			} catch (error) {
+				console.log(error);
+			}
+		}
+
+		fetchOrganizationsEvents();
+	}, []);
 
 	const goBack = () => {
 		window.history.back();
@@ -65,6 +158,36 @@ const OrganizationDetail: React.FC = () => {
 							<IonIcon color="primary" icon={arrowBackOutline} size="large" />
 						</IonButton>
 					</IonButtons>
+					<IonButtons
+						style={{
+							position: "absolute",
+							top: "10px",
+							marginTop: "10px",
+							right: "0px",
+						}}
+					>
+						<IonButton
+							style={{
+								backgroundColor: "#ffffff",
+								padding: "5px 0px",
+								borderRadius: "100%",
+							}}
+						>
+							<IonIcon color="primary" icon={searchOutline} size="large" />
+						</IonButton>
+						<Link to="/editorganization/:id">
+							<IonButton
+								style={{
+									backgroundColor: "#ffffff",
+									padding: "5px 0px",
+									borderRadius: "100%",
+								}}
+							>
+								<IonIcon color="primary" icon={pencil} size="large" />
+							</IonButton>
+						</Link>
+					</IonButtons>
+
 					<div
 						style={{
 							position: "absolute",
@@ -165,38 +288,19 @@ const OrganizationDetail: React.FC = () => {
 				</IonCard>
 
 				<h2>Members</h2>
-				<IonItem lines="none">
-					<IonAvatar slot="start">
-						<img src="./images/profiles/bella.jpg" />
-					</IonAvatar>
-					<IonText>
-						<p>Bella Saharani Sopyan (Admin)</p>
-					</IonText>
-				</IonItem>
-				<IonItem lines="none">
-					<IonAvatar slot="start">
-						<img src="./images/profiles/geri.jpg" />
-					</IonAvatar>
-					<IonText>
-						<p>Gerald Imanuel Wijaya</p>
-					</IonText>
-				</IonItem>
-				<IonItem lines="none">
-					<IonAvatar slot="start">
-						<img src="./images/profiles/kesya.jpg" />
-					</IonAvatar>
-					<IonText>
-						<p>Kesya Febriana Manampiring (Admin)</p>
-					</IonText>
-				</IonItem>
-				<IonItem lines="none">
-					<IonAvatar slot="start">
-						<img src="./images/profiles/steve.jpg" />
-					</IonAvatar>
-					<IonText>
-						<p>Steve Christian Wijaya</p>
-					</IonText>
-				</IonItem>
+
+				{organizationData?.members.map((member) => {
+					return (
+						<IonItem lines="none">
+							<IonAvatar slot="start">
+								<img src="./images/profiles/bella.jpg" />
+							</IonAvatar>
+							<IonText>
+								<p>{member}</p>
+							</IonText>
+						</IonItem>
+					);
+				})}
 			</IonContent>
 		</IonPage>
 	);

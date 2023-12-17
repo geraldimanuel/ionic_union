@@ -257,4 +257,56 @@ export async function addOrganization(
 		admin: admin,
 	});
 
+	// await setDoc(doc(db, "organizations", origin_id), {
+	// 	origin_id: origin_id,
+	// 	logo_url: logo_url,
+	// 	origin_name: origin_name,
+	// 	description: description,
+	// 	announcement: announcement,
+	// 	type: type,
+	// 	admin: [email],
+	// 	members: [email],
+	// });
+}
+
+export async function requestJoinOrganization(
+	origin_id: string,
+) {
+
+	const user = auth.currentUser;
+	const email = user?.email;
+
+	await setDoc(doc(db, "requests"), {
+		origin_id: origin_id,
+		email: email,
+	});
+}
+
+
+export async function addMembers(
+	origin_id: string,
+	email: string,
+) {
+	// append email to members array
+	const organizationRef = doc(db, "organizations", origin_id);
+	const organizationSnap = await getDoc(organizationRef);
+
+	if (organizationSnap.exists()) {
+		console.log("Document data:", organizationSnap.data());
+	} else {
+		console.log("data ilang bos");
+	}
+
+	const organization = organizationSnap.data();
+	const members = organization?.members;
+
+	if (members) {
+		members.push(email);
+	}
+
+	await setDoc(organizationRef, {
+		members: members,
+	}, { merge: true });
+
+	console.log("Document successfully written!");
 }
