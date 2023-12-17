@@ -36,11 +36,6 @@ const Tabs: React.FC = () => {
 	const history = useHistory();
 	const [isClicked, setIsClicked] = useState<boolean>(false);
 
-	const handleClick = () => {
-		setIsClicked(true);
-		history.push("/organization");
-	};
-
 	const auth = getAuth();
 
 	onAuthStateChanged(auth, (user) => {
@@ -95,7 +90,7 @@ const Tabs: React.FC = () => {
 
 			<IonTabBar slot="bottom" className="container" style={tabStyle}>
 				<IonTabButton
-					tab="events"
+					tab="organization"
 					href="/nav/organization"
 					style={{
 						background: "transparent",
@@ -109,7 +104,6 @@ const Tabs: React.FC = () => {
 								? "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)"
 								: "white",
 						}}
-						onClick={handleClick}
 					/>
 					<IonText
 						style={{
@@ -117,7 +111,6 @@ const Tabs: React.FC = () => {
 								? "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)"
 								: "white",
 						}}
-						onClick={handleClick}
 					>
 						<b>Organization</b>
 					</IonText>
