@@ -97,8 +97,8 @@ const Tabs: React.FC = () => {
 				<Route exact path="/nav/profile" component={Profile} />
 
 				<Route exact path="/events/edit/:id" component={EditEvent} />
-				<Route exact path="/request" component={Request} />
-				<Route exact path="/editprofile" component={EditProfile} />
+				<Route exact path="/nav/request" component={Request} />
+				<Route exact path="/nav/editprofile" component={EditProfile} />
 			</IonRouterOutlet>
 
 			<IonTabBar

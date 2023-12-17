@@ -34,6 +34,7 @@ import { useEffect, useState } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import { Link, useHistory } from "react-router-dom";
+import { getAuth } from "firebase/auth";
 
 interface Event {
 	id: number;
@@ -97,6 +98,8 @@ const Home: React.FC = () => {
 		return date.toLocaleDateString(undefined, options);
 	};
 
+	const auth = getAuth();
+
 	return (
 		<IonPage style={{ backgroundColor: "DBDBDB" }}>
 			<div
@@ -112,7 +115,7 @@ const Home: React.FC = () => {
 			>
 				<div style={{ textAlign: "right", marginTop: "70px" }}></div>
 				<IonText color="light">
-					<p>Hello, Kesya!</p>
+					<p>Hello, {auth.currentUser?.displayName}!</p>
 					<h1
 						style={{
 							fontSize: "32px",

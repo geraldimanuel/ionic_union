@@ -79,32 +79,6 @@ export async function registerUser(email: string, password: string) {
 		});
 }
 
-
-
-// export async function loginWithGoogleRedirect() {
-// 	getRedirectResult(auth)
-// 		.then((result) => {
-// 			// This gives you a Google Access Token. You can use it to access Google APIs.
-// 			const credential = GoogleAuthProvider.credentialFromResult(result!);
-// 			const token = credential!.accessToken;
-
-// 			// The signed-in user info.
-// 			const user = result!.user;
-// 			// IdP data available using getAdditionalUserInfo(result)
-// 			// ...
-// 		})
-// 		.catch((error) => {
-// 			// Handle Errors here.
-// 			const errorCode = error.code;
-// 			const errorMessage = error.message;
-// 			// The email of the user's account used.
-// 			const email = error.customData.email;
-// 			// The AuthCredential type that was used.
-// 			const credential = GoogleAuthProvider.credentialFromError(error);
-// 			// ...
-// 		});
-// }
-
 export async function logoutUser() {
 	auth.signOut();
 	// go to login page
@@ -137,32 +111,6 @@ export async function getEmail() {
 		//   console.error(error.message);
 		return null;
 	}
-}
-
-export async function fetchData(id = "E001") {
-	await setDoc(doc(db, "events", id), {
-		origin: "hmif",
-		heading: "JOLLITY: Closing Concert COMMFEST UMN 2023",
-		location: "Lapangan Universitas Multimedia Nusantara",
-		date: new Date("2023-11-11T15:30:00"),
-		description: `Haii haiii, KomZen!
-
-		Udah siap belum nih untuk seru-seruan nonton konser 
-		bareng di Jollity: Closing Concert COMMFEST UMN 
-		2023?!
-		
-		Guest Star: @geishaindonesia & @salpriadi
-		
-		Grab your ticket now at : 
-		https://bit.ly/PresaleCOMMFEST2023
-		
-		Temukan kegembiraan di Jollity COMMFEST 2023
-		Instagram: @commfest.umn`,
-		banner_url:
-			"https://media.discordapp.net/attachments/1054830852783231008/1176751437267615845/image_5.png?ex=6570022d&is=655d8d2d&hm=b89a03a67e4adcc153acff64676d5b12c63aec9442eec7a25cf5851692bf5431&=&format=webp&width=537&height=347",
-		category: ["music", "concert"],
-		status: true,
-	});
 }
 
 export async function addEvent(
@@ -247,6 +195,21 @@ export async function updateOrganization(
 		type: [type],
 	});	
 }
+
+export async function updateUser(
+	displayName: string,
+	photoURL: string,
+	user_uid: any,
+) {
+
+	const loggedUserRef = doc(db, "users", user_uid);
+
+	await updateDoc(loggedUserRef, {
+		displayName: displayName,
+		photoURL: photoURL,
+	});
+}
+
 
 export async function requestJoinOrganization(
 	origin_id: string,
