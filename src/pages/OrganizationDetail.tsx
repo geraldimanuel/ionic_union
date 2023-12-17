@@ -24,112 +24,10 @@ import {
 	arrowBackOutline,
 	searchOutline,
 } from "ionicons/icons";
-import { Link, useHistory, useParams } from "react-router-dom";
-import { pencil } from "ionicons/icons";
-import { useEffect, useState } from "react";
-import {
-	collection,
-	doc,
-	getDoc,
-	getDocs,
-	query,
-	where,
-} from "firebase/firestore";
-import { db } from "../firebaseConfig";
-
-interface OrgData {
-	origin_id: string;
-	logo_url: string;
-	origin_name: string;
-	description: string;
-	announcement: string;
-	type: string;
-	admin: string[];
-	members: string[];
-}
-
-interface EventData {
-	banner_url: string;
-	date: string;
-	description: string;
-	heading: string;
-	location: string;
-	origin: string;
-	created_by: string;
-	category: string;
-}
+import { useHistory } from "react-router-dom";
 
 const OrganizationDetail: React.FC = () => {
 	const history = useHistory();
-	const [organizationData, setOrganizationData] = useState<OrgData>();
-	const [eventData, setEventData] = useState<EventData[]>([]);
-
-	const { id } = useParams<{ id: string }>();
-
-	useEffect(() => {
-		async function fetchClickedOrganizationData() {
-			// const orgRef = doc(db, "organizations", id);
-			// make ref where document id is equal to id
-			const orgRef = doc(db, "organizations", id);
-
-			try {
-				const orgSnapshot = await getDoc(orgRef);
-
-				const orgData: OrgData = {
-					origin_id: orgSnapshot.id,
-					logo_url: orgSnapshot.data()?.logo_url,
-					origin_name: orgSnapshot.data()?.origin_name,
-					description: orgSnapshot.data()?.description,
-					announcement: orgSnapshot.data()?.announcement,
-					type: orgSnapshot.data()?.type,
-					admin: orgSnapshot.data()?.admin,
-					members: orgSnapshot.data()?.members,
-				};
-				setOrganizationData(orgData);
-
-				// console.log(orgData);
-			} catch (error) {
-				console.log(error);
-			}
-		}
-
-		fetchClickedOrganizationData();
-		console.log(organizationData);
-	}, []);
-
-	useEffect(() => {
-		async function fetchOrganizationsEvents() {
-			// get all events where origin is equal to organization id
-			const q = query(collection(db, "events"), where("origin", "==", id));
-
-			try {
-				const querySnapshot = await getDocs(q);
-				const tempEventData: EventData[] = [];
-
-				querySnapshot.forEach((doc) => {
-					const eventData: EventData = {
-						banner_url: doc.data().banner_url,
-						date: doc.data().date,
-						description: doc.data().description,
-						heading: doc.data().heading,
-						location: doc.data().location,
-						origin: doc.data().origin,
-						created_by: doc.data().created_by,
-						category: doc.data().category,
-					};
-					tempEventData.push(eventData);
-				});
-
-				setEventData(tempEventData);
-				// console.log(tempEventData);
-				console.log(eventData);
-			} catch (error) {
-				console.log(error);
-			}
-		}
-
-		fetchOrganizationsEvents();
-	}, []);
 
 	const goBack = () => {
 		window.history.back();
@@ -167,27 +65,6 @@ const OrganizationDetail: React.FC = () => {
 							<IonIcon color="primary" icon={arrowBackOutline} size="large" />
 						</IonButton>
 					</IonButtons>
-					<IonButtons
-						style={{
-							position: "absolute",
-							top: "10px",
-							marginTop: "10px",
-							right: "0px",
-						}}
-					>
-						<Link to={`/nav/editorganization/${organizationData?.origin_id}`}>
-							<IonButton
-								style={{
-									backgroundColor: "#ffffff",
-									padding: "5px 0px",
-									borderRadius: "100%",
-								}}
-							>
-								<IonIcon color="primary" icon={pencil} size="large" />
-							</IonButton>
-						</Link>
-					</IonButtons>
-
 					<div
 						style={{
 							position: "absolute",
@@ -197,82 +74,129 @@ const OrganizationDetail: React.FC = () => {
 							boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
 						}}
 					>
-						<img src={organizationData?.logo_url} style={{ width: "100px" }} />
+						<img src="./images/imkom.png" style={{ width: "100px" }} />
 					</div>
 				</div>
 				<IonText color="light">
 					<h1
 						style={{
-							fontSize: "28px",
+							fontSize: "32px",
 							marginTop: "190px",
 							marginLeft: "150px",
 						}}
 					>
-						{organizationData?.origin_name}
+						I'm Kom
 					</h1>
 				</IonText>
 			</div>
 
 			<IonContent className="ion-padding">
 				<h2>Description</h2>
-				<p>{organizationData?.description}</p>
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec
+					malesuada felis in nunc lacinia, non convallis ipsum fermentum. Lorem
+					ipsum dolor sit amet, consectetur adipiscing elit. Donec malesuada
+					felis in nunc lacinia, non convallis ipsum fermentum.
+				</p>
 
 				<h2>Announcement</h2>
-				<p>{organizationData?.announcement}</p>
+				<p>HALO BELLA!</p>
 
 				<h2>Events</h2>
-
-				{eventData.map((event) => {
-					return (
-						<IonCard>
-							<IonGrid>
+				<IonCard>
+					<IonGrid>
+						<IonRow>
+							<IonCol style={{ backgroundColor: "#D93D3D" }} size="3">
+								<h1 style={{ textAlign: "center", color: "white" }}>01 Dec</h1>
+							</IonCol>
+							<IonCol>
 								<IonRow>
-									<IonCol style={{ backgroundColor: "#D93D3D" }} size="3">
-										<h1 style={{ textAlign: "center", color: "white" }}>
-											{event.date}
-										</h1>
+									<h3 style={{ marginLeft: "5px" }}>Rapat Pleno Desember</h3>
+								</IonRow>
+								<IonRow>
+									<IonCol size="1">
+										<IonIcon icon={calendarNumberOutline}></IonIcon>
 									</IonCol>
 									<IonCol>
-										<IonRow>
-											<h3 style={{ marginLeft: "5px" }}>{event.heading}</h3>
-										</IonRow>
-										<IonRow>
-											<IonCol size="1">
-												<IonIcon icon={calendarNumberOutline}></IonIcon>
-											</IonCol>
-											<IonCol>
-												<small>{event.date}</small>
-											</IonCol>
-										</IonRow>
-										<IonRow>
-											<IonCol size="1">
-												<IonIcon icon={locationOutline}></IonIcon>
-											</IonCol>
-											<IonCol>
-												<small>{event.location}</small>
-											</IonCol>
-										</IonRow>
+										<small>18.00 WIB - Selesai</small>
 									</IonCol>
 								</IonRow>
-							</IonGrid>
-						</IonCard>
-					);
-				})}
+								<IonRow>
+									<IonCol size="1">
+										<IonIcon icon={locationOutline}></IonIcon>
+									</IonCol>
+									<IonCol>
+										<small>B0307</small>
+									</IonCol>
+								</IonRow>
+							</IonCol>
+						</IonRow>
+					</IonGrid>
+				</IonCard>
+				<IonCard>
+					<IonGrid>
+						<IonRow>
+							<IonCol style={{ backgroundColor: "#D93D3D" }} size="3">
+								<h1 style={{ textAlign: "center", color: "white" }}>04 Dec</h1>
+							</IonCol>
+							<IonCol>
+								<IonRow>
+									<h3 style={{ marginLeft: "5px" }}>Talkshow B-Land 2023</h3>
+								</IonRow>
+								<IonRow>
+									<IonCol size="1">
+										<IonIcon icon={calendarNumberOutline}></IonIcon>
+									</IonCol>
+									<IonCol>
+										<small>14.00 - 16.00 WIB</small>
+									</IonCol>
+								</IonRow>
+								<IonRow>
+									<IonCol size="1">
+										<IonIcon icon={locationOutline}></IonIcon>
+									</IonCol>
+									<IonCol>
+										<small>Lecture Hall</small>
+									</IonCol>
+								</IonRow>
+							</IonCol>
+						</IonRow>
+					</IonGrid>
+				</IonCard>
 
 				<h2>Members</h2>
-
-				{organizationData?.members.map((member, index) => {
-					return (
-						<IonItem key={index} lines="none">
-							<IonAvatar slot="start">
-								<img src="./images/profiles/bella.jpg" />
-							</IonAvatar>
-							<IonText>
-								<p>{member}</p>
-							</IonText>
-						</IonItem>
-					);
-				})}
+				<IonItem lines="none">
+					<IonAvatar slot="start">
+						<img src="./images/profiles/bella.jpg" />
+					</IonAvatar>
+					<IonText>
+						<p>Bella Saharani Sopyan (Admin)</p>
+					</IonText>
+				</IonItem>
+				<IonItem lines="none">
+					<IonAvatar slot="start">
+						<img src="./images/profiles/geri.jpg" />
+					</IonAvatar>
+					<IonText>
+						<p>Gerald Imanuel Wijaya</p>
+					</IonText>
+				</IonItem>
+				<IonItem lines="none">
+					<IonAvatar slot="start">
+						<img src="./images/profiles/kesya.jpg" />
+					</IonAvatar>
+					<IonText>
+						<p>Kesya Febriana Manampiring (Admin)</p>
+					</IonText>
+				</IonItem>
+				<IonItem lines="none">
+					<IonAvatar slot="start">
+						<img src="./images/profiles/steve.jpg" />
+					</IonAvatar>
+					<IonText>
+						<p>Steve Christian Wijaya</p>
+					</IonText>
+				</IonItem>
 			</IonContent>
 		</IonPage>
 	);
