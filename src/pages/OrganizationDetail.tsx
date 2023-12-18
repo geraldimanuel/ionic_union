@@ -101,7 +101,7 @@ const OrganizationDetail: React.FC = () => {
 		}
 
 		fetchClickedOrganizationData();
-	}, [organizationData]);
+	}, []);
 
 	useEffect(() => {
 		async function fetchOrganizationsEvents() {
@@ -135,7 +135,7 @@ const OrganizationDetail: React.FC = () => {
 		}
 
 		fetchOrganizationsEvents();
-	}, [eventData]);
+	}, []);
 
 	function requestHandler() {
 		requestJoinOrganization(id);

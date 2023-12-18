@@ -194,6 +194,8 @@ export async function updateOrganization(
 		announcement: announcement,
 		type: [type],
 	});	
+
+	console.log
 }
 
 export async function updateUser(

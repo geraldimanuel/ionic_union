@@ -83,7 +83,7 @@ const Organization: React.FC = () => {
 		}
 
 		fetchOrganizationData();
-	}, [orgData]);
+	}, [db]);
 
 	useEffect(() => {
 		// get all organizations data where logged user in member array
@@ -117,7 +117,7 @@ const Organization: React.FC = () => {
 		}
 
 		fetchMyOrganizationData();
-	}, [orgData]);
+	}, [db]);
 
 	function printData() {
 		console.log(orgData);
