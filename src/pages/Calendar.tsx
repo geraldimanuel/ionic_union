@@ -112,6 +112,7 @@ const Calendar: React.FC = () => {
 		// Fetch events from Firebase based on selectedDate
 		const fetchEventsFromFirebase = async () => {
 			if (selectedDate !== "") {
+				setEventData([]);
 				const fetchUserData = async () => {
 					try {
 						const userQuery = query(
@@ -146,7 +147,8 @@ const Calendar: React.FC = () => {
 		
 							const eventQuery = query(
 								collection(db, "events"),
-								where("status", "==", "Public")
+								where("status", "==", "Public"),
+								where("date", "==", selectedDate)
 							);
 							const eventQuerySnapshot = await getDocs(eventQuery);
 							const events: any[] = [];
