@@ -201,6 +201,27 @@ const Event: React.FC = () => {
 		}
 	};
 
+	const [loggedName, setLoggedName] = useState<string>("");
+
+	useEffect(() => {
+		// find user name from database that have uid same as auth.currentUser.uid
+
+		const uid = auth.currentUser?.uid;
+		console.log(uid);
+
+		if (uid) {
+			const q = getDoc(doc(db, "users", uid));
+
+			async function fetchUserName() {
+				const docSnap = await q;
+				const userName = docSnap.data()?.name;
+				setLoggedName(userName);
+			}
+
+			fetchUserName();
+		}
+	}, [db]);
+
 	return (
 		<IonPage style={{ backgroundColor: "DBDBDB" }}>
 			{/* Header untuk dicuri */}
@@ -217,7 +238,7 @@ const Event: React.FC = () => {
 			>
 				<div style={{ textAlign: "right", marginTop: "70px" }}></div>
 				<IonText color="light">
-					<p>Hello, {auth.currentUser?.displayName}!</p>
+					<p>Hello, {loggedName}!</p>
 					<h1
 						style={{
 							fontSize: "32px",

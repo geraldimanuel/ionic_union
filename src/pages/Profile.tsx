@@ -33,7 +33,7 @@ import {
 	query,
 	where,
 } from "firebase/firestore";
-import { db } from "../firebaseConfig";
+import { db, logoutUser } from "../firebaseConfig";
 import { useHistory } from "react-router-dom";
 import {
 	arrowBack,
@@ -238,6 +238,38 @@ const Profile: React.FC = () => {
 		setShowMyEventsModal(false);
 	};
 
+	const logoutUserHandler = () => {
+		logoutUser();
+		history.push("/");
+	};
+
+	const [loggedName, setLoggedName] = useState<string>("");
+	const [loggedEmail, setLoggedEmail] = useState<string>("");
+	const [loggedPhoto, setLoggedPhoto] = useState<string>("");
+
+	useEffect(() => {
+		// find user name from database that have uid same as auth.currentUser.uid
+
+		const uid = auth.currentUser?.uid;
+
+		if (uid) {
+			const q = getDoc(doc(db, "users", uid));
+
+			async function fetchUserName() {
+				const docSnap = await q;
+				const userName = docSnap.data()?.name;
+				const userEmail = docSnap.data()?.email;
+				const userPhoto = docSnap.data()?.profile_picture;
+
+				setLoggedName(userName);
+				setLoggedEmail(userEmail);
+				setLoggedPhoto(userPhoto);
+			}
+
+			fetchUserName();
+		}
+	}, [db]);
+
 	return (
 		<IonPage style={{ backgroundColor: "DBDBDB" }}>
 			<div
@@ -275,15 +307,18 @@ const Profile: React.FC = () => {
 					<IonAvatar
 						style={{ width: "100px", height: "100px", marginTop: "10px" }}
 					>
-						{auth.currentUser?.photoURL ? (
-							<img src={auth.currentUser.photoURL} />
+						{loggedPhoto ? (
+							<img src={loggedPhoto} />
 						) : (
-							<img src={undefined} alt="Avatar" />
+							<img
+								src="https://www.w3schools.com/howto/img_avatar.png"
+								alt="Avatar"
+							/>
 						)}
 					</IonAvatar>
 
-					<h1>{auth.currentUser?.displayName}</h1>
-					<h3>{auth.currentUser?.email}</h3>
+					<h1>{loggedName}</h1>
+					<h3>{loggedEmail}</h3>
 					<div
 						style={{
 							// display: "flex",
@@ -321,6 +356,10 @@ const Profile: React.FC = () => {
 							<IonIcon icon={calendarClearOutline} slot="start" />
 							My Events
 							<IonIcon icon={chevronForwardOutline} slot="end" />
+						</IonButton>
+
+						<IonButton expand="full" onClick={logoutUserHandler}>
+							Logout
 						</IonButton>
 					</div>
 

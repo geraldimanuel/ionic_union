@@ -27,6 +27,8 @@ import { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import { format, parseISO } from "date-fns";
 import { getAuth } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebaseConfig";
 
 interface EventData {
 	id: string;
@@ -92,6 +94,27 @@ const Calendar: React.FC = () => {
 
 	const auth = getAuth();
 
+	const [loggedName, setLoggedName] = useState<string>("");
+
+	useEffect(() => {
+		// find user name from database that have uid same as auth.currentUser.uid
+
+		const uid = auth.currentUser?.uid;
+		console.log(uid);
+
+		if (uid) {
+			const q = getDoc(doc(db, "users", uid));
+
+			async function fetchUserName() {
+				const docSnap = await q;
+				const userName = docSnap.data()?.name;
+				setLoggedName(userName);
+			}
+
+			fetchUserName();
+		}
+	}, [db]);
+
 	return (
 		<IonPage style={{ backgroundColor: "DBDBDB" }}>
 			{/* Header untuk dicuri */}
@@ -135,7 +158,7 @@ const Calendar: React.FC = () => {
 					></IonBadge>
 				</IonButton>
 				<IonText color="light">
-					<p>Hello, {auth.currentUser?.displayName}!</p>
+					<p>Hello, {loggedName}!</p>
 					<h1
 						style={{
 							fontSize: "32px",
