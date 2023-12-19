@@ -232,7 +232,12 @@ const OrganizationDetail: React.FC = () => {
 					>
 						<img
 							src={organizationData?.logo_url}
-							style={{ width: "100px", borderRadius: "20%" }}
+							style={{
+								width: "100px",
+								borderRadius: "20%",
+								objectFit: "cover",
+								height: "100px",
+							}}
 						/>
 					</div>
 				</div>
@@ -260,9 +265,9 @@ const OrganizationDetail: React.FC = () => {
 
 				<h2>Events</h2>
 
-				{eventData.map((event) => {
+				{eventData.map((event, index) => {
 					return (
-						<IonCard>
+						<IonCard key={index}>
 							<IonGrid>
 								<IonRow>
 									<IonCol style={{ backgroundColor: "#D93D3D" }} size="3">

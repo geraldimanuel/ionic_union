@@ -22,7 +22,7 @@ import {
 	locationOutline,
 	notificationsOutline,
 	searchOutline,
-	calendarNumberOutline
+	calendarNumberOutline,
 } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router";
@@ -120,7 +120,7 @@ const Calendar: React.FC = () => {
 						);
 						const userQuerySnapshot = await getDocs(userQuery);
 						const users: UserData[] = [];
-		
+
 						userQuerySnapshot.forEach((userDoc) => {
 							const userData: UserData = {
 								id: userDoc.id,
@@ -136,25 +136,25 @@ const Calendar: React.FC = () => {
 							};
 							users.push(userData);
 						});
-		
+
 						setUserData(users);
 						if (users.length > 0) {
 							const loggedUserEvent = users[0].data.event_attended.concat(
 								users[0].data.event_declined
 							);
 							setLoggedUserEvent(loggedUserEvent);
-		
+
 							const eventQuery = query(
 								collection(db, "events"),
 								where("status", "==", "Public")
 							);
 							const eventQuerySnapshot = await getDocs(eventQuery);
 							const events: any[] = [];
-		
+
 							eventQuerySnapshot.forEach((eventDoc) => {
 								events.push({ id: eventDoc.id, data: eventDoc.data() });
 							});
-		
+
 							const filteredEvents = events.filter((event) =>
 								loggedUserEvent.includes(event.id)
 							);
@@ -164,7 +164,7 @@ const Calendar: React.FC = () => {
 						console.error("Error fetching data:", error);
 					}
 				};
-		
+
 				fetchUserData();
 			}
 		};
@@ -213,8 +213,8 @@ const Calendar: React.FC = () => {
 						Select a date to see events.
 					</p>
 				) : (
-					eventData.map((event: any) => (
-						<IonCard>
+					eventData.map((event: any, index) => (
+						<IonCard key={index}>
 							<IonGrid>
 								<IonRow>
 									<IonCol style={{ backgroundColor: "#D93D3D" }} size="3">
