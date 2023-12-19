@@ -147,7 +147,6 @@ const Calendar: React.FC = () => {
 
 							const eventQuery = query(
 								collection(db, "events"),
-								where("status", "==", "Public"),
 								where("date", "==", selectedDate)
 							);
 							const eventQuerySnapshot = await getDocs(eventQuery);

@@ -57,6 +57,8 @@ import {
 	getDocs,
 	query,
 } from "firebase/firestore";
+import { auth } from "firebase-admin";
+import { getAuth } from "firebase/auth";
 
 setupIonicReact();
 
@@ -65,6 +67,7 @@ interface RequestData {
 	origin_id: string;
 	email: string;
 	origin_name?: string;
+	admin?: string;
 }
 
 const Request: React.FC = () => {
@@ -99,42 +102,47 @@ const Request: React.FC = () => {
 		await deleteDoc(doc(db, "requests", id));
 	};
 
+	const auth = getAuth();
+
 	useEffect(() => {
 		const fetchData = async () => {
-			const q = query(collection(db, "requests"));
-
 			try {
-				const querySnapshot = await getDocs(q);
-				const requestData: RequestData[] = [];
+				const querySnapshot = await getDocs(collection(db, "requests"));
+				const updatedRequests: RequestData[] = [];
 
 				querySnapshot.forEach((doc) => {
-					requestData.push({
+					updatedRequests.push({
 						request_id: doc.id,
 						origin_id: doc.data().origin_id,
 						email: doc.data().email,
 					});
 				});
 
-				setRequestData(requestData);
+				setRequestData(updatedRequests);
+
+				// Fetch additional data for each request
+				const requestsWithData = await Promise.all(
+					updatedRequests.map(async (data) => {
+						const docRef = doc(db, "organizations", data.origin_id);
+						const docSnap = await getDoc(docRef);
+						const origin_name = docSnap.data()?.origin_name;
+						const admin = docSnap.data()?.admin[0];
+
+						return {
+							...data,
+							origin_name,
+							admin,
+						};
+					})
+				);
+
+				setRequestData(requestsWithData);
 			} catch (error) {
 				console.log(error);
 			}
 		};
 
 		fetchData();
-
-		requestData.map(async (data) => {
-			// get origin name from origin_id
-			const docRef = doc(db, "organizations", data.origin_id);
-			const docSnap = await getDoc(docRef);
-
-			const origin_name = docSnap.data()?.origin_name;
-
-			// make sure to match the origin_id with the origin_name
-			data.origin_name = origin_name;
-
-			setRequestData([...requestData]);
-		});
 	}, [db]);
 
 	const goBack = () => {
@@ -231,50 +239,52 @@ const Request: React.FC = () => {
 							</IonCardContent>
 						</IonCard>
 					</div>
-					{requestData.map((data, index) => (
-						<IonList key={index}>
-							<IonItemSliding key={index} ref={slidingOptionsRef}>
-								<IonItem>
-									<IonAvatar slot="start">
-										<img src="https://www.w3schools.com/howto/img_avatar.png" />
-									</IonAvatar>
-									<IonLabel>
-										<h2>{data.email}</h2>
-										<p>Request to join {data.origin_name}</p>
-									</IonLabel>
-									<IonIcon icon={arrowBack} slot="end" />
-								</IonItem>
-								<div
-									style={{
-										display: "flex",
-										flexDirection: "row",
-										justifyContent: "space-between",
-									}}
-								>
-									<IonItemOptions side="end">
-										<IonItemOption
-											color="danger"
-											onClick={startRejectingHandler.bind(
-												null,
-												data.request_id
-											)}
-										>
-											<IonIcon slot="icon-only" icon={ban} />
-										</IonItemOption>
-										<IonItemOption
-											color="success"
-											onClick={startAcceptingHandler.bind(
-												null,
-												data.request_id
-											)}
-										>
-											<IonIcon slot="icon-only" icon={checkmark} />
-										</IonItemOption>
-									</IonItemOptions>
-								</div>
-							</IonItemSliding>
-						</IonList>
-					))}
+					{requestData
+						.filter((data) => data.admin === auth.currentUser?.email) // Assuming adminEmail holds the admin's email
+						.map((data, index) => (
+							<IonList key={index}>
+								<IonItemSliding key={index} ref={slidingOptionsRef}>
+									<IonItem>
+										<IonAvatar slot="start">
+											<img src="https://www.w3schools.com/howto/img_avatar.png" />
+										</IonAvatar>
+										<IonLabel>
+											<h2>{data.email}</h2>
+											<p>Request to join {data.origin_name}</p>
+										</IonLabel>
+										<IonIcon icon={arrowBack} slot="end" />
+									</IonItem>
+									<div
+										style={{
+											display: "flex",
+											flexDirection: "row",
+											justifyContent: "space-between",
+										}}
+									>
+										<IonItemOptions side="end">
+											<IonItemOption
+												color="danger"
+												onClick={startRejectingHandler.bind(
+													null,
+													data.request_id
+												)}
+											>
+												<IonIcon slot="icon-only" icon={ban} />
+											</IonItemOption>
+											<IonItemOption
+												color="success"
+												onClick={startAcceptingHandler.bind(
+													null,
+													data.request_id
+												)}
+											>
+												<IonIcon slot="icon-only" icon={checkmark} />
+											</IonItemOption>
+										</IonItemOptions>
+									</div>
+								</IonItemSliding>
+							</IonList>
+						))}
 				</IonContent>
 			</IonPage>
 		</>
