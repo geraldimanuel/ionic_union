@@ -21,6 +21,7 @@ import {
 	where,
 	getDocs,
 	Timestamp,
+	updateDoc,
 } from "firebase/firestore";
 
 export const firebaseConfig = {
@@ -78,32 +79,6 @@ export async function registerUser(email: string, password: string) {
 		});
 }
 
-
-
-// export async function loginWithGoogleRedirect() {
-// 	getRedirectResult(auth)
-// 		.then((result) => {
-// 			// This gives you a Google Access Token. You can use it to access Google APIs.
-// 			const credential = GoogleAuthProvider.credentialFromResult(result!);
-// 			const token = credential!.accessToken;
-
-// 			// The signed-in user info.
-// 			const user = result!.user;
-// 			// IdP data available using getAdditionalUserInfo(result)
-// 			// ...
-// 		})
-// 		.catch((error) => {
-// 			// Handle Errors here.
-// 			const errorCode = error.code;
-// 			const errorMessage = error.message;
-// 			// The email of the user's account used.
-// 			const email = error.customData.email;
-// 			// The AuthCredential type that was used.
-// 			const credential = GoogleAuthProvider.credentialFromError(error);
-// 			// ...
-// 		});
-// }
-
 export async function logoutUser() {
 	auth.signOut();
 	// go to login page
@@ -136,32 +111,6 @@ export async function getEmail() {
 		//   console.error(error.message);
 		return null;
 	}
-}
-
-export async function fetchData(id = "E001") {
-	await setDoc(doc(db, "events", id), {
-		origin: "hmif",
-		heading: "JOLLITY: Closing Concert COMMFEST UMN 2023",
-		location: "Lapangan Universitas Multimedia Nusantara",
-		date: new Date("2023-11-11T15:30:00"),
-		description: `Haii haiii, KomZen!
-
-		Udah siap belum nih untuk seru-seruan nonton konser 
-		bareng di Jollity: Closing Concert COMMFEST UMN 
-		2023?!
-		
-		Guest Star: @geishaindonesia & @salpriadi
-		
-		Grab your ticket now at : 
-		https://bit.ly/PresaleCOMMFEST2023
-		
-		Temukan kegembiraan di Jollity COMMFEST 2023
-		Instagram: @commfest.umn`,
-		banner_url:
-			"https://media.discordapp.net/attachments/1054830852783231008/1176751437267615845/image_5.png?ex=6570022d&is=655d8d2d&hm=b89a03a67e4adcc153acff64676d5b12c63aec9442eec7a25cf5851692bf5431&=&format=webp&width=537&height=347",
-		category: ["music", "concert"],
-		status: true,
-	});
 }
 
 export async function addEvent(
@@ -229,6 +178,41 @@ export async function addOrganization(
 	// });
 }
 
+export async function updateOrganization(
+	origin_id: string,
+	logo_url: string | null,
+	origin_name: string,
+	description: string,
+	announcement: string,
+	type: string[],
+) {
+	
+	await updateDoc(doc(db, "organizations", origin_id), {
+		logo_url: logo_url,
+		origin_name: origin_name,
+		description: description,
+		announcement: announcement,
+		type: [type],
+	});	
+
+	console.log
+}
+
+export async function updateUser(
+	displayName: string,
+	photoURL: string,
+	user_uid: any,
+) {
+
+	const loggedUserRef = doc(db, "users", user_uid);
+
+	await updateDoc(loggedUserRef, {
+		displayName: displayName,
+		photoURL: photoURL,
+	});
+}
+
+
 export async function requestJoinOrganization(
 	origin_id: string,
 ) {
@@ -236,7 +220,19 @@ export async function requestJoinOrganization(
 	const user = auth.currentUser;
 	const email = user?.email;
 
-	await setDoc(doc(db, "requests"), {
+	// if same email already request to same organization then do nothing
+	const q = query(collection(db, "requests"), where("origin_id", "==", origin_id), where("email", "==", email));
+	const querySnapshot = await getDocs(q);
+	querySnapshot.forEach((doc) => {
+		console.log(doc.id, " => ", doc.data());
+	});
+
+	if (querySnapshot.size > 0) {
+		console.log("already requested");
+		return;
+	}
+
+	await addDoc(collection(db, "requests"), {
 		origin_id: origin_id,
 		email: email,
 	});

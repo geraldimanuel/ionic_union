@@ -18,7 +18,7 @@ import {
 import { useState } from "react";
 import { arrowBack } from "ionicons/icons";
 import { addEvent } from "../firebaseConfig";
-import { useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
 const organization = Object.freeze([
@@ -88,10 +88,6 @@ const CreateEvent: React.FC = () => {
 		});
 	};
 
-	const goBack = () => {
-		window.history.back();
-	};
-
 	return (
 		<IonPage>
 			<IonToast
@@ -121,17 +117,19 @@ const CreateEvent: React.FC = () => {
 						alignItems: "center",
 					}}
 				>
-					<IonButtons onClick={goBack}>
-						<IonButton>
-							<IonIcon
-								icon={arrowBack}
-								style={{
-									color: "white",
-									fontSize: "20px",
-								}}
-							></IonIcon>
-						</IonButton>
-					</IonButtons>
+					<Link to="/nav/home">
+						<IonButtons>
+							<IonButton>
+								<IonIcon
+									icon={arrowBack}
+									style={{
+										color: "white",
+										fontSize: "20px",
+									}}
+								></IonIcon>
+							</IonButton>
+						</IonButtons>
+					</Link>
 
 					<IonTitle color="light" style={{ textAlign: "center" }}>
 						Create Event
