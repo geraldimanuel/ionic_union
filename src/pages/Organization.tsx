@@ -77,6 +77,7 @@ const Organization: React.FC = () => {
 			async function fetchUserName() {
 				const docSnap = await q;
 				const userName = docSnap.data()?.name;
+
 				setLoggedName(userName);
 			}
 

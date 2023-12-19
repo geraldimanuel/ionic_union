@@ -37,6 +37,7 @@ import {
 } from "firebase/firestore";
 import { db, requestJoinOrganization } from "../firebaseConfig";
 import { getAuth } from "firebase/auth";
+import { set } from "date-fns";
 
 interface OrgData {
 	origin_id: string;
@@ -60,12 +61,20 @@ interface EventData {
 	category: string;
 }
 
+interface UserData {
+	name: string;
+	email: string;
+	photo: string;
+}
+
 const OrganizationDetail: React.FC = () => {
 	const history = useHistory();
 	const [organizationData, setOrganizationData] = useState<OrgData>();
 	const [eventData, setEventData] = useState<EventData[]>([]);
 	const auth = getAuth();
 	const [isRequest, setIsRequest] = useState(false);
+	const [memberArray, setMemberArray] = useState<string[]>([]);
+	const [memberData, setMemberData] = useState<UserData[]>([]);
 
 	const currentUser = auth.currentUser?.email;
 
@@ -95,6 +104,8 @@ const OrganizationDetail: React.FC = () => {
 					members: orgSnapshot.data()?.members,
 				};
 				setOrganizationData(orgData);
+
+				setMemberArray(orgData.members);
 
 				// console.log(orgData);
 			} catch (error) {
@@ -129,8 +140,6 @@ const OrganizationDetail: React.FC = () => {
 				});
 
 				setEventData(tempEventData);
-				// console.log(tempEventData);
-				console.log(eventData);
 			} catch (error) {
 				console.log(error);
 			}
@@ -289,7 +298,7 @@ const OrganizationDetail: React.FC = () => {
 					return (
 						<IonItem key={index} lines="none">
 							<IonAvatar slot="start">
-								<img src="./images/profiles/bella.jpg" />
+								<img src="https://www.w3schools.com/howto/img_avatar.png" />
 							</IonAvatar>
 							<IonText>
 								<p>{member}</p>
