@@ -20,7 +20,7 @@ import {
 import { useState } from "react";
 import { arrowBack } from "ionicons/icons";
 import { addOrganization } from "../firebaseConfig";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
 const storage = getStorage();
@@ -108,19 +108,17 @@ const CreateOrganization: React.FC = () => {
 						alignItems: "center",
 					}}
 				>
-					<Link to="/nav/home">
-						<IonButtons>
-							<IonButton>
-								<IonIcon
-									icon={arrowBack}
-									style={{
-										color: "white",
-										fontSize: "20px",
-									}}
-								></IonIcon>
-							</IonButton>
-						</IonButtons>
-					</Link>
+					<IonButtons onClick={goBack}>
+						<IonButton>
+							<IonIcon
+								icon={arrowBack}
+								style={{
+									color: "white",
+									fontSize: "20px",
+								}}
+							></IonIcon>
+						</IonButton>
+					</IonButtons>
 
 					<IonTitle color="light" style={{ textAlign: "center" }}>
 						Create Organization

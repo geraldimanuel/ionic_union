@@ -16,12 +16,7 @@ import { toast } from "../components/toast";
 import { Link, useHistory } from "react-router-dom";
 
 import { logoGoogle } from "ionicons/icons";
-import {
-	GoogleAuthProvider,
-	getAuth,
-	signInWithEmailAndPassword,
-	signInWithPopup,
-} from "firebase/auth";
+import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { initializeApp } from "firebase-admin";
 
@@ -34,23 +29,6 @@ const Login: React.FC = () => {
 	async function login() {
 		const res = await loginUser(username, password);
 		console.log(res);
-	}
-
-	async function loginUser(email: string, password: string) {
-		signInWithEmailAndPassword(auth, email, password)
-			.then(async (userCredential) => {
-				// Signed in
-				const user = userCredential.user;
-
-				history.push("/nav");
-			})
-			.catch((error) => {
-				const errorCode = error.code;
-				const errorMessage = error.message;
-
-				console.log(errorCode);
-				console.log(errorMessage);
-			});
 	}
 
 	function loginWithGooglePopup() {
@@ -154,7 +132,7 @@ const Login: React.FC = () => {
 									textAlign: "center",
 									fontWeight: "bold",
 								}}
-								onClick={() => loginUser(username, password)}
+								onClick={login}
 							>
 								<p
 									style={{
@@ -203,10 +181,6 @@ const Login: React.FC = () => {
 								</p>
 								<IonIcon color="primary" icon={logoGoogle} />
 							</div>
-							<p style={{ textAlign: "center", fontSize: "14px" }}>
-								Don't have an account yet?{" "}
-								<a href="/register">Register here.</a>
-							</p>
 						</div>
 					</div>
 				</div>

@@ -1,51 +1,19 @@
 import {
-	IonButton,
-	IonContent,
-	IonHeader,
-	IonInput,
-	IonPage,
-	IonIcon,
-	IonTitle,
-	IonText,
-	IonBadge,
-	IonToolbar,
-	IonItem,
-	IonLabel,
-	IonCard,
-	IonGrid,
-	IonRow,
-	IonCol,
 	IonAvatar,
-	IonModal,
+	IonButton,
+	IonCard,
+	IonCol,
+	IonContent,
+	IonGrid,
+	IonIcon,
+	IonPage,
+	IonRow,
+	IonText,
 } from "@ionic/react";
-import Swiper from "swiper";
-import { Navigation, Pagination } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
+import { query, collection, where, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import {
-	collection,
-	doc,
-	getDoc,
-	getDocs,
-	onSnapshot,
-	query,
-	where,
-} from "firebase/firestore";
-import { db, logoutUser } from "../firebaseConfig";
-import { useHistory } from "react-router-dom";
-import {
-	arrowBack,
-	calendarClearOutline,
-	chevronForwardOutline,
-	locationOutline,
-	pencilOutline,
-	peopleOutline,
-} from "ionicons/icons";
-import { Link } from "react-router-dom";
-import { getAuth } from "firebase/auth";
-import { set } from "date-fns";
+import { db } from "../firebaseConfig";
+import { calendarClearOutline, locationOutline } from "ionicons/icons";
 
 interface User {
 	email: string;
@@ -57,14 +25,14 @@ interface User {
 }
 
 interface OrgData {
-	origin_id: string;
-	logo_url: string;
-	origin_name: string;
-	description: string;
-	announcement: string;
-	type: string;
-	admin: string[];
-	member: string[];
+	id: string;
+	data: {
+		logo_url: string;
+		description: string;
+		announcement: string;
+		origin_name: string;
+		// Add other properties as per your actual data structure
+	};
 }
 
 interface EventData {
@@ -80,194 +48,83 @@ interface EventData {
 	};
 }
 
-interface UserData {
-	id: string;
-	data: {
-		email: string;
-		event_attended: string[];
-		event_declined: string[];
-		name: string;
-		origin: string;
-		profile_picture: string;
-		role: string;
-	};
-}
-
 const Profile: React.FC = () => {
-	const auth = getAuth();
-
-	const [orgData, setOrgData] = useState<OrgData[]>([]);
-	const [userData, setUserData] = useState<UserData[]>([]);
-	const [loggedUserEvent, setLoggedUserEvent] = useState<string[]>([]);
-
-	useEffect(() => {
-		const q = query(
-			collection(db, "organizations"),
-			where("members", "array-contains", auth.currentUser?.email)
-		);
-
-		async function fetchMyOrganizationData() {
-			try {
-				const querySnapshot = await getDocs(q);
-				const orgData: OrgData[] = [];
-				querySnapshot.forEach((doc) => {
-					// map one by one
-					orgData.push({
-						origin_id: doc.id,
-						logo_url: doc.data().logo_url,
-						origin_name: doc.data().origin_name,
-						description: doc.data().description,
-						announcement: doc.data().announcement,
-						type: doc.data().type,
-						admin: doc.data().admin,
-						member: doc.data().member,
-					});
-				});
-				setOrgData(orgData);
-			} catch (error) {
-				console.log(error);
-			}
-		}
-
-		fetchMyOrganizationData();
-	}, [db]);
-
+	const [user, setUser] = useState<User>({
+		email: "bellass@gmail.com",
+		event_attended: ["imkom", "umnradio"],
+		event_declined: [],
+		name: "bella",
+		origin: ["imkom", "umnradio"],
+		profile_picture: "./images/profiles/bella.jpg",
+	});
+	const [orgData, setOrgData] = useState<OrgData[]>([
+		{
+			id: "1",
+			data: {
+				logo_url: "./images/imkom.png",
+				description: "Lorem ipsum dolor sit amet",
+				announcement: "Lorem ipsum dolor sit amet",
+				origin_name: "Im'Kom",
+			},
+		},
+		{
+			id: "2",
+			data: {
+				logo_url: "./images/radio.png",
+				description: "Lorem ipsum dolor sit amet",
+				announcement: "Lorem ipsum dolor sit amet",
+				origin_name: "UMN Radio",
+			},
+		},
+	]);
 	const [eventData, setEventData] = useState<EventData[]>([]);
 
 	useEffect(() => {
-		const q = query(
-			collection(db, "users"),
-			where("email", "==", auth.currentUser?.email)
-		);
-
-		const unsubscribe = onSnapshot(q, (querySnapshot) => {
-			const users: UserData[] = [];
-			querySnapshot.forEach((doc) => {
-				const userData: UserData = {
-					id: doc.id,
-					data: doc.data() as {
-						email: string;
-						event_attended: string[];
-						event_declined: string[];
-						name: string;
-						origin: string;
-						profile_picture: string;
-						role: string;
-					},
-				};
-				users.push(userData);
-			});
-
-			setUserData(users);
-			setLoggedUserEvent(
-				users[0].data.event_attended.concat(users[0].data.event_declined)
-			);
-		});
-
-		return () => unsubscribe();
-	}, [db]);
-
-	useEffect(() => {
-		const fetchEvents = async () => {
-			const eventsPromises = loggedUserEvent.map(async (eventId) => {
-				const docRef = doc(db, "events", eventId);
-				const docSnapshot = await getDoc(docRef);
-
-				if (docSnapshot.exists()) {
-					return {
-						id: docSnapshot.id,
-						data: docSnapshot.data() as {
-							banner_url: string;
-							date: string;
-							description: string;
-							heading: string;
-							location: string;
-							origin: string;
-						},
-					};
-				} else {
-					console.log("No such document!");
-					return null;
-				}
-			});
-
-			const fetchedEvents = await Promise.all(eventsPromises);
-			const filteredEvents = fetchedEvents.filter(
-				(event) => event !== null
-			) as EventData[];
-
-			// Check for unique events before adding to state
-			const uniqueEvents = filteredEvents.filter(
-				(event) =>
-					!eventData.some((existingEvent) => existingEvent.id === event.id)
+		async function fetchEventData() {
+			const origin = "your_origin_value"; // Replace 'your_origin_value' with the actual value
+			const getEvents = query(
+				collection(db, "events"),
+				where("origin", "==", "hmif")
 			);
 
-			if (uniqueEvents.length > 0) {
-				setEventData((prevEventData) => [...prevEventData, ...uniqueEvents]);
+			try {
+				const querySnapshot = await getDocs(getEvents);
+				const events: any = [];
+				querySnapshot.forEach((doc) => {
+					// Push each document's data to the events array
+					events.push({ id: doc.id, data: doc.data() });
+				});
+				setEventData(events); // Set the state with retrieved data
+			} catch (error) {
+				console.error("Error fetching data:", error);
 			}
-		};
-
-		if (loggedUserEvent.length > 0) {
-			fetchEvents();
 		}
-	}, [db, loggedUserEvent, eventData]);
 
-	const [showMyOrganizationsModal, setShowMyOrganizationsModal] =
-		useState(false);
-	const [showMyEventsModal, setShowMyEventsModal] = useState(false);
+		async function fetchOrganizationData() {
+			const origin = "your_origin_value"; // Replace 'your_origin_value' with the actual value
+			const getOrgs = query(
+				collection(db, "organizations"),
+				where("origin", "==", "hmif")
+			);
 
-	const openMyOrganizationsModal = () => setShowMyOrganizationsModal(true);
-	const closeMyOrganizationsModal = () => setShowMyOrganizationsModal(false);
-
-	const openMyEventsModal = () => setShowMyEventsModal(true);
-	const closeMyEventsModal = () => setShowMyEventsModal(false);
-
-	const goBack = () => {
-		window.history.back();
-	};
-
-	const history = useHistory();
-
-	const handleCardClick = (orgId: string) => {
-		history.push(`/nav/organization/${orgId}`);
-		setShowMyOrganizationsModal(false);
-	};
-
-	const handleCardClickEvent = (orgId: string) => {
-		history.push(`/nav/events/${orgId}`);
-		setShowMyEventsModal(false);
-	};
-
-	const logoutUserHandler = () => {
-		logoutUser();
-		history.push("/");
-	};
-
-	const [loggedName, setLoggedName] = useState<string>("");
-	const [loggedEmail, setLoggedEmail] = useState<string>("");
-	const [loggedPhoto, setLoggedPhoto] = useState<string>("");
-
-	useEffect(() => {
-		// find user name from database that have uid same as auth.currentUser.uid
-
-		const uid = auth.currentUser?.uid;
-
-		if (uid) {
-			const q = getDoc(doc(db, "users", uid));
-
-			async function fetchUserName() {
-				const docSnap = await q;
-				const userName = docSnap.data()?.name;
-				const userEmail = docSnap.data()?.email;
-				const userPhoto = docSnap.data()?.profile_picture;
-
-				setLoggedName(userName);
-				setLoggedEmail(userEmail);
-				setLoggedPhoto(userPhoto);
+			try {
+				const querySnapshot = await getDocs(getOrgs);
+				const orgs: any = [];
+				querySnapshot.forEach((doc) => {
+					// Push each document's data to the events array
+					orgs.push({ id: doc.id, data: doc.data() });
+				});
+				setOrgData(orgs); // Set the state with retrieved data
+			} catch (error) {
+				console.error("Error fetching data:", error);
 			}
-
-			fetchUserName();
 		}
+
+		fetchEventData();
+		// fetchOrganizationData(); masih kosong
+
+		console.log(orgData);
+		console.log(eventData);
 	}, [db]);
 
 	return (
@@ -276,23 +133,24 @@ const Profile: React.FC = () => {
 				style={{
 					background:
 						"linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
-					height: "80px",
-					borderRadius: "0px 0px 32px 0px",
+					height: "231px",
+					borderRadius: "0px 0px 32px 32px",
 					padding: "10px 25px",
 					position: "relative",
 					boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-					display: "grid",
-					gridTemplateColumns: "auto 1fr",
-					alignItems: "center",
 				}}
 			>
-				<IonTitle
-					color="light"
-					style={{ textAlign: "center" }}
-					onClick={() => console.log(loggedUserEvent)}
-				>
-					My Profile
-				</IonTitle>
+				<div style={{ textAlign: "right", marginTop: "70px" }}></div>
+				<IonText color="light">
+					<p>Hello, Bella!</p>
+					<h1
+						style={{
+							fontSize: "32px",
+						}}
+					>
+						Welcome to <br></br> UNION!
+					</h1>
+				</IonText>
 			</div>
 
 			<IonContent>
@@ -301,150 +159,64 @@ const Profile: React.FC = () => {
 						display: "flex",
 						flexDirection: "column",
 						alignItems: "center",
-						paddingBottom: "50px",
 					}}
 				>
 					<IonAvatar
 						style={{ width: "100px", height: "100px", marginTop: "10px" }}
 					>
-						{loggedPhoto ? (
-							<img src={loggedPhoto} />
-						) : (
-							<img
-								src="https://www.w3schools.com/howto/img_avatar.png"
-								alt="Avatar"
-							/>
-						)}
+						<img src={user.profile_picture} />
 					</IonAvatar>
 
-					<h1>{loggedName}</h1>
-					<h3>{loggedEmail}</h3>
-					<div
-						style={{
-							// display: "flex",
-							// flexDirection: 'column',
-							alignItems: "center",
-							width: "100%",
-							// height: "100%",
+					<h1>{user.name}</h1>
+					<h3>{user.email}</h3>
 
-							display: "grid",
-							bottom: "10px",
-							marginTop: "20px",
-							marginBottom: "5px",
-							marginLeft: "20px",
-							marginRight: "20px",
-							paddingLeft: "20px",
-							paddingRight: "20px",
-							paddingTop: "20px",
-						}}
-					>
-						<Link to="/nav/editprofile">
-							<IonButton expand="full">
-								<IonIcon icon={pencilOutline} slot="start" />
-								Edit Profile
-								<IonIcon icon={chevronForwardOutline} slot="end" />
-							</IonButton>
-						</Link>
-
-						<IonButton expand="full" onClick={openMyOrganizationsModal}>
-							<IonIcon icon={peopleOutline} slot="start" />
-							My Organizations
-							<IonIcon icon={chevronForwardOutline} slot="end" />
-						</IonButton>
-
-						<IonButton expand="full" onClick={openMyEventsModal}>
-							<IonIcon icon={calendarClearOutline} slot="start" />
-							My Events
-							<IonIcon icon={chevronForwardOutline} slot="end" />
-						</IonButton>
-
-						<IonButton expand="full" onClick={logoutUserHandler}>
-							Logout
-						</IonButton>
-					</div>
-
-					<IonModal
-						isOpen={showMyOrganizationsModal}
-						onDidDismiss={closeMyOrganizationsModal}
-					>
-						<div
-							style={{
-								display: "flex",
-								flexDirection: "column",
-								alignItems: "center",
-								width: "100%",
-								padding: "0px 20px",
-								bottom: "10px",
-							}}
-						>
-							<h2>My Organization</h2>
-						</div>
-						<IonGrid style={{ marginTop: "-20px" }}>
-							{orgData.map((item, index) => (
-								<IonCard
-									key={index}
-									onClick={() => handleCardClick(item.origin_id)}
+					<h2>My Organization</h2>
+					<IonGrid style={{ marginTop: "-20px" }}>
+						{orgData.map((item, index) => (
+							<IonCard key={index}>
+								<IonRow
+									style={{ width: "200px", height: "70px" }}
+									className="ion-text-center"
 								>
-									<IonRow
-										style={{ width: "200px", height: "70px" }}
-										className="ion-text-center"
-									>
-										<IonCol style={{}} size="4">
-											<img src={item.logo_url} />
-										</IonCol>
+									<IonCol size="4">
+										<img src={item.data.logo_url} />
+									</IonCol>
+									<IonCol>
+										<h3>{item.data.origin_name}</h3>
+									</IonCol>
+								</IonRow>
+							</IonCard>
+						))}
+					</IonGrid>
 
-										<IonCol>
-											<h3>{item.origin_name}</h3>
-										</IonCol>
-									</IonRow>
-								</IonCard>
-							))}
-						</IonGrid>
-						<IonButton onClick={() => setShowMyOrganizationsModal(false)}>
-							Close
-						</IonButton>
-					</IonModal>
-
-					<IonModal
-						isOpen={showMyEventsModal}
-						onDidDismiss={closeMyEventsModal}
-					>
-						<div
-							style={{
-								display: "flex",
-								flexDirection: "column",
-								alignItems: "center",
-								width: "100%",
-								padding: "0px 20px",
-								bottom: "10px",
-							}}
-						>
-							<h2>My Events</h2>
-						</div>
-						<IonGrid style={{ marginTop: "-20px" }}>
-							{eventData.map((item, index) => (
-								<IonCard
-									key={index}
-									onClick={() => handleCardClickEvent(item.id)}
+					<h2 style={{ marginTop: "-10px" }}>My Events</h2>
+					<IonGrid style={{ marginTop: "-20px" }}>
+						{eventData.map((item, index) => (
+							<IonCard key={index} style={{ width: "200px", padding: "10px" }}>
+								<IonRow>
+									<img src="./images/cardImage.png" />
+								</IonRow>
+								<IonRow className="ion-text-center">
+									<h3 style={{ width: "200px" }}>{item.data.heading}</h3>
+								</IonRow>
+								<IonRow
+									style={{ marginTop: "-20px" }}
+									className="ion-text-center"
 								>
-									<IonRow
-										style={{ width: "200px", height: "70px" }}
-										className="ion-text-center"
-									>
-										<IonCol size="4">
-											<img src={item.data.banner_url} />
-										</IonCol>
-										<IonCol>
-											<h3>{item.data.heading}</h3>
-										</IonCol>
-									</IonRow>
-								</IonCard>
-							))}
-						</IonGrid>
-						<IonButton onClick={() => setShowMyEventsModal(false)}>
-							Close
-						</IonButton>
-					</IonModal>
+									<IonCol size="5">
+										<IonIcon
+											style={{ marginTop: "17px" }}
+											size="small"
+											icon={calendarClearOutline}
+										/>
+									</IonCol>
+									<IonCol style={{ marginLeft: "-50px" }}>
+										<h3>{item.data.date}</h3>
+									</IonCol>
+								</IonRow>
+							</IonCard>
+						))}
+					</IonGrid>
 				</IonCard>
 			</IonContent>
 		</IonPage>

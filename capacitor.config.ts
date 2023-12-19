@@ -1,7 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.theincredible.union',
+  appId: 'io.ionic.starter',
   appName: 'ionic_union',
   webDir: 'dist',
   server: {
