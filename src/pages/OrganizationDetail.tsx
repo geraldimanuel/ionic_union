@@ -71,6 +71,8 @@ const OrganizationDetail: React.FC = () => {
 
 	const isMember = organizationData?.members.includes(currentUser!);
 
+	const isAdmin = organizationData?.admin.includes(currentUser!);
+
 	const { id } = useParams<{ id: string }>();
 
 	useEffect(() => {
@@ -179,26 +181,29 @@ const OrganizationDetail: React.FC = () => {
 							<IonIcon color="primary" icon={arrowBackOutline} size="large" />
 						</IonButton>
 					</IonButtons>
-					<IonButtons
-						style={{
-							position: "absolute",
-							top: "10px",
-							marginTop: "10px",
-							right: "0px",
-						}}
-					>
-						<Link to={`/nav/editorganization/${organizationData?.origin_id}`}>
-							<IonButton
-								style={{
-									backgroundColor: "#ffffff",
-									padding: "5px 0px",
-									borderRadius: "100%",
-								}}
-							>
-								<IonIcon color="primary" icon={pencil} size="large" />
-							</IonButton>
-						</Link>
-					</IonButtons>
+
+					{isAdmin && (
+						<IonButtons
+							style={{
+								position: "absolute",
+								top: "10px",
+								marginTop: "10px",
+								right: "0px",
+							}}
+						>
+							<Link to={`/nav/editorganization/${organizationData?.origin_id}`}>
+								<IonButton
+									style={{
+										backgroundColor: "#ffffff",
+										padding: "5px 0px",
+										borderRadius: "100%",
+									}}
+								>
+									<IonIcon color="primary" icon={pencil} size="large" />
+								</IonButton>
+							</Link>
+						</IonButtons>
+					)}
 
 					<div
 						style={{
