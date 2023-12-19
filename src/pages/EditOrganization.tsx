@@ -58,7 +58,7 @@ const EditOrganization: React.FC = () => {
 	const [description, setDescription] = useState("");
 	const [announcement, setAnnouncement] = useState("");
 	const [name, setName] = useState("");
-	const [category, setCategory] = useState<string[]>([]);
+	const [category, setCategory] = useState<string>("");
 	const [status, setStatus] = useState("");
 	const [origin, setOrigin] = useState("");
 	const [image, setImage] = useState<File | null>(null);
@@ -146,7 +146,7 @@ const EditOrganization: React.FC = () => {
 				setName(orgData.origin_name);
 				setDescription(orgData.description);
 				setAnnouncement(orgData.announcement);
-				setCategory([orgData.type]);
+				setCategory(orgData.type);
 				setImageUrl(orgData.logo_url);
 				console.log(imageUrl);
 			} catch (error) {
@@ -374,7 +374,7 @@ const EditOrganization: React.FC = () => {
 								id="category"
 								// style={{left:"5px", borderRadius:"28px", height:"56px"}}
 								placeholder="Select category"
-								onIonChange={(e) => setCategory(e.detail.value as string[])}
+								onIonChange={(e) => setCategory(e.detail.value as string)}
 							>
 								<IonSelectOption value="1">Himpunan</IonSelectOption>
 								<IonSelectOption value="2">UKM</IonSelectOption>

@@ -185,7 +185,7 @@ export async function updateOrganization(
 	origin_name: string,
 	description: string,
 	announcement: string,
-	type: string[],
+	type: string,
 ) {
 	
 	await updateDoc(doc(db, "organizations", origin_id), {
@@ -193,7 +193,7 @@ export async function updateOrganization(
 		origin_name: origin_name,
 		description: description,
 		announcement: announcement,
-		type: [type],
+		type: type,
 	});	
 
 	console.log

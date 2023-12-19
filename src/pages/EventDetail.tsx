@@ -158,30 +158,36 @@ const EventDetail: React.FC = () => {
   }, [userData, id]);
 
   useEffect(() => {
-    async function fetchEventData() {
+    const fetchEventData = () => {
       const origin = "your_origin_value";
       const q = query(collection(db, "events"));
-
-      try {
-        const querySnapshot = await getDocs(q);
-        const events: any = [];
-        querySnapshot.forEach((doc) => {
-          events.push({ id: doc.id, data: doc.data() });
-        });
-
-        const filteredEvents = events.filter((event: any) =>
-          id.includes(event.id)
-        );
-
-        setEventData(filteredEvents);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    }
-
+  
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        try {
+          const events: any[] = [];
+          querySnapshot.forEach((doc) => {
+            events.push({ id: doc.id, data: doc.data() });
+          });
+  
+          const filteredEvents = events.filter((event) =>
+            id.includes(event.id)
+          );
+  
+          setEventData(filteredEvents);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      });
+  
+      // Clean up the event listener when the component unmounts
+      return () => {
+        unsubscribe();
+      };
+    };
+  
     fetchEventData();
-  }, [loggedUserEvent]);
-
+  }, [db]);
+  
   useEffect(() => {
     if (eventData && eventData.length > 0) {
       const filteredOrgData = orgData.filter(

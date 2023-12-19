@@ -22,6 +22,7 @@ import {
 	getDocs,
 	getDoc,
 	doc,
+	onSnapshot,
 } from "firebase/firestore";
 import { notificationsOutline, searchOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
@@ -83,69 +84,80 @@ const Organization: React.FC = () => {
 			fetchUserName();
 		}
 	}, [db]);
-
 	useEffect(() => {
-		async function fetchOrganizationData() {
-			const q = query(collection(db, "organizations"));
-
+		const fetchOrganizationData = () => {
+		  const q = query(collection(db, "organizations"));
+	  
+		  const unsubscribe = onSnapshot(q, (querySnapshot) => {
 			try {
-				const querySnapshot = await getDocs(q);
-				const orgData: OrgData[] = [];
-				querySnapshot.forEach((doc) => {
-					// map one by one
-					orgData.push({
-						origin_id: doc.id,
-						logo_url: doc.data().logo_url,
-						origin_name: doc.data().origin_name,
-						description: doc.data().description,
-						announcement: doc.data().announcement,
-						type: doc.data().type,
-						admin: doc.data().admin,
-						member: doc.data().member,
-					});
+			  const orgData: OrgData[] = [];
+			  querySnapshot.forEach((doc) => {
+				// map one by one
+				orgData.push({
+				  origin_id: doc.id,
+				  logo_url: doc.data().logo_url,
+				  origin_name: doc.data().origin_name,
+				  description: doc.data().description,
+				  announcement: doc.data().announcement,
+				  type: doc.data().type,
+				  admin: doc.data().admin,
+				  member: doc.data().member,
 				});
-				setOrgData(orgData);
+			  });
+			  setOrgData(orgData);
 			} catch (error) {
-				console.log(error);
+			  console.error("Error fetching organization data:", error);
 			}
-		}
-
+		  });
+	  
+		  // Clean up the organization listener when the component unmounts
+		  return () => {
+			unsubscribe();
+		  };
+		};
+	  
 		fetchOrganizationData();
-	}, [db]);
-
-	useEffect(() => {
+	  }, [db]);
+	  
+	  useEffect(() => {
 		// get all organizations data where logged user in member array
-
+	  
 		const q = query(
-			collection(db, "organizations"),
-			where("members", "array-contains", auth.currentUser?.email)
+		  collection(db, "organizations"),
+		  where("members", "array-contains", auth.currentUser?.email)
 		);
-
-		async function fetchMyOrganizationData() {
+	  
+		const fetchMyOrganizationData = () => {
+		  const unsubscribe = onSnapshot(q, (querySnapshot) => {
 			try {
-				const querySnapshot = await getDocs(q);
-				const orgData: OrgData[] = [];
-				querySnapshot.forEach((doc) => {
-					// map one by one
-					orgData.push({
-						origin_id: doc.id,
-						logo_url: doc.data().logo_url,
-						origin_name: doc.data().origin_name,
-						description: doc.data().description,
-						announcement: doc.data().announcement,
-						type: doc.data().type,
-						admin: doc.data().admin,
-						member: doc.data().member,
-					});
+			  const orgData: OrgData[] = [];
+			  querySnapshot.forEach((doc) => {
+				// map one by one
+				orgData.push({
+				  origin_id: doc.id,
+				  logo_url: doc.data().logo_url,
+				  origin_name: doc.data().origin_name,
+				  description: doc.data().description,
+				  announcement: doc.data().announcement,
+				  type: doc.data().type,
+				  admin: doc.data().admin,
+				  member: doc.data().member,
 				});
-				setMyOrg(orgData);
+			  });
+			  setMyOrg(orgData);
 			} catch (error) {
-				console.log(error);
+			  console.error("Error fetching user's organization data:", error);
 			}
-		}
-
+		  });
+	  
+		  // Clean up the user's organization listener when the component unmounts
+		  return () => {
+			unsubscribe();
+		  };
+		};
+	  
 		fetchMyOrganizationData();
-	}, [db]);
+	  }, [db]);	  
 
 	function printData() {
 		console.log(orgData);
