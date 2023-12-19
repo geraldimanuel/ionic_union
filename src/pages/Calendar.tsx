@@ -164,26 +164,9 @@ const Calendar: React.FC = () => {
 							fontSize: "32px",
 						}}
 					>
-						Let's find your <br></br> favorite events!
+						Let's find your <br></br> timeline on <br></br> calendar!
 					</h1>
 				</IonText>
-				<IonItem
-					style={{
-						top: "30px",
-						borderRadius: "28px",
-						height: "56px",
-						boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-					}}
-				>
-					<IonLabel>
-						<IonIcon icon={searchOutline} />
-					</IonLabel>
-					<IonInput
-						style={{ left: "5px", borderRadius: "28px", height: "56px" }}
-						type="text"
-						placeholder="Search here. . ."
-					/>
-				</IonItem>
 			</div>
 
 			<IonContent className="ion-padding">

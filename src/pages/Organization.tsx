@@ -86,6 +86,8 @@ const Organization: React.FC = () => {
 	}, [db]);
 
 	useEffect(() => {
+
+		console.log("useEffect org")
 		async function fetchOrganizationData() {
 			const q = query(collection(db, "organizations"));
 
@@ -115,6 +117,8 @@ const Organization: React.FC = () => {
 	}, [db]);
 
 	useEffect(() => {
+
+		console.log("useEffect myorg")
 		// get all organizations data where logged user in member array
 
 		const q = query(
