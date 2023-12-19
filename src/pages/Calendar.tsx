@@ -182,39 +182,11 @@ const Calendar: React.FC = () => {
 						"linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
 					height: "261px",
 					borderRadius: "0px 0px 32px 32px",
-					padding: "10px 25px",
+					padding: "70px 25px",
 					position: "relative",
 					boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
 				}}
 			>
-				<IonButton
-					color="secondary"
-					style={{
-						position: "relative",
-						top: "45px",
-						left: "315px",
-						width: "51px",
-						height: "51px",
-						borderRadius: "14px",
-					}}
-					slot="end"
-				>
-					<IonIcon icon={notificationsOutline} />
-					<IonBadge
-						color="danger"
-						style={{
-							position: "absolute",
-							top: "4px",
-							left: "15px",
-							width: "5px",
-							height: "5px",
-							borderRadius: "100%",
-							display: "flex",
-							justifyContent: "center",
-							alignItems: "center",
-						}}
-					></IonBadge>
-				</IonButton>
 				<IonText color="light">
 					<p>Hello, {loggedName}!</p>
 					<h1
