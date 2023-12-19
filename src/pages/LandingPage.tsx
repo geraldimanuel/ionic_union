@@ -11,99 +11,169 @@ import {
 	IonToolbar,
 	IonItem,
 	IonLabel,
-	IonRouterLink,
 	IonCard,
 	IonGrid,
 	IonRow,
 	IonCol,
+	IonRouterLink,
 } from "@ionic/react";
-import {
-	notificationsOutline,
-	searchOutline,
-	calendarNumberOutline,
-	locationOutline,
-	appsOutline,
-	add,
-} from "ionicons/icons";
-import Swiper from "swiper";
-import { Navigation, Pagination } from "swiper/modules";
+import { add, locationOutline, calendarNumberOutline } from "ionicons/icons";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { useEffect, useState } from "react";
 import {
 	collection,
-	doc,
-	getDoc,
 	getDocs,
 	query,
 	where,
+	getDoc,
+	doc,
+	updateDoc,
+	arrayUnion,
+	onSnapshot,
 } from "firebase/firestore";
-import { db } from "../firebaseConfig";
-import { Link, useHistory } from "react-router-dom";
-import { getAuth } from "firebase/auth";
+import { useHistory } from "react-router-dom";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { addEvent, db } from "../firebaseConfig";
 
-interface Event {
-	id: number;
-	date: Date;
-	title: string;
-	time: string;
-	location: string;
+interface EventData {
+	id: string;
+	data: {
+		banner_url: string;
+		date: string;
+		description: string;
+		heading: string;
+		location: string;
+		origin: string;
+		// Add other properties as per your actual data structure
+	};
 }
 
-const eventData: Event[] = [
-	{
-		id: 1,
-		date: new Date("2023-12-04T14:00:00"),
-		title: "Talkshow B-Land 2023",
-		time: "14.00 - 16.00 WIB",
-		location: "Lecture Hall",
-	},
-	{
-		id: 2,
-		date: new Date("2023-12-05T10:00:00"),
-		title: "Workshop XYZ",
-		time: "10.00 - 12.00 WIB",
-		location: "Conference Room",
-	},
-	{
-		id: 3,
-		date: new Date("2023-12-06T18:00:00"),
-		title: "Seminar ABC",
-		time: "18.00 - 20.00 WIB",
-		location: "Auditorium",
-	},
-];
-
-const logged_user = {
-	user: "Kesya",
-	attended: [1, 2],
-};
+interface UserData {
+	id: string;
+	data: {
+		email: string;
+		event_attended: string[];
+		event_declined: string[];
+		name: string;
+		origin: string;
+		profile_picture: string;
+		role: string;
+	};
+}
 
 const Home: React.FC = () => {
+	const [eventData, setEventData] = useState<EventData[]>([]);
+	const [userData, setUserData] = useState<UserData[]>([]);
+	const [loggedUserEvent, setLoggedUserEvent] = useState<string[]>([]);
 	const history = useHistory();
+	const auth = getAuth();
 
-	const handleClickEvent = () => {
-		history.push(`/nav/createevent`);
-	};
+	// useEffect(() => {
+	// 	const userQuery = query(collection(db, "users"), where("email", "==", auth.currentUser?.email));
+	// 	const userUnsubscribe = onSnapshot(userQuery, (userQuerySnapshot) => {
+	// 	  const users: UserData[] = [];
+	// 	  userQuerySnapshot.forEach((userDoc) => {
+	// 		const userData: UserData = {
+	// 		  id: userDoc.id,
+	// 		  data: userDoc.data() as {
+	// 			email: string;
+	// 			event_attended: string[];
+	// 			event_declined: string[];
+	// 			name: string;
+	// 			origin: string;
+	// 			profile_picture: string;
+	// 			role: string;
+	// 		  },
+	// 		};
+	// 		users.push(userData);
+	// 	  });
 
-	const handleClickOrganization = () => {
-		history.push(`/nav/createorganization`);
-	};
+	// 	  setUserData(users);
+	// 	  setLoggedUserEvent(users[0].data.event_attended.concat(users[0].data.event_declined));
+	// 	});
 
-	//ini untuk sort yg dihadirin sama logged user aja + sort date
-	const sortedEventData: Event[] = eventData
-		.filter((event) => logged_user.attended.includes(event.id))
-		.sort((a, b) => b.date.getTime() - a.date.getTime());
+	// 	const eventQuery = query(collection(db, "events"), where("status", "==", "Public"));
+	// 	const eventUnsubscribe = onSnapshot(eventQuery, (eventQuerySnapshot) => {
+	// 	  const events: any = [];
+	// 	  eventQuerySnapshot.forEach((eventDoc) => {
+	// 		events.push({ id: eventDoc.id, data: eventDoc.data() });
+	// 	  });
 
-	const formatEventDate = (date: Date) => {
-		const options: Intl.DateTimeFormatOptions = {
-			day: "2-digit",
-			month: "short",
-			year: "2-digit",
+	// 	  const filteredEvents = events.filter((event: any) => loggedUserEvent.includes(event.id));
+	// 	  setEventData(filteredEvents);
+	// 	});
+
+	// 	return () => {
+	// 	  userUnsubscribe();
+	// 	  eventUnsubscribe();
+	// 	};
+	//   }, [db, history]);
+
+	//   useEffect(() => {
+	// 	const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+	// 	});
+
+	// 	return () => unsubscribeAuth();
+	//   }, [auth]);
+
+	useEffect(() => {
+		const fetchUserData = async () => {
+			try {
+				const userQuery = query(
+					collection(db, "users"),
+					where("email", "==", auth.currentUser?.email)
+				);
+				const userQuerySnapshot = await getDocs(userQuery);
+				const users: UserData[] = [];
+
+				userQuerySnapshot.forEach((userDoc) => {
+					const userData: UserData = {
+						id: userDoc.id,
+						data: userDoc.data() as {
+							email: string;
+							event_attended: string[];
+							event_declined: string[];
+							name: string;
+							origin: string;
+							profile_picture: string;
+							role: string;
+						},
+					};
+					users.push(userData);
+				});
+
+				setUserData(users);
+				if (users.length > 0) {
+					const loggedUserEvent = users[0].data.event_attended.concat(
+						users[0].data.event_declined
+					);
+					setLoggedUserEvent(loggedUserEvent);
+
+					const eventQuery = query(
+						collection(db, "events"),
+						where("status", "==", "Public")
+					);
+					const eventQuerySnapshot = await getDocs(eventQuery);
+					const events: any[] = [];
+
+					eventQuerySnapshot.forEach((eventDoc) => {
+						events.push({ id: eventDoc.id, data: eventDoc.data() });
+					});
+
+					const filteredEvents = events.filter((event) =>
+						loggedUserEvent.includes(event.id)
+					);
+					setEventData(filteredEvents);
+				}
+			} catch (error) {
+				console.error("Error fetching data:", error);
+			}
 		};
-		return date.toLocaleDateString(undefined, options);
-	};
+
+		fetchUserData();
+	}, [eventData]);
 
 	const auth = getAuth();
 
@@ -143,7 +213,7 @@ const Home: React.FC = () => {
 			>
 				<div style={{ textAlign: "right", marginTop: "70px" }}></div>
 				<IonText color="light">
-					<p>Hello, {loggedName}!</p>
+					<p>Hello, {auth.currentUser?.displayName}!</p>
 					<h1
 						style={{
 							fontSize: "32px",
@@ -194,26 +264,31 @@ const Home: React.FC = () => {
 					</h2>
 				</IonText>
 				{eventData.length > 0 ? (
-					sortedEventData.map((event) => (
-						<IonRouterLink key={event.id} routerLink={`/event/${event.id}`}>
+					eventData.map((event: any) => (
+						<IonRouterLink
+							key={event.id}
+							routerLink={`/nav/events/${event.id}`}
+						>
 							<IonCard>
 								<IonGrid>
 									<IonRow>
 										<IonCol style={{ backgroundColor: "#D93D3D" }} size="3">
 											<h1 style={{ textAlign: "center", color: "white" }}>
-												{formatEventDate(event.date)}
+												{event.data.date}
 											</h1>
 										</IonCol>
 										<IonCol>
 											<IonRow>
-												<h3 style={{ marginLeft: "5px" }}>{event.title}</h3>
+												<h3 style={{ marginLeft: "5px" }}>
+													{event.data.heading}
+												</h3>
 											</IonRow>
 											<IonRow>
 												<IonCol size="1">
 													<IonIcon icon={calendarNumberOutline}></IonIcon>
 												</IonCol>
 												<IonCol>
-													<small>{event.time}</small>
+													<small>{event.data.date}</small>
 												</IonCol>
 											</IonRow>
 											<IonRow>
@@ -221,7 +296,7 @@ const Home: React.FC = () => {
 													<IonIcon icon={locationOutline}></IonIcon>
 												</IonCol>
 												<IonCol>
-													<small>{event.location}</small>
+													<small>{event.data.location}</small>
 												</IonCol>
 											</IonRow>
 										</IonCol>
