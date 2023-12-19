@@ -122,6 +122,7 @@ const EventDetail: React.FC = () => {
       setLoggedUserEvent(
         users[0].data.event_attended.concat(users[0].data.event_declined)
       );
+      console.log("useEffect1")
     });
 
     return () => unsubscribe();
@@ -144,6 +145,7 @@ const EventDetail: React.FC = () => {
       });
 
       setOrgData(orgs);
+      console.log("useEffect2")
     });
 
     return () => unsubscribe();
@@ -155,6 +157,7 @@ const EventDetail: React.FC = () => {
     } else {
       setIsIdInLoggedUserEvent(false);
     }
+    console.log("useEffect3")
   }, [userData, id]);
 
   useEffect(() => {
@@ -174,6 +177,7 @@ const EventDetail: React.FC = () => {
         );
 
         setEventData(filteredEvents);
+        console.log("useEffect4")
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -193,6 +197,7 @@ const EventDetail: React.FC = () => {
     } else {
       setIsCurrentUserEventCreator(false);
     }
+    console.log("useEffect5")
   }, [eventData, orgData]);
 
   const goBack = () => {

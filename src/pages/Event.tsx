@@ -121,6 +121,7 @@ const Event: React.FC = () => {
 		const filteredEvents = events.filter((event : any) => !loggedUserEvent.includes(event.id));
   
 		setEventData(filteredEvents);
+    console.log("Ini useEffect Event 2")
 	  } catch (error) {
 		console.error("Error fetching data:", error);
 	  }
@@ -129,9 +130,42 @@ const Event: React.FC = () => {
 	fetchEventData();
   }, [loggedUserEvent]); 
 
-  function printData() {
-    console.log(eventData);
-  }
+  // useEffect(() => {
+	// 	const fetchUserData = async () => {
+	// 		try {
+  //       const q = query(collection(db, "users"), where("email", "==", auth.currentUser?.email));
+  
+  //       const unsubscribe = onSnapshot(q, (querySnapshot) => {
+  //         const users: UserData[] = [];
+  //         querySnapshot.forEach((doc) => {
+  //           const userData: UserData = {
+  //             id: doc.id,
+  //             data: doc.data() as {
+  //               email: string;
+  //               event_attended: string[];
+  //               event_declined: string[];
+  //               name: string;
+  //               origin: string;
+  //               profile_picture: string;
+  //               role: string;
+  //             },
+  //           };
+  //           users.push(userData);
+  //         });
+      
+  //         setUserData(users);
+  //         setLoggedUserEvent(users[0].data.event_attended.concat(users[0].data.event_declined));
+  //         console.log("Ini useEffect Event 1")
+  //       });
+      
+  //       return () => unsubscribe();
+	// 		} catch (error) {
+	// 			console.error("Error fetching data:", error);
+	// 		}
+	// 	};
+
+	// 	fetchUserData();
+	// }, [db]);
 
   const handleAttendClick = async (eventId: string) => {
     try {

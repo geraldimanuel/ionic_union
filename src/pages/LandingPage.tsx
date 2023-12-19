@@ -109,71 +109,65 @@ const Home: React.FC = () => {
 	// 	  userUnsubscribe();
 	// 	  eventUnsubscribe();
 	// 	};
-	//   }, [db, history]);
+	//   }, [db]);
 
 	//   useEffect(() => {
 	// 	const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
 	// 	});
 
 	// 	return () => unsubscribeAuth();
-	//   }, [auth]);
+	//   }, [db]);
+	//make useEffect above asyncronous
 
 	useEffect(() => {
 		const fetchUserData = async () => {
 			try {
-				const userQuery = query(
-					collection(db, "users"),
-					where("email", "==", auth.currentUser?.email)
-				);
-				const userQuerySnapshot = await getDocs(userQuery);
-				const users: UserData[] = [];
+						const userQuery = query(collection(db, "users"), where("email", "==", auth.currentUser?.email));
+		const userUnsubscribe = onSnapshot(userQuery, (userQuerySnapshot) => {
+		  const users: UserData[] = [];
+		  userQuerySnapshot.forEach((userDoc) => {
+			const userData: UserData = {
+			  id: userDoc.id,
+			  data: userDoc.data() as {
+				email: string;
+				event_attended: string[];
+				event_declined: string[];
+				name: string;
+				origin: string;
+				profile_picture: string;
+				role: string;
+			  },
+			};
+			users.push(userData);
+		  });
 
-				userQuerySnapshot.forEach((userDoc) => {
-					const userData: UserData = {
-						id: userDoc.id,
-						data: userDoc.data() as {
-							email: string;
-							event_attended: string[];
-							event_declined: string[];
-							name: string;
-							origin: string;
-							profile_picture: string;
-							role: string;
-						},
-					};
-					users.push(userData);
-				});
+		  setUserData(users);
+		  setLoggedUserEvent(users[0].data.event_attended.concat(users[0].data.event_declined));
+		});
 
-				setUserData(users);
-				if (users.length > 0) {
-					const loggedUserEvent = users[0].data.event_attended.concat(
-						users[0].data.event_declined
-					);
-					setLoggedUserEvent(loggedUserEvent);
+		const eventQuery = query(collection(db, "events"));
+		const eventUnsubscribe = onSnapshot(eventQuery, (eventQuerySnapshot) => {
+		  const events: any = [];
+		  eventQuerySnapshot.forEach((eventDoc) => {
+			events.push({ id: eventDoc.id, data: eventDoc.data() });
+		  });
 
-					const eventQuery = query(
-						collection(db, "events"),
-						where("status", "==", "Public")
-					);
-					const eventQuerySnapshot = await getDocs(eventQuery);
-					const events: any[] = [];
+		  const filteredEvents = events.filter((event: any) => loggedUserEvent.includes(event.id));
+		  setEventData(filteredEvents);
+		});
 
-					eventQuerySnapshot.forEach((eventDoc) => {
-						events.push({ id: eventDoc.id, data: eventDoc.data() });
-					});
-
-					const filteredEvents = events.filter((event) =>
-						loggedUserEvent.includes(event.id)
-					);
-					setEventData(filteredEvents);
-				}
+		return () => {
+		  userUnsubscribe();
+		  eventUnsubscribe();
+		  console.log("Hello Home!")
+		};
 			} catch (error) {
 				console.error("Error fetching data:", error);
 			}
 		};
 
 		fetchUserData();
-	}, [eventData]);
+	}, [db, history]);
 
 	return (
 		<IonPage style={{ backgroundColor: "DBDBDB" }}>
