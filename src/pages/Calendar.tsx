@@ -22,6 +22,7 @@ import {
 	locationOutline,
 	notificationsOutline,
 	searchOutline,
+	calendarNumberOutline
 } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router";
@@ -51,45 +52,29 @@ interface EventData {
 	};
 }
 
+interface UserData {
+	id: string;
+	data: {
+		email: string;
+		event_attended: string[];
+		event_declined: string[];
+		name: string;
+		origin: string;
+		profile_picture: string;
+		role: string;
+	};
+}
+
 const Calendar: React.FC = () => {
 	const history = useHistory();
 	const [selectedDate, setSelectedDate] = useState<string>("");
-	// const [eventData, setEventData] = useState<EventData[]>([
-	// 	{
-	// 		id: "1",
-	// 		data: {
-	// 			banner_url: "./images/imkom.png",
-	// 			date: "2023-12-08",
-	// 			description: "join yuk!",
-	// 			heading: "imkom",
-	// 			location: "function hall",
-	// 			origin: "Im'Kom",
-	// 		},
-	// 	},
-	// 	{
-	// 		id: "2",
-	// 		data: {
-	// 			banner_url: "./images/radio.png",
-	// 			date: "2023-12-20",
-	// 			description: "final stage",
-	// 			heading: "umn redio",
-	// 			location: "ruang",
-	// 			origin: "UMN Radio",
-	// 		},
-	// 	},
-	// ]);
+	const [eventData, setEventData] = useState<EventData[]>([]);
+	const [userData, setUserData] = useState<UserData[]>([]);
+	const [loggedUserEvent, setLoggedUserEvent] = useState<string[]>([]);
 
 	useEffect(() => {
 		console.log("selectedDate: ", selectedDate);
 	}, [selectedDate]);
-
-	// const filteredEvents = eventData.filter((item) =>
-	// 	Object.values(item.data).some(
-	// 		(value) =>
-	// 			typeof value === "string" &&
-	// 			value.toLowerCase().includes(selectedDate.toLowerCase())
-	// 	)
-	// );
 
 	const handleCardClick = (eventId: string) => {
 		history.push(`/events/1`);
@@ -123,40 +108,69 @@ const Calendar: React.FC = () => {
 		}
 	}, [db]);
 
-	const [firebaseEvents, setFirebaseEvents] = useState<EventData[]>([]);
-
 	useEffect(() => {
 		// Fetch events from Firebase based on selectedDate
 		const fetchEventsFromFirebase = async () => {
 			if (selectedDate !== "") {
-				// Assuming 'date' in Firebase matches the format 'yyyy-MM-dd'
-				const eventsRef = collection(db, "events"); // Replace 'events' with your Firebase collection name
-				const querySnapshot = await getDocs(
-					query(eventsRef, where("date", "==", selectedDate))
-				);
-
-				const eventsData: EventData[] = [];
-				querySnapshot.forEach((doc) => {
-					const eventData: EventData = {
-						id: doc.id,
-						data: {
-							banner_url: doc.data().banner_url,
-							date: doc.data().date,
-							description: doc.data().description,
-							heading: doc.data().heading,
-							location: doc.data().location,
-							origin: doc.data().origin,
-							category: doc.data().category,
-						},
-					};
-					eventsData.push(eventData);
-				});
-
-				setFirebaseEvents(eventsData);
+				const fetchUserData = async () => {
+					try {
+						const userQuery = query(
+							collection(db, "users"),
+							where("email", "==", auth.currentUser?.email)
+						);
+						const userQuerySnapshot = await getDocs(userQuery);
+						const users: UserData[] = [];
+		
+						userQuerySnapshot.forEach((userDoc) => {
+							const userData: UserData = {
+								id: userDoc.id,
+								data: userDoc.data() as {
+									email: string;
+									event_attended: string[];
+									event_declined: string[];
+									name: string;
+									origin: string;
+									profile_picture: string;
+									role: string;
+								},
+							};
+							users.push(userData);
+						});
+		
+						setUserData(users);
+						if (users.length > 0) {
+							const loggedUserEvent = users[0].data.event_attended.concat(
+								users[0].data.event_declined
+							);
+							setLoggedUserEvent(loggedUserEvent);
+		
+							const eventQuery = query(
+								collection(db, "events"),
+								where("status", "==", "Public")
+							);
+							const eventQuerySnapshot = await getDocs(eventQuery);
+							const events: any[] = [];
+		
+							eventQuerySnapshot.forEach((eventDoc) => {
+								events.push({ id: eventDoc.id, data: eventDoc.data() });
+							});
+		
+							const filteredEvents = events.filter((event) =>
+								loggedUserEvent.includes(event.id)
+							);
+							setEventData(filteredEvents);
+						}
+					} catch (error) {
+						console.error("Error fetching data:", error);
+					}
+				};
+		
+				fetchUserData();
 			}
 		};
 
 		fetchEventsFromFirebase();
+		console.log("eventData: ", eventData);
 	}, [selectedDate]);
 
 	return (
@@ -227,100 +241,40 @@ const Calendar: React.FC = () => {
 						Select a date to see events.
 					</p>
 				) : (
-					firebaseEvents.map((item, index) => (
-						<IonCard
-							key={index}
-							style={{ borderRadius: "10px", marginTop: "30px" }}
-							onClick={() => handleCardClick(item.id)}
-						>
-							<img
-								src={item.data.banner_url}
-								style={{
-									position: "relative",
-									zIndex: "1",
-									height: "160px",
-									objectFit: "cover",
-									width: "100%",
-								}}
-							/>
-							<div
-								style={{
-									zIndex: "2",
-									top: "-150px",
-									left: "10px",
-									backgroundColor: "#2a93d5",
-									height: "22px",
-									width: "64px",
-									borderRadius: "10px",
-									position: "relative",
-									display: "flex",
-									alignItems: "center",
-									justifyContent: "center",
-								}}
-							>
-								<IonText
-									color="light"
-									style={{ textAlign: "center", paddingBottom: "5px" }}
-								>
-									<small>
-										<b>{item.data.category}</b>
-									</small>
-								</IonText>
-							</div>
-							<div style={{ padding: "0px 10px", marginTop: "-30px" }}>
-								<IonText color="dark">
-									<h2>{item.data.heading}</h2>
-									<div
-										style={{
-											display: "flex",
-											flexDirection: "row",
-											alignItems: "center",
-										}}
-									>
-										<IonIcon icon={calendarClearOutline} />{" "}
-										<small style={{ marginLeft: "10px" }}>
-											{item.data.date}
-										</small>{" "}
-										<br></br>
-									</div>
-									<div
-										style={{
-											display: "flex",
-											flexDirection: "row",
-											alignItems: "center",
-										}}
-									>
-										<IonIcon icon={locationOutline} />{" "}
-										<small style={{ marginLeft: "10px" }}>
-											{item.data.location}
-										</small>
-									</div>
-								</IonText>
-								<div
-									style={{
-										marginTop: "10px",
-										display: "flex",
-										flexDirection: "row",
-										gap: "40px",
-										alignItems: "center",
-										justifyContent: "center",
-										marginBottom: "15px",
-									}}
-								>
-									<IonButton
-										color="secondary"
-										style={{ borderRadius: "10px", width: "146px" }}
-									>
-										Attend
-									</IonButton>
-									<IonButton
-										color="danger"
-										style={{ borderRadius: "10px", width: "146px" }}
-									>
-										Decline
-									</IonButton>
-								</div>
-							</div>
+					eventData.map((event: any) => (
+						<IonCard>
+							<IonGrid>
+								<IonRow>
+									<IonCol style={{ backgroundColor: "#D93D3D" }} size="3">
+										<h1 style={{ textAlign: "center", color: "white" }}>
+											{event.data.date}
+										</h1>
+									</IonCol>
+									<IonCol>
+										<IonRow>
+											<h3 style={{ marginLeft: "5px" }}>
+												{event.data.heading}
+											</h3>
+										</IonRow>
+										<IonRow>
+											<IonCol size="1">
+												<IonIcon icon={calendarNumberOutline}></IonIcon>
+											</IonCol>
+											<IonCol>
+												<small>{event.data.date}</small>
+											</IonCol>
+										</IonRow>
+										<IonRow>
+											<IonCol size="1">
+												<IonIcon icon={locationOutline}></IonIcon>
+											</IonCol>
+											<IonCol>
+												<small>{event.data.location}</small>
+											</IonCol>
+										</IonRow>
+									</IonCol>
+								</IonRow>
+							</IonGrid>
 						</IonCard>
 					))
 				)}
