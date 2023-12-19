@@ -170,7 +170,7 @@ const Profile: React.FC = () => {
 		};
 
 		fetchData();
-	}, [db, auth.currentUser?.email]);
+	}, [db]);
 
 	useEffect(() => {
 		const fetchEvents = async () => {
@@ -312,8 +312,8 @@ const Profile: React.FC = () => {
 					<IonAvatar
 						style={{ width: "100px", height: "100px", marginTop: "10px" }}
 					>
-						{loggedPhoto ? (
-							<img src={loggedPhoto} />
+						{userData[0].data.profile_picture ? (
+							<img src={userData[0].data.profile_picture} />
 						) : (
 							<img
 								src="https://www.w3schools.com/howto/img_avatar.png"
@@ -322,7 +322,7 @@ const Profile: React.FC = () => {
 						)}
 					</IonAvatar>
 
-					<h1>{loggedName}</h1>
+					<h1>{userData[0].data.name}</h1>
 					<h3>{loggedEmail}</h3>
 					<div
 						style={{
