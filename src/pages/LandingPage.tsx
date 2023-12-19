@@ -60,6 +60,7 @@ interface UserData {
 		origin: string;
 		profile_picture: string;
 		role: string;
+		date: string;
 	};
 }
 
@@ -140,8 +141,10 @@ const Home: React.FC = () => {
 								origin: string;
 								profile_picture: string;
 								role: string;
+								date: string
 							},
 						};
+						
 						users.push(userData);
 					});
 
@@ -153,9 +156,11 @@ const Home: React.FC = () => {
 						);
 						setLoggedUserEvent(loggedUserEvent);
 
+								const today = new Date();
+				today.setHours(0, 0, 0, 0);
+
 						const eventQuery = query(
 							collection(db, "events"),
-							where("status", "==", "Public")
 						);
 
 						const eventUnsubscribe = onSnapshot(
@@ -164,7 +169,11 @@ const Home: React.FC = () => {
 								const events: any[] = [];
 
 								eventQuerySnapshot.forEach((eventDoc) => {
+										  const eventData = eventDoc.data();
+					  const eventDate = new Date(eventData.date);
+					  if (eventDate >= today) {
 									events.push({ id: eventDoc.id, data: eventDoc.data() });
+					  }
 								});
 
 								const filteredEvents = events.filter((event) =>
@@ -174,7 +183,6 @@ const Home: React.FC = () => {
 							}
 						);
 
-						// Clean up the event listener when the user component unmounts
 						return () => {
 							eventUnsubscribe();
 						};
