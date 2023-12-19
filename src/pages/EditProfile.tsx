@@ -26,8 +26,13 @@ import { arrowBack, arrowBackOutline, pencil } from "ionicons/icons";
 import { useState, useEffect } from "react";
 import { useHistory } from "react-router";
 import { Link } from "react-router-dom";
-import { updateUser } from "../firebaseConfig";
+import { db, updateUser } from "../firebaseConfig";
 import { getAuth } from "firebase/auth";
+import { Camera, CameraResultType } from "@capacitor/camera";
+import { doc, getDoc } from "firebase/firestore";
+import { defineCustomElements } from "@ionic/pwa-elements/loader";
+
+defineCustomElements(window);
 
 interface User {
 	email: string;
@@ -57,46 +62,68 @@ const EditProfile: React.FC = () => {
 
 	const auth = getAuth();
 
-	const updateData = (url: string) => {
-		// updateUser(name, url, auth.currentUser?.uid);
-		// history.push(`/nav/profile`);
+	const takePicture = async () => {
+		const image = await Camera.getPhoto({
+			quality: 90,
+			allowEditing: true,
+			resultType: CameraResultType.Uri,
+		});
 
+		if (!image || !image.webPath) return;
+
+		// Convert Photo to Blob
+		const blob = await fetch(image.webPath).then((res) => res.blob());
+
+		// Create a File object from the Blob
+		const file = new File([blob], "image.jpg", {
+			type: "image/jpeg",
+			lastModified: Date.now(),
+		});
+
+		setImagePreview(image.webPath);
+		setImage(file);
+		updateData(image.webPath);
+	};
+
+	const updateData = async (url: string) => {
 		if (name) {
-			updateUser(name, url, auth.currentUser?.uid);
-			history.push(`/nav/profile`);
+			if (image) {
+				const storageRef = ref(storage, "profile_pictures/" + fileName); // Use a folder and a file name
+
+				uploadBytes(storageRef, image as Blob).then((snapshot) => {
+					getDownloadURL(storageRef).then((newUrl) => {
+						updateUser(name, newUrl, auth.currentUser?.uid);
+						history.push(`/nav/profile`);
+					});
+				});
+			} else {
+				// If no new image is selected, use the current image URL
+				updateUser(name, url, auth.currentUser?.uid);
+				history.push(`/nav/profile`);
+			}
 		} else {
 			setError("Please fill in all fields");
 		}
 	};
 
-	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const file = e.target.files?.[0];
+	// const updateData = (url: string) => {
+	// 	// updateUser(name, url, auth.currentUser?.uid);
+	// 	// history.push(`/nav/profile`);
 
-		if (file) {
-			setImage(file);
-			setFileName(file.name);
+	// 	if (name) {
+	// 		updateUser(name, url, auth.currentUser?.uid);
+	// 		history.push(`/nav/profile`);
+	// 	} else {
+	// 		setError("Please fill in all fields");
+	// 	}
+	// };
 
-			const previewURL = URL.createObjectURL(file);
-			setImagePreview(previewURL);
-		}
+	const submitHandler = (e: React.FormEvent) => {
+		e.preventDefault();
+		updateData(imagePreview!);
 	};
 
 	const storage = getStorage();
-
-	const submitHandler = async () => {
-		if (image) {
-			const storageRef = ref(storage, fileName);
-
-			uploadBytes(storageRef, image as Blob).then((snapshot) => {
-				getDownloadURL(ref(storage, fileName)).then((url) => {
-					updateData(url);
-				});
-			});
-		} else {
-			// Jika tidak ada gambar yang dipilih, gunakan URL gambar lama
-			updateData(imageUrl);
-		}
-	};
 
 	useEffect(() => {
 		const auth = getAuth();
@@ -108,6 +135,30 @@ const EditProfile: React.FC = () => {
 			setImagePreview(auth.currentUser.photoURL!);
 		}
 	}, []);
+
+	useEffect(() => {
+		// find user name from database that have uid same as auth.currentUser.uid
+
+		const uid = auth.currentUser?.uid;
+
+		if (uid) {
+			const q = getDoc(doc(db, "users", uid));
+
+			async function fetchUserName() {
+				const docSnap = await q;
+				const userName = docSnap.data()?.name;
+				const userEmail = docSnap.data()?.email;
+				const userPhoto = docSnap.data()?.photoURL;
+
+				setName(userName);
+				setEmail(userEmail);
+				setImageUrl(userPhoto);
+				setImagePreview(userPhoto);
+			}
+
+			fetchUserName();
+		}
+	}, [db]);
 
 	return (
 		<IonPage>
@@ -201,21 +252,7 @@ const EditProfile: React.FC = () => {
 						}
 					>
 						<IonItem>
-							<IonIcon
-								icon={pencil}
-								style={{
-									position: "absolute",
-									top: "80px",
-									left: "80px",
-									width: "20px",
-									color: "white",
-								}}
-							></IonIcon>
-							<input
-								type="file"
-								accept="image/*"
-								onChange={handleImageChange}
-							/>
+							<IonButton onClick={takePicture}>Take Picture</IonButton>
 						</IonItem>
 						<IonItem
 							style={{

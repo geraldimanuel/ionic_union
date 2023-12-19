@@ -259,7 +259,7 @@ const Profile: React.FC = () => {
 				const docSnap = await q;
 				const userName = docSnap.data()?.name;
 				const userEmail = docSnap.data()?.email;
-				const userPhoto = docSnap.data()?.profile_picture;
+				const userPhoto = docSnap.data()?.photoURL;
 
 				setLoggedName(userName);
 				setLoggedEmail(userEmail);
