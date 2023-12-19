@@ -8,8 +8,8 @@ import {
 	signInWithRedirect,
 	getRedirectResult,
 	onAuthStateChanged,
+	signOut,
 } from "firebase/auth";
-import { useHistory } from "react-router-dom";
 import {
 	getFirestore,
 	setDoc,
@@ -20,8 +20,9 @@ import {
 	query,
 	where,
 	getDocs,
+	Timestamp,
+	updateDoc,
 } from "firebase/firestore";
-import { useState } from "react";
 
 export const firebaseConfig = {
 	apiKey: "AIzaSyDshXm1Zw3PrgHHjlmLlYZp-YVwrWqWvC8",
@@ -34,8 +35,8 @@ export const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
+export const auth = getAuth(app);
+export const provider = new GoogleAuthProvider();
 provider.addScope("https://www.googleapis.com/auth/contacts.readonly");
 
 export const db = getFirestore(app);
@@ -78,78 +79,9 @@ export async function registerUser(email: string, password: string) {
 		});
 }
 
-export async function loginWithGooglePopup() {
-	signInWithPopup(auth, provider)
-		.then(async (result) => {
-			// This gives you a Google Access Token. You can use it to access the Google API.
-			const credential = GoogleAuthProvider.credentialFromResult(result);
-			const token = credential!.accessToken;
-			// The signed-in user info.
-			const user = result.user;
-			// IdP data available using getAdditionalUserInfo(result)
-			// ...
-
-			// await setDoc(doc(db, "users", user.uid), {
-			// 	name: user.displayName,
-			// 	email: user.email,
-			// 	role: "user",
-			// 	organizations: ["umn"],
-			// });
-
-			const userRef = doc(db, "users", user.uid);
-			const userSnapshot = await getDoc(userRef);
-
-			if (!userSnapshot.exists()) {
-				// User doesn't exist, create a new entry
-				await setDoc(userRef, {
-					name: user.displayName,
-					email: user.email,
-					role: "user",
-					organizations: ["umn"],
-				});
-			} else {
-				// User already exists
-				console.log("User already exists in the database");
-			}
-		})
-		.catch((error) => {
-			// Handle Errors here.
-			const errorCode = error.code;
-			const errorMessage = error.message;
-			// The email of the user's account used.
-			const email = error.customData.email;
-			// The AuthCredential type that was used.
-			const credential = GoogleAuthProvider.credentialFromError(error);
-			// ...
-		});
-}
-
-// export async function loginWithGoogleRedirect() {
-// 	getRedirectResult(auth)
-// 		.then((result) => {
-// 			// This gives you a Google Access Token. You can use it to access Google APIs.
-// 			const credential = GoogleAuthProvider.credentialFromResult(result!);
-// 			const token = credential!.accessToken;
-
-// 			// The signed-in user info.
-// 			const user = result!.user;
-// 			// IdP data available using getAdditionalUserInfo(result)
-// 			// ...
-// 		})
-// 		.catch((error) => {
-// 			// Handle Errors here.
-// 			const errorCode = error.code;
-// 			const errorMessage = error.message;
-// 			// The email of the user's account used.
-// 			const email = error.customData.email;
-// 			// The AuthCredential type that was used.
-// 			const credential = GoogleAuthProvider.credentialFromError(error);
-// 			// ...
-// 		});
-// }
-
 export async function logoutUser() {
 	auth.signOut();
+	// go to login page
 }
 
 export async function getCurrentUserEmail() {
@@ -181,48 +113,20 @@ export async function getEmail() {
 	}
 }
 
-export async function fetchData(id = "E001") {
-	// const docRef = await addDoc(collection(db, "events"), {
-	// 	origin: "hmif",
-	// 	heading: "JOLLITY: Closing Concert COMMFEST UMN 2023",
-	// 	location: "",
-	// 	date: "",
-	// 	description: "",
-	// 	banner_url: ""
-	// })
-
-	await setDoc(doc(db, "events", id), {
-		origin: "hmif",
-		heading: "JOLLITY: Closing Concert COMMFEST UMN 2023",
-		location: "Lapangan Universitas Multimedia Nusantara",
-		date: "Saturday, Nov 11, 2023 (15.30 WIB - Selesai)",
-		description: `Haii haiii, KomZen!
-
-		Udah siap belum nih untuk seru-seruan nonton konser 
-		bareng di Jollity: Closing Concert COMMFEST UMN 
-		2023?!
-		
-		Guest Star: @geishaindonesia & @salpriadi
-		
-		Grab your ticket now at : 
-		https://bit.ly/PresaleCOMMFEST2023
-		
-		Temukan kegembiraan di Jollity COMMFEST 2023
-		Instagram: @commfest.umn`,
-		banner_url:
-			"https://media.discordapp.net/attachments/1054830852783231008/1176751437267615845/image_5.png?ex=6570022d&is=655d8d2d&hm=b89a03a67e4adcc153acff64676d5b12c63aec9442eec7a25cf5851692bf5431&=&format=webp&width=537&height=347",
-	});
-}
-
 export async function addEvent(
-	bannerUrl: string,
-	date: string,
-	description: string,
+	bannerUrl: string | null,
 	heading: string,
+	date: Timestamp | null,
 	location: string,
+	description: string,
+	category: string[],
+	status: boolean,
 	origin: string
 ) {
 	const eventsCollection = collection(db, "events");
+
+	const user = auth.currentUser;
+	const username = user?.displayName;
 
 	await addDoc(eventsCollection, {
 		origin: origin,
@@ -231,26 +135,134 @@ export async function addEvent(
 		date: date,
 		description: description,
 		banner_url: bannerUrl,
-		// You don't need to specify an ID here, Firestore will auto-generate one
+		category: category,
+		status: status,
+		created_by: username,
 	});
-}	
+}
 
-// export const [eventData, setEventData] = useState([]);
+export async function addOrganization(
+	// origin_id: string,
+	logo_url: string | null,
+	origin_name: string,
+	description: string,
+	announcement: string,
+	type: string[],
+) {
 
-// export async function getEvent(origin:string){
+	const organizationsCollection = collection(db, "organizations");
+	
+	const user = auth.currentUser;
+	const email = user?.email;
 
-// 	const q = query(collection(db, "events"), where("origin","==", origin));
+	await addDoc(organizationsCollection, {
+		// origin_id: origin_id,
+		logo_url: logo_url,
+		origin_name: origin_name,
+		description: description,
+		announcement: announcement,
+		type: type,
+		admin: [email],
+		members: [email],
+	});
 
-// 	try {
-//         const querySnapshot = await getDocs(q);
-//         const events:any = [];
-//         querySnapshot.forEach((doc) => {
-//           // Push each document's data to the events array
-//           events.push({ id: doc.id, data: doc.data() });
-//         });
-//         setEventData(events); // Set the state with retrieved data
-//       } catch (error) {
-//         console.error('Error fetching data:', error);
-//       }
-	  
-// }
+	// await setDoc(doc(db, "organizations", origin_id), {
+	// 	origin_id: origin_id,
+	// 	logo_url: logo_url,
+	// 	origin_name: origin_name,
+	// 	description: description,
+	// 	announcement: announcement,
+	// 	type: type,
+	// 	admin: [email],
+	// 	members: [email],
+	// });
+}
+
+export async function updateOrganization(
+	origin_id: string,
+	logo_url: string | null,
+	origin_name: string,
+	description: string,
+	announcement: string,
+	type: string[],
+) {
+	
+	await updateDoc(doc(db, "organizations", origin_id), {
+		logo_url: logo_url,
+		origin_name: origin_name,
+		description: description,
+		announcement: announcement,
+		type: [type],
+	});	
+
+	console.log
+}
+
+export async function updateUser(
+	displayName: string,
+	photoURL: string,
+	user_uid: any,
+) {
+
+	const loggedUserRef = doc(db, "users", user_uid);
+
+	await updateDoc(loggedUserRef, {
+		displayName: displayName,
+		photoURL: photoURL,
+	});
+}
+
+
+export async function requestJoinOrganization(
+	origin_id: string,
+) {
+
+	const user = auth.currentUser;
+	const email = user?.email;
+
+	// if same email already request to same organization then do nothing
+	const q = query(collection(db, "requests"), where("origin_id", "==", origin_id), where("email", "==", email));
+	const querySnapshot = await getDocs(q);
+	querySnapshot.forEach((doc) => {
+		console.log(doc.id, " => ", doc.data());
+	});
+
+	if (querySnapshot.size > 0) {
+		console.log("already requested");
+		return;
+	}
+
+	await addDoc(collection(db, "requests"), {
+		origin_id: origin_id,
+		email: email,
+	});
+}
+
+
+export async function addMembers(
+	origin_id: string,
+	email: string,
+) {
+	// append email to members array
+	const organizationRef = doc(db, "organizations", origin_id);
+	const organizationSnap = await getDoc(organizationRef);
+
+	if (organizationSnap.exists()) {
+		console.log("Document data:", organizationSnap.data());
+	} else {
+		console.log("data ilang bos");
+	}
+
+	const organization = organizationSnap.data();
+	const members = organization?.members;
+
+	if (members) {
+		members.push(email);
+	}
+
+	await setDoc(organizationRef, {
+		members: members,
+	}, { merge: true });
+
+	console.log("Document successfully written!");
+}

@@ -63,7 +63,6 @@ http://ionicframework.com/docs/theming/ */
 	--ion-color-light-contrast-rgb: 0,0,0;
 	--ion-color-light-shade: #d7d8da;
 	--ion-color-light-tint: #f5f6f9;
-
 }
 
 @media (prefers-color-scheme: dark) {
@@ -239,7 +238,7 @@ h2 {
 
 h3 {
   font-family: 'Poppins', sans-serif;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 600;
 }
 
