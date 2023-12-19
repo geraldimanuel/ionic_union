@@ -224,7 +224,7 @@ export async function updateEvent(
 }
 
 export async function updateUser(
-	displayName: string,
+	name: string,
 	photoURL: string,
 	user_uid: any,
 ) {
@@ -232,7 +232,7 @@ export async function updateUser(
 	const loggedUserRef = doc(db, "users", user_uid);
 
 	await updateDoc(loggedUserRef, {
-		displayName: displayName,
+		name: name,
 		photoURL: photoURL,
 	});
 }

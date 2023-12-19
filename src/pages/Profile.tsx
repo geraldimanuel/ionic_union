@@ -135,37 +135,47 @@ const Profile: React.FC = () => {
 	const [eventData, setEventData] = useState<EventData[]>([]);
 
 	useEffect(() => {
-		const q = query(
-			collection(db, "users"),
-			where("email", "==", auth.currentUser?.email)
-		);
-
-		const unsubscribe = onSnapshot(q, (querySnapshot) => {
+		const fetchData = async () => {
+		  try {
+			const q = query(
+			  collection(db, "users"),
+			  where("email", "==", auth.currentUser?.email)
+			);
+	  
+			const querySnapshot = await getDocs(q);
+	  
 			const users: UserData[] = [];
 			querySnapshot.forEach((doc) => {
-				const userData: UserData = {
-					id: doc.id,
-					data: doc.data() as {
-						email: string;
-						event_attended: string[];
-						event_declined: string[];
-						name: string;
-						origin: string;
-						profile_picture: string;
-						role: string;
-					},
-				};
-				users.push(userData);
+			  const userData: UserData = {
+				id: doc.id,
+				data: doc.data() as {
+				  email: string;
+				  event_attended: string[];
+				  event_declined: string[];
+				  name: string;
+				  origin: string;
+				  profile_picture: string;
+				  role: string;
+				},
+			  };
+			  users.push(userData);
 			});
-
+	  
 			setUserData(users);
-			setLoggedUserEvent(
+	  
+			if (users.length > 0) {
+			  setLoggedUserEvent(
 				users[0].data.event_attended.concat(users[0].data.event_declined)
-			);
-		});
-
-		return () => unsubscribe();
-	}, [db]);
+			  );
+			}
+		  } catch (error) {
+			console.error("Error fetching data:", error);
+		  }
+		};
+	  
+		fetchData();
+	  
+	  }, [db]);	  
 
 	useEffect(() => {
 		const fetchEvents = async () => {
@@ -317,7 +327,7 @@ const Profile: React.FC = () => {
 						)}
 					</IonAvatar>
 
-					<h1>{loggedName}</h1>
+					<h1>{userData[0].data.name}</h1>
 					<h3>{loggedEmail}</h3>
 					<div
 						style={{
