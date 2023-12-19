@@ -84,7 +84,7 @@ const CreateOrganization: React.FC = () => {
 			<IonToast
 				isOpen={showToast}
 				onDidDismiss={() => setShowToast(false)}
-				message="Event Successfully created!"
+				message="Organization Successfully created!"
 				duration={2000}
 			/>
 			<IonToast
@@ -183,7 +183,7 @@ const CreateOrganization: React.FC = () => {
 						labelPlacement="floating"
 						fill="outline"
 						placeholder="Enter announcement"
-						value={description}
+						value={announcement}
 						onIonChange={(e) => setAnnouncement(e.detail.value!)}
 						style={{ marginTop: "10px" }}
 					/>
