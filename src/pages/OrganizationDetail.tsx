@@ -60,6 +60,7 @@ interface EventData {
 	origin: string;
 	created_by: string;
 	category: string;
+	event_id: string;
 }
 
 interface UserData {
@@ -134,6 +135,7 @@ const OrganizationDetail: React.FC = () => {
 							origin: doc.data().origin,
 							created_by: doc.data().created_by,
 							category: doc.data().category,
+							event_id: doc.id,
 						};
 						tempEventData.push(eventData);
 					});
@@ -267,38 +269,44 @@ const OrganizationDetail: React.FC = () => {
 
 				{eventData.map((event, index) => {
 					return (
-						<IonCard key={index}>
-							<IonGrid>
-								<IonRow>
-									<IonCol style={{ backgroundColor: "#D93D3D" }} size="3">
-										<h1 style={{ textAlign: "center", color: "white" }}>
-											{event.date}
-										</h1>
-									</IonCol>
-									<IonCol>
-										<IonRow>
-											<h3 style={{ marginLeft: "5px" }}>{event.heading}</h3>
-										</IonRow>
-										<IonRow>
-											<IonCol size="1">
-												<IonIcon icon={calendarNumberOutline}></IonIcon>
-											</IonCol>
-											<IonCol>
-												<small>{event.date}</small>
-											</IonCol>
-										</IonRow>
-										<IonRow>
-											<IonCol size="1">
-												<IonIcon icon={locationOutline}></IonIcon>
-											</IonCol>
-											<IonCol>
-												<small>{event.location}</small>
-											</IonCol>
-										</IonRow>
-									</IonCol>
-								</IonRow>
-							</IonGrid>
-						</IonCard>
+						<Link
+							style={{ textDecoration: "none" }}
+							key={index}
+							to={`/nav/events/${event.event_id}`}
+						>
+							<IonCard key={index}>
+								<IonGrid>
+									<IonRow>
+										<IonCol style={{ backgroundColor: "#D93D3D" }} size="3">
+											<h1 style={{ textAlign: "center", color: "white" }}>
+												{event.date}
+											</h1>
+										</IonCol>
+										<IonCol>
+											<IonRow>
+												<h3 style={{ marginLeft: "5px" }}>{event.heading}</h3>
+											</IonRow>
+											<IonRow>
+												<IonCol size="1">
+													<IonIcon icon={calendarNumberOutline}></IonIcon>
+												</IonCol>
+												<IonCol>
+													<small>{event.date}</small>
+												</IonCol>
+											</IonRow>
+											<IonRow>
+												<IonCol size="1">
+													<IonIcon icon={locationOutline}></IonIcon>
+												</IonCol>
+												<IonCol>
+													<small>{event.location}</small>
+												</IonCol>
+											</IonRow>
+										</IonCol>
+									</IonRow>
+								</IonGrid>
+							</IonCard>
+						</Link>
 					);
 				})}
 

@@ -64,6 +64,7 @@ interface RequestData {
 	request_id: string;
 	origin_id: string;
 	email: string;
+	origin_name?: string;
 }
 
 const Request: React.FC = () => {
@@ -121,7 +122,20 @@ const Request: React.FC = () => {
 		};
 
 		fetchData();
-	}, [requestData]);
+
+		requestData.map(async (data) => {
+			// get origin name from origin_id
+			const docRef = doc(db, "organizations", data.origin_id);
+			const docSnap = await getDoc(docRef);
+
+			const origin_name = docSnap.data()?.origin_name;
+
+			// make sure to match the origin_id with the origin_name
+			data.origin_name = origin_name;
+
+			setRequestData([...requestData]);
+		});
+	}, [db]);
 
 	const goBack = () => {
 		window.history.back();
@@ -226,7 +240,7 @@ const Request: React.FC = () => {
 									</IonAvatar>
 									<IonLabel>
 										<h2>{data.email}</h2>
-										<p>Request to join {data.origin_id}</p>
+										<p>Request to join {data.origin_name}</p>
 									</IonLabel>
 									<IonIcon icon={arrowBack} slot="end" />
 								</IonItem>
