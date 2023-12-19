@@ -88,7 +88,7 @@ interface UserData {
 		event_declined: string[];
 		name: string;
 		origin: string;
-		profile_picture: string;
+		photoURL: string;
 		role: string;
 	};
 }
@@ -153,8 +153,8 @@ const Profile: React.FC = () => {
 								event_declined: string[];
 								name: string;
 								origin: string;
-								profile_picture: string;
 								role: string;
+								photoURL: string;
 							},
 						};
 						users.push(userData);
@@ -171,6 +171,10 @@ const Profile: React.FC = () => {
 
 		fetchData();
 	}, [db]);
+
+	useEffect(() => {
+		console.log(userData);
+	}, []);
 
 	useEffect(() => {
 		const fetchEvents = async () => {
@@ -312,8 +316,8 @@ const Profile: React.FC = () => {
 					<IonAvatar
 						style={{ width: "100px", height: "100px", marginTop: "10px" }}
 					>
-						{userData[0].data.profile_picture ? (
-							<img src={userData[0].data.profile_picture} />
+						{userData[0]?.data.photoURL ? (
+							<img src={userData[0]?.data.photoURL} />
 						) : (
 							<img
 								src="https://www.w3schools.com/howto/img_avatar.png"
@@ -322,7 +326,7 @@ const Profile: React.FC = () => {
 						)}
 					</IonAvatar>
 
-					<h1>{userData[0].data.name}</h1>
+					<h1>{userData[0]?.data.name}</h1>
 					<h3>{loggedEmail}</h3>
 					<div
 						style={{

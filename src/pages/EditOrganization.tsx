@@ -160,38 +160,10 @@ const EditOrganization: React.FC = () => {
 
 	return (
 		<IonPage>
-			<IonHeader>
-				<IonToolbar
-					color="linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)"
-					style={{
-						background:
-							"linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
-
-						height: "80px",
-						borderRadius: "0px 0px 32px 32px",
-						padding: "10px 25px",
-						position: "relative",
-						boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-					}}
-				>
-					<IonButtons
-						style={{ position: "absolute", top: "5px", bottom: "20px" }}
-					>
-						<IonButton
-							style={{ backgroundColor: "#FFFFFF", borderRadius: "100%" }}
-							onClick={goBack}
-						>
-							<IonIcon color="#095797" icon={arrowBackOutline} size="large" />
-						</IonButton>
-					</IonButtons>
-					<IonTitle color="light">Edit Organization</IonTitle>
-				</IonToolbar>
-			</IonHeader>
-
 			<IonToast
 				isOpen={showToast}
-				onDidDismiss={() => setShowToast(true)}
-				message="Organization Successfully edited!"
+				onDidDismiss={() => setShowToast(false)}
+				message="Organization successfully edited!"
 				duration={2000}
 			/>
 			<IonToast
@@ -203,45 +175,33 @@ const EditOrganization: React.FC = () => {
 			<IonContent fullscreen>
 				<div
 					style={{
-						display: "flex",
-						flexDirection: "column",
+						background:
+							"linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
+						height: "80px",
+						borderRadius: "0px 0px 32px 0px",
+						padding: "10px 25px",
+						position: "relative",
+						boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+						display: "grid",
+						gridTemplateColumns: "auto 1fr",
 						alignItems: "center",
-						justifyContent: "center",
 					}}
 				>
-					<IonGrid>
-						<IonCard
-							style={{
-								height: "125px",
-								width: "125px",
-								// alignItems: "center",
-								// justifyContent: "center",
-							}}
-						>
-							<IonRow className="ion-text-center">
-								<IonCol
-									style={{
-										borderRadius: "20px",
-										top: "30px",
-										marginLeft: "10px",
-										marginRight: "10px",
-									}}
-								>
-									{imagePreview && <img src={imagePreview} />}
-								</IonCol>
-							</IonRow>
+					<IonButtons onClick={goBack}>
+						<IonButton>
 							<IonIcon
-								icon={pencil}
+								icon={arrowBack}
 								style={{
-									position: "absolute",
-									top: "80px",
-									left: "80px",
-									width: "20px",
 									color: "white",
+									fontSize: "20px",
 								}}
 							></IonIcon>
-						</IonCard>
-					</IonGrid>
+						</IonButton>
+					</IonButtons>
+
+					<IonTitle color="light" style={{ textAlign: "center" }}>
+						Edit Organization
+					</IonTitle>
 				</div>
 
 				<IonLoading isOpen={loading} />
@@ -259,151 +219,84 @@ const EditOrganization: React.FC = () => {
 				/>
 				<IonList className="ion-padding">
 					<IonItem>
-						<IonIcon
-							icon={pencil}
-							style={{
-								position: "absolute",
-								top: "80px",
-								left: "80px",
-								width: "20px",
-								color: "white",
-							}}
-						></IonIcon>
 						<input type="file" accept="image/*" onChange={handleImageChange} />
 					</IonItem>
-					{/* {imagePreview && (
-                        <img
-                            src={imagePreview}
-                            alt="Preview"
-                            style={{ width: "100%", maxHeight: "300px", marginTop: "10px" }}
-                        />
-                    )} */}
+					{imagePreview && (
+						<img
+							src={imagePreview}
+							alt="Preview"
+							style={{ width: "100%", maxHeight: "300px", marginTop: "10px" }}
+						/>
+					)}
+					{!imagePreview && (
+						<img
+							src={organizationData?.logo_url}
+							alt="Preview"
+							style={{ width: "100%", maxHeight: "300px", marginTop: "10px" }}
+						/>
+					)}
+					<IonInput
+						label="Name*"
+						labelPlacement="floating"
+						fill="outline"
+						placeholder="Enter name"
+						value={name}
+						onIonChange={(e) => setName(e.detail.value!)}
+						style={{ marginTop: "10px" }}
+					/>
+					<IonTextarea
+						label="Description*"
+						labelPlacement="floating"
+						fill="outline"
+						placeholder="Enter description"
+						value={description}
+						onIonChange={(e) => setDescription(e.detail.value!)}
+						style={{ marginTop: "10px" }}
+					/>
+					<IonInput
+						label="Announcement*"
+						labelPlacement="floating"
+						fill="outline"
+						type="date"
+						value={announcement}
+						onIonChange={(e) => setAnnouncement(e.detail.value!)}
+						style={{ marginTop: "10px" }}
+					/>
+
+					<IonSelect
+						label="Category*"
+						labelPlacement="floating"
+						value={category}
+						placeholder="Select category"
+						fill="outline"
+						multiple
+						onIonChange={(e) => setCategory(e.detail.value as string)}
+						style={{ marginTop: "10px" }}
+					>
+						<IonSelectOption value="1">Himpunan</IonSelectOption>
+						<IonSelectOption value="2">UKM</IonSelectOption>
+						<IonSelectOption value="3">Media Kampus</IonSelectOption>
+					</IonSelect>
 				</IonList>
 
-				<IonGrid>
-					<div
-						style={
-							{
-								// height:"56px",
-								// marginTop:"10px",
-								// marginBottom:"10px",
-							}
-						}
-					>
-						<IonItem
-							style={{
-								left: "5px",
-								borderRadius: "28px",
-								height: "56px",
-								boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-								marginTop: "10px",
-								marginBottom: "10px",
-							}}
-						>
-							<IonLabel></IonLabel>
-							<IonInput
-								label="Name*"
-								value={name}
-								fill="outline"
-								labelPlacement="floating"
-								id="name"
-								type="text"
-								placeholder="Enter your name"
-								onIonChange={(e) => setName(e.detail.value!)}
-							/>
-						</IonItem>
-						<IonItem
-							style={{
-								left: "5px",
-								borderRadius: "28px",
-								height: "56px",
-								boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-								marginTop: "10px",
-								marginBottom: "10px",
-							}}
-						>
-							<IonLabel></IonLabel>
-							<IonTextarea
-								label="Description"
-								value={description}
-								fill="outline"
-								labelPlacement="floating"
-								id="description"
-								placeholder="Enter your description"
-								onIonChange={(e) => setDescription(e.detail.value!)}
-							/>
-						</IonItem>
-						<IonItem
-							style={{
-								left: "5px",
-								borderRadius: "28px",
-								height: "56px",
-								boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-								marginTop: "10px",
-								marginBottom: "10px",
-							}}
-						>
-							<IonLabel></IonLabel>
-							<IonTextarea
-								label="Announcement"
-								value={announcement}
-								fill="outline"
-								labelPlacement="floating"
-								id="announcement"
-								// style={{left:"5px", borderRadius:"28px", height:"56px"}}
-								placeholder="Enter your announcement"
-								onIonChange={(e) => setAnnouncement(e.detail.value!)}
-							/>
-						</IonItem>
-						<IonItem
-							style={{
-								left: "5px",
-								borderRadius: "28px",
-								height: "56px",
-								boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-								marginTop: "10px",
-								marginBottom: "10px",
-							}}
-						>
-							<IonLabel></IonLabel>
-							<IonSelect
-								label="Category*"
-								value={category}
-								fill="outline"
-								labelPlacement="floating"
-								id="category"
-								// style={{left:"5px", borderRadius:"28px", height:"56px"}}
-								placeholder="Select category"
-								onIonChange={(e) => setCategory(e.detail.value as string)}
-							>
-								<IonSelectOption value="1">Himpunan</IonSelectOption>
-								<IonSelectOption value="2">UKM</IonSelectOption>
-								<IonSelectOption value="3">Media Kampus</IonSelectOption>
-							</IonSelect>
-						</IonItem>
-
-						<IonButton
-							expand="block"
-							style={{
-								borderRadius: "20px",
-								display: "flex",
-								flexDirection: "column",
-								marginLeft: "10px",
-								marginRight: "10px",
-								"--background":
-									"linear-gradient(90deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
-								boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-								justifyContent: "center",
-								alignItems: "center",
-								marginBottom: "30px",
-								marginTop: "30px",
-							}}
-							onClick={submitHandler}
-						>
-							Save
-						</IonButton>
-					</div>
-				</IonGrid>
+				<IonButton
+					expand="block"
+					style={{
+						borderRadius: "20px",
+						display: "flex",
+						flexDirection: "column",
+						marginLeft: "10px",
+						marginRight: "10px",
+						"--background":
+							"linear-gradient(90deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
+						boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+						justifyContent: "center",
+						alignItems: "center",
+					}}
+					onClick={submitHandler}
+				>
+					Edit
+				</IonButton>
 			</IonContent>
 		</IonPage>
 	);

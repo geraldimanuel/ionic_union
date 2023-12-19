@@ -244,27 +244,16 @@ const EditProfile: React.FC = () => {
 								Take Picture
 							</IonButton>
 						</IonItem>
-						<IonItem
-							style={{
-								left: "5px",
-								borderRadius: "28px",
-								height: "56px",
-								boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-								marginTop: "10px",
-								marginBottom: "10px",
-							}}
-						>
-							<IonLabel></IonLabel>
-							<IonInput
-								label="Name"
-								value={name}
-								fill="outline"
-								labelPlacement="floating"
-								id="name"
-								placeholder="Enter your name"
-								onIonChange={(e) => setName(e.detail.value!)}
-							/>
-						</IonItem>
+
+						<IonInput
+							label="Name"
+							value={name}
+							fill="outline"
+							labelPlacement="floating"
+							id="name"
+							placeholder="Enter your name"
+							onIonChange={(e) => setName(e.detail.value!)}
+						/>
 
 						<IonButton
 							expand="block"
