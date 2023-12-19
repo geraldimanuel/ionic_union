@@ -95,7 +95,7 @@ const EditProfile: React.FC = () => {
 
 		setImagePreview(image.webPath);
 		setImage(file);
-		updateData(image.webPath);
+		// updateData(image.webPath);
 	};
 
 	const updateData = async (url: string) => {
@@ -119,79 +119,12 @@ const EditProfile: React.FC = () => {
 		}
 	};
 
-	// const updateData = (url: string) => {
-	// 	// updateUser(name, url, auth.currentUser?.uid);
-	// 	// history.push(`/nav/profile`);
-
-	// 	if (name) {
-	// 		updateUser(name, url, auth.currentUser?.uid);
-	// 		history.push(`/nav/profile`);
-	// 	} else {
-	// 		setError("Please fill in all fields");
-	// 	}
-	// };
-
 	const submitHandler = (e: React.FormEvent) => {
 		e.preventDefault();
 		updateData(imagePreview!);
 	};
 
-	// useEffect(() => {
-	//   let isMounted = true;
-
-	//   const fetchData = async () => {
-	//     try {
-	//       const q = query(
-	//         collection(db, "users"),
-	//         where("email", "==", auth.currentUser?.email)
-	//       );
-
-	//       const querySnapshot = await getDocs(q);
-
-	//       const users: UserData[] = [];
-	//       querySnapshot.forEach((doc) => {
-	//         const userData: UserData = {
-	//           id: doc.id,
-	//           data: doc.data() as {
-	//             email: string;
-	//             event_attended: string[];
-	//             event_declined: string[];
-	//             name: string;
-	//             origin: string;
-	//             profile_picture: string;
-	//             role: string;
-	//           },
-	//         };
-	//         users.push(userData);
-	//       });
-
-	//       setUserData(users[0]);
-
-	//       return () => {
-	//         isMounted = false;
-	//       };
-	//     } catch (error) {
-	//       console.error("Error fetching data:", error);
-	//     }
-	//   };
-
-	//   fetchData();
-	// }, [db, auth.currentUser?.email]);
-
 	useEffect(() => {
-		const auth = getAuth();
-		if (auth.currentUser) {
-			setName(auth.currentUser.displayName!);
-			setEmail(auth.currentUser.email!);
-			setImageUrl(auth.currentUser.photoURL!);
-			setLoading(false);
-			setImagePreview(auth.currentUser.photoURL!);
-		}
-	}, []);
-
-	useEffect(() => {
-		// find user name from database that have uid same as auth.currentUser.uid
-
 		const uid = auth.currentUser?.uid;
 
 		if (uid) {
@@ -307,21 +240,9 @@ const EditProfile: React.FC = () => {
 						}
 					>
 						<IonItem>
-							<IonIcon
-								icon={pencil}
-								style={{
-									position: "absolute",
-									top: "80px",
-									left: "80px",
-									width: "20px",
-									color: "white",
-								}}
-							></IonIcon>
-							<input
-								type="file"
-								accept="image/*"
-								// onChange={handleImageChange}
-							/>
+							<IonButton expand="full" onClick={takePicture}>
+								Take Picture
+							</IonButton>
 						</IonItem>
 						<IonItem
 							style={{

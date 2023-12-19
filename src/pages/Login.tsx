@@ -8,6 +8,7 @@ import {
 	IonLabel,
 	IonPage,
 	IonTitle,
+	IonToast,
 	IonToolbar,
 } from "@ionic/react";
 import { useState } from "react";
@@ -24,6 +25,7 @@ import {
 } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { initializeApp } from "firebase-admin";
+import { set } from "date-fns";
 
 const Login: React.FC = () => {
 	const [username, setUsername] = useState("");
@@ -35,6 +37,9 @@ const Login: React.FC = () => {
 		const res = await loginUser(username, password);
 		console.log(res);
 	}
+
+	const [showToast, setShowToast] = useState(false);
+	const [registerMessage, setRegisterMessage] = useState("");
 
 	async function loginUser(email: string, password: string) {
 		signInWithEmailAndPassword(auth, email, password)
@@ -48,8 +53,8 @@ const Login: React.FC = () => {
 				const errorCode = error.code;
 				const errorMessage = error.message;
 
-				console.log(errorCode);
-				console.log(errorMessage);
+				setRegisterMessage(errorMessage);
+				setShowToast(true);
 			});
 	}
 
@@ -97,6 +102,12 @@ const Login: React.FC = () => {
 
 	return (
 		<IonPage>
+			<IonToast
+				isOpen={showToast}
+				onDidDismiss={() => setShowToast(false)}
+				message={registerMessage}
+				duration={2000}
+			/>
 			<IonContent>
 				<div
 					style={{

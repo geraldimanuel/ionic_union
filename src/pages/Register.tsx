@@ -8,6 +8,7 @@ import {
 	IonLabel,
 	IonPage,
 	IonTitle,
+	IonToast,
 	IonToolbar,
 } from "@ionic/react";
 import { useState } from "react";
@@ -71,36 +72,24 @@ const Register: React.FC = () => {
 			.catch((error) => {
 				const errorCode = error.code;
 				const errorMessage = error.message;
+				setRegisterMessage(errorMessage);
+				setShowToast(true);
 				// ..
 			});
 	}
 
+	const [showToast, setShowToast] = useState(false);
+	const [registerMessage, setRegisterMessage] = useState("");
+
 	return (
 		<IonPage>
+			<IonToast
+				isOpen={showToast}
+				onDidDismiss={() => setShowToast(false)}
+				message={registerMessage}
+				duration={2000}
+			/>
 			<IonContent>
-				{/* <h1>Register</h1>
-				<IonInput
-					placeholder="Email"
-					onIonChange={(e: any) => setUsername(e.target.value)}
-				/>
-				<IonInput
-					placeholder="Password"
-					onIonChange={(e: any) => setPassword(e.target.value)}
-					type="password"
-				/>
-				<IonInput
-					placeholder="Confirm Password"
-					onIonChange={(e: any) => setCPassword(e.target.value)}
-					type="password"
-				/>
-				<IonButton onClick={register}>Register</IonButton>
-				<p>
-					Already have an account?
-					<Link to={"/login"}> Login</Link>
-				</p>
-
-				<button onClick={loginWithGooglePopup}>Sign in With Google</button> */}
-
 				<div
 					style={{
 						background:
