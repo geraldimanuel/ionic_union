@@ -103,12 +103,54 @@ const OrganizationDetail: React.FC = () => {
 						members: orgSnapshot.data()?.members,
 					};
 					setOrganizationData(orgData);
+
+					// if (organizationData?.members) {
+					// 	const memberPromises = organizationData.members.map(
+					// 		async (member) => {
+					// 			const docRef = collection(db, "users");
+					// 			const q = query(docRef, where("email", "==", member));
+					// 			const querySnapshot = await getDocs(q);
+
+					// 			const memberData: any = [];
+
+					// 			querySnapshot.forEach((doc) => {
+					// 				const photoURL = doc.data().photoURL;
+					// 				const email = doc.data().email;
+
+					// 				if (!memberArray.includes(member)) {
+					// 					setMemberArray((prev) => [...prev, member]);
+					// 					memberData.push({
+					// 						name: member,
+					// 						email: email,
+					// 						photo: photoURL,
+					// 					});
+					// 				}
+					// 			});
+
+					// 			return memberData;
+					// 		}
+					// 	);
+
+					// 	if (memberPromises.length > 0) {
+					// 		Promise.all(memberPromises)
+					// 			.then((results) => {
+					// 				const flattenedMemberData = results.flat();
+					// 				setMemberData((prev) => [...prev, ...flattenedMemberData]);
+					// 			})
+					// 			.catch((error) => {
+					// 				console.error("Error fetching member data:", error);
+					// 			});
+					// 	}
+
+					// 	console.log(memberData);
+					// }
 				} catch (error) {
 					console.log(error);
 				}
 			});
 
 			// Clean up the listener when the component unmounts
+
 			return () => {
 				unsubscribe();
 			};
