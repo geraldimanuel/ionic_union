@@ -206,48 +206,50 @@ const EventDetail: React.FC = () => {
   const handleAttendClick = async (eventId: string) => {
     try {
       const userDocRef = doc(db, "users", userData[0].id);
-  
+
       await updateDoc(userDocRef, {
         event_attended: arrayUnion(eventId),
       });
-  
-      setUserData(userData.map(user => ({
-        ...user,
-        data: {
-          ...user.data,
-          event_attended: Array.isArray(user.data.event_attended)
-            ? user.data.event_attended
-            : [user.data.event_attended as string],
-        },
-      }))); 
 
-      setToastMessage("You confirmed to attend this event");   
-  
+      setUserData(
+        userData.map((user) => ({
+          ...user,
+          data: {
+            ...user.data,
+            event_attended: Array.isArray(user.data.event_attended)
+              ? user.data.event_attended
+              : [user.data.event_attended as string],
+          },
+        }))
+      );
+
+      setToastMessage("You confirmed to attend this event");
     } catch (error) {
       console.error("Error updating user data:", error);
     }
   };
-  
+
   const handleDeclinedClick = async (eventId: string) => {
     try {
       const userDocRef = doc(db, "users", userData[0].id);
-  
+
       await updateDoc(userDocRef, {
         event_declined: arrayUnion(eventId),
       });
-  
-      setUserData(userData.map(user => ({
-        ...user,
-        data: {
-          ...user.data,
-          event_declined: Array.isArray(user.data.event_declined)
-            ? user.data.event_declined
-            : [user.data.event_declined as string],
-        },
-      })));     
-      
+
+      setUserData(
+        userData.map((user) => ({
+          ...user,
+          data: {
+            ...user.data,
+            event_declined: Array.isArray(user.data.event_declined)
+              ? user.data.event_declined
+              : [user.data.event_declined as string],
+          },
+        }))
+      );
+
       setToastMessage("You confirmed you can't attend this event");
-  
     } catch (error) {
       console.error("Error updating user data:", error);
     }
@@ -371,7 +373,11 @@ const EventDetail: React.FC = () => {
                   />
                 )}
                 <IonText style={{ marginLeft: "10px" }}>
-                  <p>{eventData[0].data.origin}</p>
+                  {orgThisData.length > 0 ? (
+                    <p>{orgThisData[0].data.origin_name}</p>
+                  ) : (
+                    <p>No Organization</p>
+                  )}
                 </IonText>
               </IonRow>
             </IonGrid>

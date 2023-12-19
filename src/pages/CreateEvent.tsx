@@ -1,31 +1,58 @@
 import {
-	IonPage,
-	IonTitle,
-	IonContent,
-	IonSelect,
-	IonButtons,
-	IonSelectOption,
-	IonLoading,
-	IonAlert,
-	IonList,
-	IonItem,
-	IonInput,
-	IonTextarea,
 	IonButton,
+	IonContent,
+	IonHeader,
+	IonInput,
+	IonPage,
 	IonIcon,
+	IonTitle,
+	IonText,
+	IonBadge,
+	IonToolbar,
+	IonItem,
+	IonLabel,
+	IonCard,
+	IonGrid,
+	IonRow,
+	IonCol,
 	IonToast,
-} from "@ionic/react";
-import { useState } from "react";
-import { arrowBack } from "ionicons/icons";
-import { addEvent } from "../firebaseConfig";
-import { Link, useHistory } from "react-router-dom";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+	IonButtons,
+	IonLoading,
+	IonList,
+	IonSelect,
+	IonSelectOption,
+	IonTextarea,
+	IonAlert,
+  } from "@ionic/react";
+  import { arrowBack } from "ionicons/icons";
+  import "swiper/css";
+  import "swiper/css/navigation";
+  import "swiper/css/pagination";
+  import { useEffect, useState } from "react";
+  import {
+	collection,
+	getDocs,
+	query,
+	where,
+	getDoc,
+	doc,
+	updateDoc,
+	arrayUnion,
+	onSnapshot,
+  } from "firebase/firestore";
+  import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+  import { useHistory, useParams, Link } from "react-router-dom";
+  import { getAuth, onAuthStateChanged } from "firebase/auth";
+  import { addEvent, db } from "../firebaseConfig";
 
-const organization = Object.freeze([
-	{ code: "hmif", name: "HMIF" },
-	{ code: "umnradio", name: "UMN Radio" },
-	{ code: "imkom", name: "Im'Kom" },
-]);
+interface OrgData {
+	id: string;
+	data: {
+	  logo_url: string;
+	  origin_name: string;
+	  members: string[];
+	};
+  }
 
 const storage = getStorage();
 
@@ -35,6 +62,7 @@ const CreateEvent: React.FC = () => {
 	const [description, setDescription] = useState("");
 	const [heading, setHeading] = useState("");
 	const [location, setLocation] = useState("");
+	const [orgData, setOrgData] = useState<OrgData[]>([]);
 
 	const [date, setDate] = useState<any>();
 	const [category, setCategory] = useState<string[]>([]);
@@ -46,6 +74,35 @@ const CreateEvent: React.FC = () => {
 	const [showToast, setShowToast] = useState(false);
 	const [showToastCancel, setShowToastCancel] = useState(false);
 	const [fileName, setFileName] = useState("");
+	const auth = getAuth();
+
+	useEffect(() => {
+		const q = query(collection(db, "organizations"));
+	  
+		const unsubscribe = onSnapshot(q, (querySnapshot) => {
+		  const orgs: OrgData[] = [];
+		  querySnapshot.forEach((doc) => {
+			const orgData: OrgData = {
+			  id: doc.id,
+			  data: doc.data() as {
+				origin_name: string;
+				logo_url: string;
+				members: string[];
+			  },
+			};
+	  
+			const currentUserEmail = auth.currentUser?.email ?? ''; // Default to an empty string if null or undefined
+      if (currentUserEmail && orgData.data.members.includes(currentUserEmail)) {
+        orgs.push(orgData);
+      }
+    });
+	  
+		  setOrgData(orgs);
+		});
+	  
+		return () => unsubscribe();
+	  }, [db, auth.currentUser]);
+	  
 
 	const addData = (url: string) => {
 		if (heading && location && date && category.length > 0 && image) {
@@ -57,9 +114,11 @@ const CreateEvent: React.FC = () => {
 				description,
 				category,
 				status,
-				origin
+				origin,
+				created_by,
 			);
-			history.push("/home");
+			
+			history.push("/nav/home");
 			setShowToast(true);
 		} else {
 			setShowToastCancel(true);
@@ -87,6 +146,26 @@ const CreateEvent: React.FC = () => {
 			});
 		});
 	};
+
+	const [created_by, setCreatedBy] = useState<string>("");
+
+	useEffect(() => {
+
+		const uid = auth.currentUser?.uid;
+		console.log(uid);
+
+		if (uid) {
+			const q = getDoc(doc(db, "users", uid));
+
+			async function fetchUserName() {
+				const docSnap = await q;
+				const userName = docSnap.data()?.name;
+				setCreatedBy(userName);
+			}
+
+			fetchUserName();
+		}
+	}, [db]);
 
 	return (
 		<IonPage>
@@ -202,7 +281,6 @@ const CreateEvent: React.FC = () => {
 						value={category}
 						placeholder="Select category"
 						fill="outline"
-						multiple
 						onIonChange={(e) => setCategory(e.detail.value as string[])}
 						style={{ marginTop: "10px" }}
 					>
@@ -234,9 +312,9 @@ const CreateEvent: React.FC = () => {
 						style={{ marginTop: "10px" }}
 					>
 						<IonSelectOption value="0">No Organization</IonSelectOption>
-						{organization.map((org) => (
-							<IonSelectOption key={org.code} value={org.code}>
-								{org.name}
+						{orgData.map((org) => (
+							<IonSelectOption key={org.id} value={org.id}>
+							{org.data.origin_name}
 							</IonSelectOption>
 						))}
 					</IonSelect>

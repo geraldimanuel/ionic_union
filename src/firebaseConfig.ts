@@ -121,7 +121,8 @@ export async function addEvent(
 	description: string,
 	category: string[],
 	status: boolean,
-	origin: string
+	origin: string,
+	created_by: string,
 ) {
 	const eventsCollection = collection(db, "events");
 
