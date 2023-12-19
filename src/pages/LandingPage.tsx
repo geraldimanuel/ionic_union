@@ -31,7 +31,14 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { useEffect, useState } from "react";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import {
+	collection,
+	doc,
+	getDoc,
+	getDocs,
+	query,
+	where,
+} from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import { Link, useHistory } from "react-router-dom";
 import { getAuth } from "firebase/auth";
@@ -100,6 +107,27 @@ const Home: React.FC = () => {
 
 	const auth = getAuth();
 
+	const [loggedName, setLoggedName] = useState<string>("");
+
+	useEffect(() => {
+		// find user name from database that have uid same as auth.currentUser.uid
+
+		const uid = auth.currentUser?.uid;
+		console.log(uid);
+
+		if (uid) {
+			const q = getDoc(doc(db, "users", uid));
+
+			async function fetchUserName() {
+				const docSnap = await q;
+				const userName = docSnap.data()?.name;
+				setLoggedName(userName);
+			}
+
+			fetchUserName();
+		}
+	}, [db]);
+
 	return (
 		<IonPage style={{ backgroundColor: "DBDBDB" }}>
 			<div
@@ -115,7 +143,7 @@ const Home: React.FC = () => {
 			>
 				<div style={{ textAlign: "right", marginTop: "70px" }}></div>
 				<IonText color="light">
-					<p>Hello, {auth.currentUser?.displayName}!</p>
+					<p>Hello, {loggedName}!</p>
 					<h1
 						style={{
 							fontSize: "32px",
