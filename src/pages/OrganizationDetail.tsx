@@ -204,7 +204,7 @@ const OrganizationDetail: React.FC = () => {
 						style={{
 							position: "absolute",
 							// marginTop: "130px",
-							top: "180px",
+							top: "120px",
 							backgroundColor: "white",
 							borderRadius: "20%",
 							boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
