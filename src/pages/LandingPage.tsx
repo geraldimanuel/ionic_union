@@ -175,8 +175,6 @@ const Home: React.FC = () => {
 		fetchUserData();
 	}, [eventData]);
 
-	const auth = getAuth();
-
 	const [loggedName, setLoggedName] = useState<string>("");
 
 	useEffect(() => {
@@ -213,7 +211,7 @@ const Home: React.FC = () => {
 			>
 				<div style={{ textAlign: "right", marginTop: "70px" }}></div>
 				<IonText color="light">
-					<p>Hello, {auth.currentUser?.displayName}!</p>
+					<p>Hello, {loggedName}!</p>
 					<h1
 						style={{
 							fontSize: "32px",
