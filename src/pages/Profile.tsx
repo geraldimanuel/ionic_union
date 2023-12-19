@@ -358,6 +358,14 @@ const Profile: React.FC = () => {
 							<IonIcon icon={chevronForwardOutline} slot="end" />
 						</IonButton>
 
+						<Link to="/nav/request">
+							<IonButton expand="full">
+								<IonIcon slot="start" />
+								Requests
+								<IonIcon slot="end" />
+							</IonButton>
+						</Link>
+
 						<IonButton expand="full" onClick={logoutUserHandler}>
 							Logout
 						</IonButton>
