@@ -135,37 +135,43 @@ const Profile: React.FC = () => {
 	const [eventData, setEventData] = useState<EventData[]>([]);
 
 	useEffect(() => {
-		const q = query(
-			collection(db, "users"),
-			where("email", "==", auth.currentUser?.email)
-		);
-
-		const unsubscribe = onSnapshot(q, (querySnapshot) => {
-			const users: UserData[] = [];
-			querySnapshot.forEach((doc) => {
+		const fetchData = async () => {
+		  try {
+			const q = query(
+			  collection(db, "users"),
+			  where("email", "==", auth.currentUser?.email)
+			);
+	  
+			const unsubscribe = onSnapshot(q, (querySnapshot) => {
+			  const users: UserData[] = [];
+			  querySnapshot.forEach((doc) => {
 				const userData: UserData = {
-					id: doc.id,
-					data: doc.data() as {
-						email: string;
-						event_attended: string[];
-						event_declined: string[];
-						name: string;
-						origin: string;
-						profile_picture: string;
-						role: string;
-					},
+				  id: doc.id,
+				  data: doc.data() as {
+					email: string;
+					event_attended: string[];
+					event_declined: string[];
+					name: string;
+					origin: string;
+					profile_picture: string;
+					role: string;
+				  },
 				};
 				users.push(userData);
+			  });
+	  
+			  setUserData(users);
 			});
 
-			setUserData(users);
-			setLoggedUserEvent(
-				users[0].data.event_attended.concat(users[0].data.event_declined)
-			);
-		});
-
-		return () => unsubscribe();
-	}, [db]);
+			return () => unsubscribe();
+		  } catch (error) {
+			console.error("Error fetching data:", error);
+		  }
+		};
+	  
+		fetchData();
+	  }, [db, auth.currentUser?.email]);
+		
 
 	useEffect(() => {
 		const fetchEvents = async () => {
@@ -307,8 +313,8 @@ const Profile: React.FC = () => {
 					<IonAvatar
 						style={{ width: "100px", height: "100px", marginTop: "10px" }}
 					>
-						{loggedPhoto ? (
-							<img src={loggedPhoto} />
+						{userData[0].data.profile_picture ? (
+							<img src={userData[0].data.profile_picture} />
 						) : (
 							<img
 								src="https://www.w3schools.com/howto/img_avatar.png"
@@ -317,7 +323,7 @@ const Profile: React.FC = () => {
 						)}
 					</IonAvatar>
 
-					<h1>{loggedName}</h1>
+					<h1>{userData[0].data.name}</h1>
 					<h3>{loggedEmail}</h3>
 					<div
 						style={{

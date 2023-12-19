@@ -121,7 +121,8 @@ export async function addEvent(
 	description: string,
 	category: string[],
 	status: boolean,
-	origin: string
+	origin: string,
+	created_by: string,
 ) {
 	const eventsCollection = collection(db, "events");
 
@@ -184,7 +185,7 @@ export async function updateOrganization(
 	origin_name: string,
 	description: string,
 	announcement: string,
-	type: string[],
+	type: string,
 ) {
 	
 	await updateDoc(doc(db, "organizations", origin_id), {
@@ -192,14 +193,38 @@ export async function updateOrganization(
 		origin_name: origin_name,
 		description: description,
 		announcement: announcement,
-		type: [type],
+		type: type,
 	});	
 
 	console.log
 }
 
+export async function updateEvent(
+	event_id: string,
+	bannerUrl: string | null,
+	heading: string,
+	date: Timestamp | null,
+	location: string,
+	description: string,
+	category: string[],
+	status: boolean,
+	origin: string,
+) {
+	const eventsCollection = collection(db, "events");
+
+	await updateDoc(doc(db, "events", event_id), {
+		heading: heading,
+		location: location,
+		date: date,
+		description: description,
+		banner_url: bannerUrl,
+		category: category,
+		status: status,
+	});
+}
+
 export async function updateUser(
-	displayName: string,
+	name: string,
 	photoURL: string,
 	user_uid: any,
 ) {
@@ -207,7 +232,7 @@ export async function updateUser(
 	const loggedUserRef = doc(db, "users", user_uid);
 
 	await updateDoc(loggedUserRef, {
-		displayName: displayName,
+		name: name,
 		photoURL: photoURL,
 	});
 }

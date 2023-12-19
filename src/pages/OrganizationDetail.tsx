@@ -34,6 +34,7 @@ import {
 	getDocs,
 	query,
 	where,
+	onSnapshot,
 } from "firebase/firestore";
 import { db, requestJoinOrganization } from "../firebaseConfig";
 import { getAuth } from "firebase/auth";
@@ -85,68 +86,72 @@ const OrganizationDetail: React.FC = () => {
 	const { id } = useParams<{ id: string }>();
 
 	useEffect(() => {
-		async function fetchClickedOrganizationData() {
-			// const orgRef = doc(db, "organizations", id);
-			// make ref where document id is equal to id
+		const fetchClickedOrganizationData = () => {
 			const orgRef = doc(db, "organizations", id);
 
-			try {
-				const orgSnapshot = await getDoc(orgRef);
+			const unsubscribe = onSnapshot(orgRef, (orgSnapshot) => {
+				try {
+					const orgData: OrgData = {
+						origin_id: orgSnapshot.id,
+						logo_url: orgSnapshot.data()?.logo_url,
+						origin_name: orgSnapshot.data()?.origin_name,
+						description: orgSnapshot.data()?.description,
+						announcement: orgSnapshot.data()?.announcement,
+						type: orgSnapshot.data()?.type,
+						admin: orgSnapshot.data()?.admin,
+						members: orgSnapshot.data()?.members,
+					};
+					setOrganizationData(orgData);
+				} catch (error) {
+					console.log(error);
+				}
+			});
 
-				const orgData: OrgData = {
-					origin_id: orgSnapshot.id,
-					logo_url: orgSnapshot.data()?.logo_url,
-					origin_name: orgSnapshot.data()?.origin_name,
-					description: orgSnapshot.data()?.description,
-					announcement: orgSnapshot.data()?.announcement,
-					type: orgSnapshot.data()?.type,
-					admin: orgSnapshot.data()?.admin,
-					members: orgSnapshot.data()?.members,
-				};
-				setOrganizationData(orgData);
-
-				setMemberArray(orgData.members);
-
-				// console.log(orgData);
-			} catch (error) {
-				console.log(error);
-			}
-		}
+			// Clean up the listener when the component unmounts
+			return () => {
+				unsubscribe();
+			};
+		};
 
 		fetchClickedOrganizationData();
-	}, [db]);
+	}, [db, id]);
 
 	useEffect(() => {
-		async function fetchOrganizationsEvents() {
-			// get all events where origin is equal to organization id
+		const fetchOrganizationsEvents = () => {
 			const q = query(collection(db, "events"), where("origin", "==", id));
 
-			try {
-				const querySnapshot = await getDocs(q);
-				const tempEventData: EventData[] = [];
+			const unsubscribe = onSnapshot(q, (querySnapshot) => {
+				try {
+					const tempEventData: EventData[] = [];
 
-				querySnapshot.forEach((doc) => {
-					const eventData: EventData = {
-						banner_url: doc.data().banner_url,
-						date: doc.data().date,
-						description: doc.data().description,
-						heading: doc.data().heading,
-						location: doc.data().location,
-						origin: doc.data().origin,
-						created_by: doc.data().created_by,
-						category: doc.data().category,
-					};
-					tempEventData.push(eventData);
-				});
+					querySnapshot.forEach((doc) => {
+						const eventData: EventData = {
+							banner_url: doc.data().banner_url,
+							date: doc.data().date,
+							description: doc.data().description,
+							heading: doc.data().heading,
+							location: doc.data().location,
+							origin: doc.data().origin,
+							created_by: doc.data().created_by,
+							category: doc.data().category,
+						};
+						tempEventData.push(eventData);
+					});
 
-				setEventData(tempEventData);
-			} catch (error) {
-				console.log(error);
-			}
-		}
+					setEventData(tempEventData);
+				} catch (error) {
+					console.log(error);
+				}
+			});
+
+			// Clean up the listener when the component unmounts
+			return () => {
+				unsubscribe();
+			};
+		};
 
 		fetchOrganizationsEvents();
-	}, [db]);
+	}, [db, id]);
 
 	function requestHandler() {
 		requestJoinOrganization(id);

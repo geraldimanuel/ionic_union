@@ -158,30 +158,36 @@ const EventDetail: React.FC = () => {
   }, [userData, id]);
 
   useEffect(() => {
-    async function fetchEventData() {
+    const fetchEventData = () => {
       const origin = "your_origin_value";
       const q = query(collection(db, "events"));
-
-      try {
-        const querySnapshot = await getDocs(q);
-        const events: any = [];
-        querySnapshot.forEach((doc) => {
-          events.push({ id: doc.id, data: doc.data() });
-        });
-
-        const filteredEvents = events.filter((event: any) =>
-          id.includes(event.id)
-        );
-
-        setEventData(filteredEvents);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    }
-
+  
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        try {
+          const events: any[] = [];
+          querySnapshot.forEach((doc) => {
+            events.push({ id: doc.id, data: doc.data() });
+          });
+  
+          const filteredEvents = events.filter((event) =>
+            id.includes(event.id)
+          );
+  
+          setEventData(filteredEvents);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      });
+  
+      // Clean up the event listener when the component unmounts
+      return () => {
+        unsubscribe();
+      };
+    };
+  
     fetchEventData();
-  }, [loggedUserEvent]);
-
+  }, [db]);
+  
   useEffect(() => {
     if (eventData && eventData.length > 0) {
       const filteredOrgData = orgData.filter(
@@ -206,48 +212,50 @@ const EventDetail: React.FC = () => {
   const handleAttendClick = async (eventId: string) => {
     try {
       const userDocRef = doc(db, "users", userData[0].id);
-  
+
       await updateDoc(userDocRef, {
         event_attended: arrayUnion(eventId),
       });
-  
-      setUserData(userData.map(user => ({
-        ...user,
-        data: {
-          ...user.data,
-          event_attended: Array.isArray(user.data.event_attended)
-            ? user.data.event_attended
-            : [user.data.event_attended as string],
-        },
-      }))); 
 
-      setToastMessage("You confirmed to attend this event");   
-  
+      setUserData(
+        userData.map((user) => ({
+          ...user,
+          data: {
+            ...user.data,
+            event_attended: Array.isArray(user.data.event_attended)
+              ? user.data.event_attended
+              : [user.data.event_attended as string],
+          },
+        }))
+      );
+
+      setToastMessage("You confirmed to attend this event");
     } catch (error) {
       console.error("Error updating user data:", error);
     }
   };
-  
+
   const handleDeclinedClick = async (eventId: string) => {
     try {
       const userDocRef = doc(db, "users", userData[0].id);
-  
+
       await updateDoc(userDocRef, {
         event_declined: arrayUnion(eventId),
       });
-  
-      setUserData(userData.map(user => ({
-        ...user,
-        data: {
-          ...user.data,
-          event_declined: Array.isArray(user.data.event_declined)
-            ? user.data.event_declined
-            : [user.data.event_declined as string],
-        },
-      })));     
-      
+
+      setUserData(
+        userData.map((user) => ({
+          ...user,
+          data: {
+            ...user.data,
+            event_declined: Array.isArray(user.data.event_declined)
+              ? user.data.event_declined
+              : [user.data.event_declined as string],
+          },
+        }))
+      );
+
       setToastMessage("You confirmed you can't attend this event");
-  
     } catch (error) {
       console.error("Error updating user data:", error);
     }
@@ -371,7 +379,11 @@ const EventDetail: React.FC = () => {
                   />
                 )}
                 <IonText style={{ marginLeft: "10px" }}>
-                  <p>{eventData[0].data.origin}</p>
+                  {orgThisData.length > 0 ? (
+                    <p>{orgThisData[0].data.origin_name}</p>
+                  ) : (
+                    <p>No Organization</p>
+                  )}
                 </IonText>
               </IonRow>
             </IonGrid>

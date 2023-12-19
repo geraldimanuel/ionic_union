@@ -43,7 +43,7 @@ import {
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { useHistory, useParams } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { addEvent, db } from "../firebaseConfig";
+import { addEvent, db, updateEvent } from "../firebaseConfig";
 
 interface EventData {
   id: string;
@@ -111,6 +111,7 @@ const EditEvent: React.FC = () => {
   const [showToast, setShowToast] = useState(false);
   const [showToastCancel, setShowToastCancel] = useState(false);
   const [fileName, setFileName] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
   const auth = getAuth();
 
   useEffect(() => {
@@ -186,6 +187,7 @@ const EditEvent: React.FC = () => {
         setLocation(filteredEvents[0].data.location);
         setDescription(filteredEvents[0].data.description);
         setDate(filteredEvents[0].data.date);
+        setImageUrl(filteredEvents[0].data.banner_url);
         setCategory(filteredEvents[0].data.category);
         setStatus(filteredEvents[0].data.status);
         setOrigin(filteredEvents[0].data.origin);
@@ -209,66 +211,29 @@ const EditEvent: React.FC = () => {
     }
   };
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
+  const updateData = (url: string) => {
+		if (heading && date && description && category.length > 0) {
+			updateEvent(id, url, heading, date, location, description, category, status, origin);
+			history.push(`/nav/events/${id}`);
+		} else {
+			setShowToastCancel(true);
+		}
+	};
 
-      const storageRef = ref(storage, fileName);
+  const handleSubmit = async () => {
+		if (image) {
+			const storageRef = ref(storage, fileName);
 
-      if (image) {
-        uploadBytes(storageRef, image as Blob).then((snapshot) => {
-          getDownloadURL(ref(storage, fileName)).then((url) => {
-            setBanner_url(url);
-          });
-        });
-      }
-
-      if (!heading || !location || !date || !category || !status || !origin) {
-        setShowToastCancel(true);
-        setLoading(false);
-        return;
-      }
-
-      if (banner_url) {
-        const updatedEventData = {
-          banner_url,
-          heading,
-          location,
-          date,
-          description,
-          category,
-          status,
-          origin,
-        };
-
-        const eventDocRef = doc(db, "events", id);
-        await updateDoc(eventDocRef, updatedEventData);
-      } else {
-        const updatedEventData = {
-          heading,
-          location,
-          date,
-          description,
-          category,
-          status,
-          origin,
-        };
-
-        const eventDocRef = doc(db, "events", id);
-        await updateDoc(eventDocRef, updatedEventData);
-      }
-
-      setShowToast(true);
-      setLoading(false);
-    } catch (error) {
-      setError("Error updating event: " + error);
-      setLoading(false);
-    }
-  };
-
-  const handleSubmit = () => {
-    fetchData();
-  };
+			uploadBytes(storageRef, image as Blob).then((snapshot) => {
+				getDownloadURL(ref(storage, fileName)).then((url) => {
+					updateData(url);
+				});
+			});
+		} else {
+			// Jika tidak ada gambar yang dipilih, gunakan URL gambar lama
+			updateData(imageUrl);
+		}
+	};
 
   const goBack = () => {
     window.history.back();

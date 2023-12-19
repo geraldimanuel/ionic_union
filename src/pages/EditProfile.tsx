@@ -26,21 +26,33 @@ import { arrowBack, arrowBackOutline, pencil } from "ionicons/icons";
 import { useState, useEffect } from "react";
 import { useHistory } from "react-router";
 import { Link } from "react-router-dom";
-import { db, updateUser } from "../firebaseConfig";
+import {
+	collection,
+	doc,
+	getDoc,
+	getDocs,
+	onSnapshot,
+	query,
+	where,
+} from "firebase/firestore";
+import { updateUser, db } from "../firebaseConfig";
 import { getAuth } from "firebase/auth";
 import { Camera, CameraResultType } from "@capacitor/camera";
-import { doc, getDoc } from "firebase/firestore";
 import { defineCustomElements } from "@ionic/pwa-elements/loader";
 
 defineCustomElements(window);
 
-interface User {
-	email: string;
-	event_attended: string[];
-	event_declined: string[];
-	name: string;
-	origin: string[];
-	profile_picture: string;
+interface UserData {
+	id: string;
+	data: {
+		email: string;
+		event_attended: string[];
+		event_declined: string[];
+		name: string;
+		origin: string;
+		profile_picture: string;
+		role: string;
+	};
 }
 
 const EditProfile: React.FC = () => {
@@ -50,6 +62,7 @@ const EditProfile: React.FC = () => {
 	const [email, setEmail] = useState<string>("");
 	const [fileName, setFileName] = useState("");
 	const [imageUrl, setImageUrl] = useState("");
+	const [userData, setUserData] = useState<UserData>();
 
 	const [loading, setLoading] = useState<boolean>(true);
 	const [error, setError] = useState<string>();
@@ -123,7 +136,47 @@ const EditProfile: React.FC = () => {
 		updateData(imagePreview!);
 	};
 
-	const storage = getStorage();
+	// useEffect(() => {
+	//   let isMounted = true;
+
+	//   const fetchData = async () => {
+	//     try {
+	//       const q = query(
+	//         collection(db, "users"),
+	//         where("email", "==", auth.currentUser?.email)
+	//       );
+
+	//       const querySnapshot = await getDocs(q);
+
+	//       const users: UserData[] = [];
+	//       querySnapshot.forEach((doc) => {
+	//         const userData: UserData = {
+	//           id: doc.id,
+	//           data: doc.data() as {
+	//             email: string;
+	//             event_attended: string[];
+	//             event_declined: string[];
+	//             name: string;
+	//             origin: string;
+	//             profile_picture: string;
+	//             role: string;
+	//           },
+	//         };
+	//         users.push(userData);
+	//       });
+
+	//       setUserData(users[0]);
+
+	//       return () => {
+	//         isMounted = false;
+	//       };
+	//     } catch (error) {
+	//       console.error("Error fetching data:", error);
+	//     }
+	//   };
+
+	//   fetchData();
+	// }, [db, auth.currentUser?.email]);
 
 	useEffect(() => {
 		const auth = getAuth();
@@ -159,6 +212,8 @@ const EditProfile: React.FC = () => {
 			fetchUserName();
 		}
 	}, [db]);
+
+	const storage = getStorage();
 
 	return (
 		<IonPage>
@@ -252,7 +307,21 @@ const EditProfile: React.FC = () => {
 						}
 					>
 						<IonItem>
-							<IonButton onClick={takePicture}>Take Picture</IonButton>
+							<IonIcon
+								icon={pencil}
+								style={{
+									position: "absolute",
+									top: "80px",
+									left: "80px",
+									width: "20px",
+									color: "white",
+								}}
+							></IonIcon>
+							<input
+								type="file"
+								accept="image/*"
+								// onChange={handleImageChange}
+							/>
 						</IonItem>
 						<IonItem
 							style={{
