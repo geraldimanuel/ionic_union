@@ -235,7 +235,7 @@ const Organization: React.FC = () => {
 				</IonItem>
 
 				<h2>Organizations</h2>
-				<IonItem lines="none" className="catWrapper">
+				{/* <IonItem lines="none" className="catWrapper">
 					<IonButton
 						onClick={() => printData()}
 						// color="isClicked() ? 'secondary' : 'primary'"
@@ -259,7 +259,7 @@ const Organization: React.FC = () => {
 					<IonButton className="catItem">
 						<small className="catText">UKM Seni</small>
 					</IonButton>
-				</IonItem>
+				</IonItem> */}
 
 				<IonGrid>
 					{orgData.map((item, index) => (
