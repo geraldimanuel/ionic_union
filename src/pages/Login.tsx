@@ -8,26 +8,106 @@ import {
 	IonLabel,
 	IonPage,
 	IonTitle,
+	IonToast,
 	IonToolbar,
 } from "@ionic/react";
 import { useState } from "react";
-import { loginUser, loginWithGooglePopup } from "../firebaseConfig";
+import { auth, db, loginUser, provider } from "../firebaseConfig";
 import { toast } from "../components/toast";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 
 import { logoGoogle } from "ionicons/icons";
+import {
+	GoogleAuthProvider,
+	getAuth,
+	signInWithEmailAndPassword,
+	signInWithPopup,
+} from "firebase/auth";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { initializeApp } from "firebase-admin";
+import { set } from "date-fns";
 
 const Login: React.FC = () => {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
+
+	const history = useHistory();
 
 	async function login() {
 		const res = await loginUser(username, password);
 		console.log(res);
 	}
 
+	const [showToast, setShowToast] = useState(false);
+	const [registerMessage, setRegisterMessage] = useState("");
+
+	async function loginUser(email: string, password: string) {
+		signInWithEmailAndPassword(auth, email, password)
+			.then(async (userCredential) => {
+				// Signed in
+				const user = userCredential.user;
+
+				history.push("/nav");
+			})
+			.catch((error) => {
+				const errorCode = error.code;
+				const errorMessage = error.message;
+
+				setRegisterMessage(errorMessage);
+				setShowToast(true);
+			});
+	}
+
+	function loginWithGooglePopup() {
+		signInWithPopup(auth, provider)
+			.then(async (result) => {
+				// This gives you a Google Access Token. You can use it to access the Google API.
+				const credential = GoogleAuthProvider.credentialFromResult(result);
+				const token = credential!.accessToken;
+				// The signed-in user info.
+				const user = result.user;
+
+				const userRef = doc(db, "users", user.uid);
+				const userSnapshot = await getDoc(userRef);
+
+				if (!userSnapshot.exists()) {
+					// User doesn't exist, create a new entry
+					await setDoc(userRef, {
+						profile_picture: user.photoURL,
+						name: user.displayName,
+						email: user.email,
+						role: "user",
+						origin: ["umn"],
+						event_attended: [],
+						event_declined: [],
+					});
+				} else {
+					// User already exists
+					console.log("User already exists in the database");
+				}
+
+				history.push("/nav");
+			})
+			.catch((error) => {
+				// Handle Errors here.
+				const errorCode = error.code;
+				const errorMessage = error.message;
+				// The email of the user's account used.
+				const email = error.customData.email;
+				// The AuthCredential type that was used.
+				const credential = GoogleAuthProvider.credentialFromError(error);
+				// ...
+			});
+	}
+
 	return (
 		<IonPage>
+			<IonToast
+				isOpen={showToast}
+				onDidDismiss={() => setShowToast(false)}
+				message={registerMessage}
+				duration={2000}
+			/>
 			<IonContent>
 				<div
 					style={{
@@ -85,7 +165,7 @@ const Login: React.FC = () => {
 									textAlign: "center",
 									fontWeight: "bold",
 								}}
-								onClick={login}
+								onClick={() => loginUser(username, password)}
 							>
 								<p
 									style={{
@@ -134,6 +214,10 @@ const Login: React.FC = () => {
 								</p>
 								<IonIcon color="primary" icon={logoGoogle} />
 							</div>
+							<p style={{ textAlign: "center", fontSize: "14px" }}>
+								Don't have an account yet?{" "}
+								<a href="/register">Register here.</a>
+							</p>
 						</div>
 					</div>
 				</div>

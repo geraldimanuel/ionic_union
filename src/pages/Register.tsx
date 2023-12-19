@@ -8,14 +8,18 @@ import {
 	IonLabel,
 	IonPage,
 	IonTitle,
+	IonToast,
 	IonToolbar,
 } from "@ionic/react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { loginWithGooglePopup, registerUser } from "../firebaseConfig";
+import { Link, useHistory } from "react-router-dom";
+import { auth, db, registerUser } from "../firebaseConfig";
 import { logoGoogle } from "ionicons/icons";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 const Register: React.FC = () => {
+	const [name, setName] = useState("");
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [cpassword, setCPassword] = useState("");
@@ -36,33 +40,63 @@ const Register: React.FC = () => {
 		const res = await registerUser(username, password);
 	}
 
+	const history = useHistory();
+
+	async function registerUser(email: string, password: string) {
+		createUserWithEmailAndPassword(auth, email, password)
+			.then(async (userCredential) => {
+				// Signed up
+				const user = userCredential.user;
+
+				const userRef = doc(db, "users", user.uid);
+				const userSnapshot = await getDoc(userRef);
+
+				if (!userSnapshot.exists()) {
+					// User doesn't exist, create a new entry
+					await setDoc(userRef, {
+						profile_picture: "https://www.w3schools.com/howto/img_avatar.png",
+						name: name,
+						email: email,
+						role: "user",
+						origin: ["umn"],
+						event_attended: [],
+						event_declined: [],
+					});
+				} else {
+					// User already exists
+					console.log("User already exists in the database");
+				}
+
+				history.push("/login");
+			})
+			.catch((error) => {
+				const errorCode = error.code;
+				const errorMessage = error.message;
+				setRegisterMessage(errorMessage);
+				setShowToast(true);
+				// ..
+			});
+	}
+
+	const [showToast, setShowToast] = useState(false);
+	const [registerMessage, setRegisterMessage] = useState("");
+
 	return (
 		<IonPage>
+			<IonToast
+				isOpen={showToast}
+				onDidDismiss={() => setShowToast(false)}
+				message={registerMessage}
+				duration={2000}
+			/>
 			<IonContent>
-				{/* <h1>Register</h1>
-				<IonInput
-					placeholder="Email"
-					onIonChange={(e: any) => setUsername(e.target.value)}
-				/>
-				<IonInput
-					placeholder="Password"
-					onIonChange={(e: any) => setPassword(e.target.value)}
-					type="password"
-				/>
-				<IonInput
-					placeholder="Confirm Password"
-					onIonChange={(e: any) => setCPassword(e.target.value)}
-					type="password"
-				/>
-				<IonButton onClick={register}>Register</IonButton>
-				<p>
-					Already have an account?
-					<Link to={"/login"}> Login</Link>
-				</p>
-
-				<button onClick={loginWithGooglePopup}>Sign in With Google</button> */}
-
-				<div style={{ background: "linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)", height: "100%" }}>
+				<div
+					style={{
+						background:
+							"linear-gradient(180deg, rgba(18,84,136,1) 0%, rgba(42,147,213,1) 100%)",
+						height: "100%",
+					}}
+				>
 					<div
 						style={{
 							borderRadius: "40px 40px 0px 0px",
@@ -79,6 +113,13 @@ const Register: React.FC = () => {
 					>
 						<h1 style={{ fontSize: "43px", marginBottom: "20px" }}>Register</h1>
 						<div style={{ marginBottom: "50px" }}>
+							<IonItem>
+								<IonLabel position="floating">Full Name</IonLabel>
+								<IonInput
+									placeholder="Full Name"
+									onIonChange={(e: any) => setName(e.target.value)}
+								/>
+							</IonItem>
 							<IonItem>
 								<IonLabel position="floating">E-mail</IonLabel>
 								<IonInput
@@ -98,7 +139,7 @@ const Register: React.FC = () => {
 								<IonLabel position="floating">Confirm password</IonLabel>
 								<IonInput
 									placeholder="Re-type password"
-									onIonChange={(e: any) => setPassword(e.target.value)}
+									onIonChange={(e: any) => setCPassword(e.target.value)}
 									type="password"
 								/>
 							</IonItem>
@@ -132,6 +173,9 @@ const Register: React.FC = () => {
 									Register now
 								</p>
 							</div>
+							<p style={{ textAlign: "center", fontSize: "14px" }}>
+								Already have an account? <a href="/login">click here.</a>
+							</p>
 						</div>
 					</div>
 				</div>
