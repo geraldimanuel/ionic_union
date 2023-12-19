@@ -199,6 +199,30 @@ export async function updateOrganization(
 	console.log
 }
 
+export async function updateEvent(
+	event_id: string,
+	bannerUrl: string | null,
+	heading: string,
+	date: Timestamp | null,
+	location: string,
+	description: string,
+	category: string[],
+	status: boolean,
+	origin: string,
+) {
+	const eventsCollection = collection(db, "events");
+
+	await updateDoc(doc(db, "events", event_id), {
+		heading: heading,
+		location: location,
+		date: date,
+		description: description,
+		banner_url: bannerUrl,
+		category: category,
+		status: status,
+	});
+}
+
 export async function updateUser(
 	displayName: string,
 	photoURL: string,
