@@ -288,6 +288,7 @@ const Event: React.FC = () => {
 								zIndex: "1",
 								height: "160px",
 								width: "100%",
+								objectFit: "cover",
 							}}
 						/>
 						<div

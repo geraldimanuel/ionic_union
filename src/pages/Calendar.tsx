@@ -27,7 +27,14 @@ import { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import { format, parseISO } from "date-fns";
 import { getAuth } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import {
+	collection,
+	doc,
+	getDoc,
+	getDocs,
+	query,
+	where,
+} from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
 interface EventData {
@@ -39,6 +46,7 @@ interface EventData {
 		heading: string;
 		location: string;
 		origin: string;
+		category: string;
 		// Add other properties as per your actual data structure
 	};
 }
@@ -46,42 +54,42 @@ interface EventData {
 const Calendar: React.FC = () => {
 	const history = useHistory();
 	const [selectedDate, setSelectedDate] = useState<string>("");
-	const [eventData, setEventData] = useState<EventData[]>([
-		{
-			id: "1",
-			data: {
-				banner_url: "./images/imkom.png",
-				date: "2023-12-08",
-				description: "join yuk!",
-				heading: "imkom",
-				location: "function hall",
-				origin: "Im'Kom",
-			},
-		},
-		{
-			id: "2",
-			data: {
-				banner_url: "./images/radio.png",
-				date: "2023-12-20",
-				description: "final stage",
-				heading: "umn redio",
-				location: "ruang",
-				origin: "UMN Radio",
-			},
-		},
-	]);
+	// const [eventData, setEventData] = useState<EventData[]>([
+	// 	{
+	// 		id: "1",
+	// 		data: {
+	// 			banner_url: "./images/imkom.png",
+	// 			date: "2023-12-08",
+	// 			description: "join yuk!",
+	// 			heading: "imkom",
+	// 			location: "function hall",
+	// 			origin: "Im'Kom",
+	// 		},
+	// 	},
+	// 	{
+	// 		id: "2",
+	// 		data: {
+	// 			banner_url: "./images/radio.png",
+	// 			date: "2023-12-20",
+	// 			description: "final stage",
+	// 			heading: "umn redio",
+	// 			location: "ruang",
+	// 			origin: "UMN Radio",
+	// 		},
+	// 	},
+	// ]);
 
 	useEffect(() => {
 		console.log("selectedDate: ", selectedDate);
 	}, [selectedDate]);
 
-	const filteredEvents = eventData.filter((item) =>
-		Object.values(item.data).some(
-			(value) =>
-				typeof value === "string" &&
-				value.toLowerCase().includes(selectedDate.toLowerCase())
-		)
-	);
+	// const filteredEvents = eventData.filter((item) =>
+	// 	Object.values(item.data).some(
+	// 		(value) =>
+	// 			typeof value === "string" &&
+	// 			value.toLowerCase().includes(selectedDate.toLowerCase())
+	// 	)
+	// );
 
 	const handleCardClick = (eventId: string) => {
 		history.push(`/events/1`);
@@ -114,6 +122,42 @@ const Calendar: React.FC = () => {
 			fetchUserName();
 		}
 	}, [db]);
+
+	const [firebaseEvents, setFirebaseEvents] = useState<EventData[]>([]);
+
+	useEffect(() => {
+		// Fetch events from Firebase based on selectedDate
+		const fetchEventsFromFirebase = async () => {
+			if (selectedDate !== "") {
+				// Assuming 'date' in Firebase matches the format 'yyyy-MM-dd'
+				const eventsRef = collection(db, "events"); // Replace 'events' with your Firebase collection name
+				const querySnapshot = await getDocs(
+					query(eventsRef, where("date", "==", selectedDate))
+				);
+
+				const eventsData: EventData[] = [];
+				querySnapshot.forEach((doc) => {
+					const eventData: EventData = {
+						id: doc.id,
+						data: {
+							banner_url: doc.data().banner_url,
+							date: doc.data().date,
+							description: doc.data().description,
+							heading: doc.data().heading,
+							location: doc.data().location,
+							origin: doc.data().origin,
+							category: doc.data().category,
+						},
+					};
+					eventsData.push(eventData);
+				});
+
+				setFirebaseEvents(eventsData);
+			}
+		};
+
+		fetchEventsFromFirebase();
+	}, [selectedDate]);
 
 	return (
 		<IonPage style={{ backgroundColor: "DBDBDB" }}>
@@ -178,187 +222,108 @@ const Calendar: React.FC = () => {
 					></IonDatetime>
 				</IonCard>
 
-				{selectedDate === ""
-					? eventData.map((item, index) => (
-							<IonCard
-								key={index}
-								style={{ borderRadius: "10px", marginTop: "30px" }}
-								onClick={() => handleCardClick(item.id)}
+				{selectedDate === "" ? (
+					<p style={{ textAlign: "center", fontSize: "14px" }}>
+						Select a date to see events.
+					</p>
+				) : (
+					firebaseEvents.map((item, index) => (
+						<IonCard
+							key={index}
+							style={{ borderRadius: "10px", marginTop: "30px" }}
+							onClick={() => handleCardClick(item.id)}
+						>
+							<img
+								src={item.data.banner_url}
+								style={{
+									position: "relative",
+									zIndex: "1",
+									height: "160px",
+									objectFit: "cover",
+									width: "100%",
+								}}
+							/>
+							<div
+								style={{
+									zIndex: "2",
+									top: "-150px",
+									left: "10px",
+									backgroundColor: "#2a93d5",
+									height: "22px",
+									width: "64px",
+									borderRadius: "10px",
+									position: "relative",
+									display: "flex",
+									alignItems: "center",
+									justifyContent: "center",
+								}}
 							>
-								<img
-									src="../images/cardImage.png"
-									style={{ position: "relative", zIndex: "1" }}
-								/>
-								<div
-									style={{
-										zIndex: "2",
-										top: "-150px",
-										left: "10px",
-										backgroundColor: "#2a93d5",
-										height: "22px",
-										width: "64px",
-										borderRadius: "10px",
-										position: "relative",
-										display: "flex",
-										alignItems: "center",
-										justifyContent: "center",
-									}}
+								<IonText
+									color="light"
+									style={{ textAlign: "center", paddingBottom: "5px" }}
 								>
-									<IonText
-										color="light"
-										style={{ textAlign: "center", paddingBottom: "5px" }}
-									>
-										<small>
-											<b>Concert</b>
-										</small>
-									</IonText>
-								</div>
-								<div style={{ padding: "0px 10px", marginTop: "-30px" }}>
-									<IonText color="dark">
-										<h2>{item.data.heading}</h2>
-										<div
-											style={{
-												display: "flex",
-												flexDirection: "row",
-												alignItems: "center",
-											}}
-										>
-											<IonIcon icon={calendarClearOutline} />{" "}
-											<small style={{ marginLeft: "10px" }}>
-												{item.data.date}
-											</small>{" "}
-											<br></br>
-										</div>
-										<div
-											style={{
-												display: "flex",
-												flexDirection: "row",
-												alignItems: "center",
-											}}
-										>
-											<IonIcon icon={locationOutline} />{" "}
-											<small style={{ marginLeft: "10px" }}>
-												{item.data.location}
-											</small>
-										</div>
-									</IonText>
+									<small>
+										<b>{item.data.category}</b>
+									</small>
+								</IonText>
+							</div>
+							<div style={{ padding: "0px 10px", marginTop: "-30px" }}>
+								<IonText color="dark">
+									<h2>{item.data.heading}</h2>
 									<div
 										style={{
-											marginTop: "10px",
 											display: "flex",
 											flexDirection: "row",
-											gap: "40px",
 											alignItems: "center",
-											justifyContent: "center",
-											marginBottom: "15px",
 										}}
 									>
-										<IonButton
-											color="secondary"
-											style={{ borderRadius: "10px", width: "146px" }}
-										>
-											Attend
-										</IonButton>
-										<IonButton
-											color="danger"
-											style={{ borderRadius: "10px", width: "146px" }}
-										>
-											Decline
-										</IonButton>
+										<IonIcon icon={calendarClearOutline} />{" "}
+										<small style={{ marginLeft: "10px" }}>
+											{item.data.date}
+										</small>{" "}
+										<br></br>
 									</div>
-								</div>
-							</IonCard>
-					  ))
-					: filteredEvents.map((item, index) => (
-							<IonCard
-								key={index}
-								style={{ borderRadius: "10px", marginTop: "30px" }}
-								onClick={() => handleCardClick(item.id)}
-							>
-								<img
-									src="../images/cardImage.png"
-									style={{ position: "relative", zIndex: "1" }}
-								/>
-								<div
-									style={{
-										zIndex: "2",
-										top: "-150px",
-										left: "10px",
-										backgroundColor: "#2a93d5",
-										height: "22px",
-										width: "64px",
-										borderRadius: "10px",
-										position: "relative",
-										display: "flex",
-										alignItems: "center",
-										justifyContent: "center",
-									}}
-								>
-									<IonText
-										color="light"
-										style={{ textAlign: "center", paddingBottom: "5px" }}
-									>
-										<small>
-											<b>Concert</b>
-										</small>
-									</IonText>
-								</div>
-								<div style={{ padding: "0px 10px", marginTop: "-30px" }}>
-									<IonText color="dark">
-										<h2>{item.data.heading}</h2>
-										<div
-											style={{
-												display: "flex",
-												flexDirection: "row",
-												alignItems: "center",
-											}}
-										>
-											<IonIcon icon={calendarClearOutline} />{" "}
-											<small style={{ marginLeft: "10px" }}>
-												{item.data.date}
-											</small>{" "}
-											<br></br>
-										</div>
-										<div
-											style={{
-												display: "flex",
-												flexDirection: "row",
-												alignItems: "center",
-											}}
-										>
-											<IonIcon icon={locationOutline} />{" "}
-											<small style={{ marginLeft: "10px" }}>
-												{item.data.location}
-											</small>
-										</div>
-									</IonText>
 									<div
 										style={{
-											marginTop: "10px",
 											display: "flex",
 											flexDirection: "row",
-											gap: "40px",
 											alignItems: "center",
-											justifyContent: "center",
-											marginBottom: "15px",
 										}}
 									>
-										<IonButton
-											color="secondary"
-											style={{ borderRadius: "10px", width: "146px" }}
-										>
-											Attend
-										</IonButton>
-										<IonButton
-											color="danger"
-											style={{ borderRadius: "10px", width: "146px" }}
-										>
-											Decline
-										</IonButton>
+										<IonIcon icon={locationOutline} />{" "}
+										<small style={{ marginLeft: "10px" }}>
+											{item.data.location}
+										</small>
 									</div>
+								</IonText>
+								<div
+									style={{
+										marginTop: "10px",
+										display: "flex",
+										flexDirection: "row",
+										gap: "40px",
+										alignItems: "center",
+										justifyContent: "center",
+										marginBottom: "15px",
+									}}
+								>
+									<IonButton
+										color="secondary"
+										style={{ borderRadius: "10px", width: "146px" }}
+									>
+										Attend
+									</IonButton>
+									<IonButton
+										color="danger"
+										style={{ borderRadius: "10px", width: "146px" }}
+									>
+										Decline
+									</IonButton>
 								</div>
-							</IonCard>
-					  ))}
+							</div>
+						</IonCard>
+					))
+				)}
 			</IonContent>
 		</IonPage>
 	);
