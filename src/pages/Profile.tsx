@@ -161,6 +161,10 @@ const Profile: React.FC = () => {
 					});
 
 					setUserData(users);
+					if (users.length > 0) {
+						const loggedUserEvent = users[0].data.event_attended;
+						setLoggedUserEvent(loggedUserEvent);
+					}
 				});
 
 				return () => unsubscribe();
@@ -173,8 +177,8 @@ const Profile: React.FC = () => {
 	}, [db]);
 
 	useEffect(() => {
-		console.log(userData);
-	}, []);
+		console.log("loggedUserEvent: ", loggedUserEvent);
+	}, [db]);
 
 	useEffect(() => {
 		const fetchEvents = async () => {
