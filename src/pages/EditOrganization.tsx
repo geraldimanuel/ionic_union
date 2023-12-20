@@ -257,7 +257,7 @@ const EditOrganization: React.FC = () => {
 						label="Announcement*"
 						labelPlacement="floating"
 						fill="outline"
-						type="date"
+						placeholder="Enter announcement"
 						value={announcement}
 						onIonChange={(e) => setAnnouncement(e.detail.value!)}
 						style={{ marginTop: "10px" }}

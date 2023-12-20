@@ -1,4 +1,4 @@
-import { Redirect, Route } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import Home from "./pages/Home";
@@ -37,42 +37,65 @@ import Tabs from "./pages/Tabs";
 import EditOrganization from "./pages/EditOrganization";
 import Calendar from "./pages/Calendar";
 import Profile from "./pages/Profile";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import { useHistory } from "react-router-dom";
 import EditProfile from "./pages/EditProfile";
 import Request from "./pages/Request";
+import { Storage } from "@capacitor/storage";
+import { BrowserRouter as Router, Route, useHistory } from "react-router-dom";
 
 setupIonicReact();
 
 const App: React.FC = () => {
-	return (
-		<IonApp>
-			<IonReactRouter>
-				<IonRouterOutlet id="main">
-					<Redirect exact from="/" to="/login" />
-					<Route path="/nav" component={Tabs} />
+	const history = useHistory();
+	const [authenticated, setAuthenticated] = useState(false);
 
-					<Route path="/register" component={Register} />
-					<Route path="/login" component={Login} />
-					<Route path="/admin" component={Admin} />
-					{/* <Route path="/event" component={Event} />
+	useEffect(() => {
+		const checkTokenInStorage = async () => {
+			const { value } = await Storage.get({ key: "authToken" });
+			return value;
+		};
+
+		const initializeApp = async () => {
+			const authToken = await checkTokenInStorage();
+			if (authToken) {
+				setAuthenticated(true);
+				console.log("authenticated");
+			}
+		};
+
+		initializeApp();
+	}, []);
+
+	return (
+		<Router>
+			<IonApp>
+				<IonReactRouter>
+					<IonRouterOutlet id="main">
+						<Redirect exact from="/" to={authenticated ? "/nav" : "/login"} />
+						<Route path="/nav" component={Tabs} />
+
+						<Route path="/register" component={Register} />
+						<Route path="/login" component={Login} />
+						<Route path="/admin" component={Admin} />
+						{/* <Route path="/event" component={Event} />
 					<Route path="/event" component={Event} />
 					<Route path="/event/1" component={EventDetail} /> */}
-					{/* <Route exact path="/organization" component={Organization} /> */}
-					{/* <Route path="/organization/:id" component={OrganizationDetail} /> */}
-					{/* <Route  path="/editorganization" component={EditOrganization} /> */}
-					{/* <Route path="/calendar" component={Calendar} /> */}
+						{/* <Route exact path="/organization" component={Organization} /> */}
+						{/* <Route path="/organization/:id" component={OrganizationDetail} /> */}
+						{/* <Route  path="/editorganization" component={EditOrganization} /> */}
+						{/* <Route path="/calendar" component={Calendar} /> */}
 
-					<Route
-						exact
-						path="/nav/createorganization"
-						component={CreateOrganization}
-					/>
-					<Route exact path="/nav/createevent" component={CreateEvent} />
-				</IonRouterOutlet>
-			</IonReactRouter>
-		</IonApp>
+						<Route
+							exact
+							path="/nav/createorganization"
+							component={CreateOrganization}
+						/>
+						<Route exact path="/nav/createevent" component={CreateEvent} />
+					</IonRouterOutlet>
+				</IonReactRouter>
+			</IonApp>
+		</Router>
 	);
 };
 

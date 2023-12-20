@@ -16,7 +16,7 @@ import { auth, db, loginUser, provider } from "../firebaseConfig";
 import { toast } from "../components/toast";
 import { Link, useHistory } from "react-router-dom";
 
-import { logoGoogle } from "ionicons/icons";
+import { logoGoogle, save } from "ionicons/icons";
 import {
 	GoogleAuthProvider,
 	getAuth,
@@ -26,6 +26,8 @@ import {
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { initializeApp } from "firebase-admin";
 import { set } from "date-fns";
+
+import { Storage } from "@capacitor/storage";
 
 const Login: React.FC = () => {
 	const [username, setUsername] = useState("");
@@ -41,11 +43,17 @@ const Login: React.FC = () => {
 	const [showToast, setShowToast] = useState(false);
 	const [registerMessage, setRegisterMessage] = useState("");
 
+	const saveTokenToStorage = async (token: string) => {
+		await Storage.set({ key: "authToken", value: token });
+	};
+
 	async function loginUser(email: string, password: string) {
 		signInWithEmailAndPassword(auth, email, password)
 			.then(async (userCredential) => {
 				// Signed in
 				const user = userCredential.user;
+
+				saveTokenToStorage(user.uid);
 
 				history.push("/nav");
 			})
