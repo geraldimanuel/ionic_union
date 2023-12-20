@@ -1,10 +1,10 @@
-# Union App
+# Onion App
 
-Welcome to Union, a cross-platform app built with Ionic that provides a comprehensive schedule and attendance system for organizational meetings and campus events.
+Welcome to Onion, a cross-platform app built with Ionic that provides a comprehensive schedule and attendance system for organizational meetings and campus events.
 
 ## Overview
 
-Union is designed to streamline event management within organizations and campuses, offering a user-friendly interface for scheduling, managing attendance, and accessing event details.
+Onion is designed to streamline event management within organizations and campuses, offering a user-friendly interface for scheduling, managing attendance, and accessing event details.
 
 ## Features
 
@@ -39,6 +39,16 @@ We welcome contributions from the community to enhance Union. To contribute:
 
 Please ensure to follow the [code of conduct](CODE_OF_CONDUCT.md) when contributing.
 
+## Creators
+- Kesya Febriana Manampiring (00000065476)
+- Gerald Imanuel Wijaya (00000060106)
+- Bella Saharani Sopyan (00000064581)
+- Steve Christian (00000058797)
+
+## Links
+- [GitHub Repository](https://github.com/geraldimanuel/ionic_union)
+- [Play Store](https://play.google.com/store/apps/details?id=com.theincredible.union)
+  
 ## Support
 
 For any questions, issues, or suggestions, please [open an issue](https://github.com/geraldimanuel/ionic_union/issues) or contact [geraldimanuelwijaya@gmail.com].
