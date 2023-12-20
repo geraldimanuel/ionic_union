@@ -122,6 +122,14 @@ const EditProfile: React.FC = () => {
 	const submitHandler = (e: React.FormEvent) => {
 		e.preventDefault();
 		updateData(imagePreview!);
+
+		// delete old state
+		setName("");
+		setEmail("");
+		setImage(undefined);
+		setImagePreview(undefined);
+		setFileName("");
+		setImageUrl("");
 	};
 
 	useEffect(() => {
