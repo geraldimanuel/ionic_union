@@ -151,9 +151,7 @@ const Home: React.FC = () => {
 					setUserData(users);
 
 					if (users.length > 0) {
-						const loggedUserEvent = users[0].data.event_attended.concat(
-							users[0].data.event_declined
-						);
+						const loggedUserEvent = users[0].data.event_attended;
 						setLoggedUserEvent(loggedUserEvent);
 
 								const today = new Date();
